@@ -795,7 +795,7 @@ sub changeOpt {
 sub addPlanetSource {
   my $name = shift;
   my $number = shift;
-  my $source = new Source($name);
+  my $source = new ObsDesk::Source($name);
   $source->type('planet');
   $source->planetnum($number);
   if (!isWithin ($source, @SOURCE_LIST)) {
@@ -1009,7 +1009,7 @@ sub getSourcesFromFile {
 
     print "Creating a new source in getsourcefromfile\n" if $locateBug;
 
-    my $source = new Source($parts[0], $ra, $dec, $epoc);
+    my $source = new ObsDesk::Source($parts[0], $ra, $dec, $epoc);
     print "Created a new source in getsourcefromfile\n" if $locateBug;
 
     push (@sources, $source);
@@ -1194,7 +1194,7 @@ sub editSource {
   my $newBut = $manipF->Button( -text=>'New', 
 		    -width        => 4,
 		    -command=> sub{
-			my $source = new Source();
+			my $source = new ObsDesk::Source();
 			&getSource ($source);
 			my $res = &waitForResponse();
 			if ($res && !isWithin ($source, @SOURCE_LIST)) {
@@ -1222,7 +1222,7 @@ sub editSource {
 	  my $c = $k;
 	  $planBut->command(-label=>$plan, -command=> sub{
 	      &addPlanetSource ($plan, $c);
-	      print "$TEL is tel  \n";
+	      print "$TEL is tel  \n" if $locateBug;
 	      fillWithSourceList ($EditWin, 'full');
 	      plot();
 	  });
