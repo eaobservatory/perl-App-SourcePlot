@@ -550,7 +550,7 @@ returns a copy of this object
 
 sub copy {
   my $self = shift;
-  my $source = new Source($self->name, $self->ra, $self->dec, $self->epoc);
+  my $source = $self->new($self->name, $self->ra, $self->dec, $self->epoc);
   return $source;
 }
 
