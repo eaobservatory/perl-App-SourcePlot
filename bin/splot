@@ -33,6 +33,9 @@
 #       DD/MM/YY: INIT  Comments
 #       --------- ----  --------
 #       $Log: splot,v $
+#       Revision 1.12  2000/05/10 21:06:42  timj
+#       Fix progress bar
+#
 #       Revision 1.11  1999/10/28 19:51:15  timj
 #       Y2K compliant (add 1900 to year)
 #
@@ -76,7 +79,7 @@ BEGIN {
  
     use Tk;                     # define Tk objects and methods
     use Tk::ProgressBar;
-    $VERSION = sprintf "%d.%03d", q$Revision: 1.11 $ =~ /(\d+)\.(\d+)/;
+    $VERSION = sprintf "%d.%03d", q$Revision: 1.12 $ =~ /(\d+)\.(\d+)/;
     $MW = MainWindow->new;
     $MW->positionfrom('user');
     $MW->geometry('+0+90');
@@ -90,8 +93,8 @@ BEGIN {
                          -text => "Source Plot $VERSION ...");
     $STATUS->grid(-row => 0, -column => 0, -sticky => 'w'); 
     $BAR = $MW->ProgressBar(-from =>0, -to=>100, 
-			    -width=>270, -length=>15,
-			    -blocks => 20, -anchor => 'e',
+			    -width=>15, -length=>270,
+			    -blocks => 20, -anchor => 'w',
 			    -colors => [0, 'blue'],
 			    -relief => 'sunken',
 			    -borderwidth => 3,
