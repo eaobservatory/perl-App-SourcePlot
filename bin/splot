@@ -1,4 +1,4 @@
-#!/bin/perl
+#!/local/bin/perl
 ########################################################################
 ####             J C M T   S O F T W A R E   G R O U P              ####
 #                -------------------------------------
@@ -20,6 +20,7 @@
 #       Last Updated    : 07/02/98
 #
 #   Programmer(s):      Casey Best (University of Victoria)
+#                       Pam Shimek (University of Victoria)
 #
 #   Comments:
 #
@@ -36,7 +37,6 @@ require 5.004;
 use strict;
 
 #use lib '/jcmt_sw/omp/obsdesk/Perl5Lib';
-use lib '/jcmt_sw/omp/obsdesk/neworg/cvsorg/inst';
 
 my $plotterType = 'Tk';
 my $locateBug = 0;
@@ -65,7 +65,6 @@ BEGIN {
     $MW->update;
 
 }
-
 # Preinit subs
 use subs 'update_status';
 
@@ -82,17 +81,26 @@ if ($plotterType eq 'gaia') {
 } else {
   eval 'use Plotter::Tk';
 }
-die "Error loading Plotter Module: $@" if $@;
 
 update_status 'Loading Date Module', 25;
 
 eval 'use Date::Manip';
 die "Error loading Date::Manip Module: $@" if $@;
 
+update_status 'Loading Defaults Module', 30;
+
+eval 'use ObsDesk::Defaults';
+die "Error loading Defaults Module: $@" if $@;
+
 update_status 'Loading Source Module', 35;
 
 eval 'use ObsDesk::Source';
 die "Error loading Source Module: $@" if $@;
+
+update_status 'Loading SrcCatalog Module', 45;
+
+eval 'use Tk::SrcCatalog';
+die "Error loading Tk::SrcCatalog: $@" if $@;
 
 update_status 'Loading SLA Module', 45;
 
@@ -115,7 +123,6 @@ eval 'use Tk::Balloon';
 die "Error loading Tk::Balloon Module: $@" if $@;
 
 use Math::Trig;
-
 #global variables that will be used....
 
 my $DATE;
@@ -133,18 +140,36 @@ my $EDIT_OPEN;
 my $LAST_COMMAND;
 my @UNDO_LIST;
 my $undoBut;
-
+my $cBut;
 my $TimeLap = 30000;    # time between white dot updates
 my $dotSizeX = 4;
 my $dotSizeY = 4;
 
 my @telescopes = ('JCMT', 'UKIRT');
-my $TEL = 'JCMT';
-my $telObject = new Astro::Telescope('JCMT');
+#my $telObject = new Astro::Telescope('JCMT');
 
-my @axes = ('Time', 'Elevation', 'Azimuth', 'Parallactic Angle');
-my $X_AXIS = 'Time';
-my $Y_AXIS = 'Elevation';
+my @axes = ('Time', 'Elevation', 'Air Mass', 'Azimuth', 'Parallactic Angle');
+my %defaults = (
+		TEL => 'JCMT',
+		XAXIS => 'Time',
+		YAXIS => 'Elevation',
+		TIME => '1:30:00'
+		);
+
+# setting up default values for Source Plot Options
+my $defaults = ObsDesk::Defaults->new;
+$defaults->file('.splotcfg');
+$defaults->r_defaults(\%defaults);
+my $TEL = $defaults->values('TEL');
+my $X_AXIS = $defaults->values('XAXIS');
+my $Y_AXIS = $defaults->values('YAXIS');
+my $TIME = $defaults->values('TIME');
+chomp($X_AXIS);
+chomp($Y_AXIS);
+chomp($TIME);
+chomp($TEL);
+my $telObject = new Astro::Telescope($TEL);
+
 my ($minX,$minY);
 my ($maxX,$maxY);
 
@@ -330,13 +355,14 @@ my $eBut = $buttonFrame->Button(
 $balloon->attach($eBut,
 		 -balloonmsg => "Press to open the Edit Window");  
 
-my $cBut = $buttonFrame->Button(
+$cBut = $buttonFrame->Button(
    -text         => 'Catalog',
    -width        => 8,
    -command      => sub {
      if (!$CATALOG_OPEN) {
-       &catalogWin();
+       my $catalog = new Tk::SrcCatalog($MW, -addCmd => \&addCommand, -onDestroy => \&reset, -upDate => \&update_status);
        $CATALOG_OPEN = 1;
+       $cBut->configure(-state=> 'disabled');
      }
    }   
 )->pack(-side=>'left');
@@ -356,7 +382,7 @@ $MW->update;
 $eBut->configure(-state=>'disabled');
 $cBut->configure(-state=>'disabled');
 &editSource ();
-&catalogWin();
+my $catalog = new Tk::SrcCatalog($MW, -addCmd => \&addCommand, -onDestroy => \&reset, -upDate => \&update_status);
 $CATALOG_OPEN = 1;
 $EDIT_OPEN = 1;
 
@@ -366,6 +392,40 @@ calcTime();
 print "made it to just before the main loop\n" if $locateBug;
 
 MainLoop;
+
+
+sub reset
+{
+	$CATALOG_OPEN = 0;
+	$cBut->configure(-state=>'normal');
+}
+
+sub addCommand
+{
+	my $selected = shift;
+	if(@{$selected} != ())
+	{
+		my $source;
+		$LAST_COMMAND = 'Add';
+		@UNDO_LIST = ();
+		$undoBut->configure(-state => 'normal') if $EDIT_OPEN;
+		foreach $source (@$selected)
+		{
+			if(!isWithin($source, @SOURCE_LIST))
+			{
+				my $s = $source->copy();
+				$s->color(getColor());
+				push (@SOURCE_LIST, $s);
+				push (@UNDO_LIST, $source->copy());
+			}
+		}
+		if ($EDIT_OPEN) {
+			fillWithSourceList ($EditWin, 'full');
+		}
+		plot();
+	}
+}
+
 
 
 
@@ -643,6 +703,8 @@ sub changeOpt {
 		 });
   }
   $yb->grid(-column=>1, -row=>4, -padx =>10, -pady=>5, -sticky=>'w');
+
+  # inserting cascading choices
     
   # place the x-axis menuButton
   $topFrame->Label (
@@ -707,6 +769,21 @@ sub changeOpt {
 		     destroy $Top;
 		   }
 		  )->pack(-side=>'right');
+
+  $buttonF->Button(
+		   -text         => 'Save Setting',
+		   -command      => sub{
+			$X_AXIS = $xEnt;
+			$Y_AXIS = $yEnt;
+			$TEL = $telEnt;
+			$TIME = $timeEnt;
+			$defaults->values('TEL', $TEL);
+			$defaults->values('XAXIS', $X_AXIS);
+			$defaults->values('YAXIS', $Y_AXIS);
+			$defaults->values('TIME', $TIME);
+			$defaults->w_defaults();
+		   }
+		  )->pack(-side=>'right');
   $MW->update;
 }
 
@@ -718,7 +795,7 @@ sub changeOpt {
 sub addPlanetSource {
   my $name = shift;
   my $number = shift;
-  my $source = new ObsDesk::Source($name);
+  my $source = new Source($name);
   $source->type('planet');
   $source->planetnum($number);
   if (!isWithin ($source, @SOURCE_LIST)) {
@@ -799,196 +876,6 @@ sub getSource {
 		  )->pack(-side=>'right');
   $Top->update;
   $Top->grab;
-}
-
-############################################################
-#
-#  CatalogWin creates a windows that displays the contents
-#  of a catalog and allows the user to select as many entries
-#  in it as he/she wishes.
-#
-sub catalogWin {
-  my (@selected) = ();
-
-  print "made it into the catalog method...\n" if $locateBug;
-
-  $cBut->configure(-state=>'disabled');
-
-  my $Top = $MW->Toplevel;
-  $Top->geometry('+600+437');
-  $Top->title('Source Plot: Catalog Window');
-  $Top->resizable(0,0);
-
-  print "made the catalog window\n" if $locateBug;
-
-  my @Sources;
-  my $topFrame = $Top->Frame(-relief=>'groove', -borderwidth =>2, -width =>50)->pack(-padx=>10, -fill => 'x', -ipady=>3, pady => 10);
-  
-  # create the header
-  my $headFrame = $topFrame->Frame(-relief=>'flat', -borderwidth =>2)->grid(-row=>0, -sticky=>'nsew', -ipadx => 3);
-  my $head = $topFrame->Text(
-      -wrap       => 'none',
-      -relief     => 'flat',
-      -foreground => 'midnightblue',
-      -width      => 50,
-      -height     => 1, 
-      -font       => '-*-Courier-Medium-R-Normal--*-120-*-*-*-*-*-*',
-      -takefocus  => 0
-  )->grid (-sticky=>'ew', -row =>0);
-  my $title = sprintf "%5s  %-16s  %-12s  %-13s  %-4s", 'Index', 'Name', 'Ra', 'Dec', 'Epoc';
-  $head->insert ('end', $title);
-  $head->configure(-state=>'disabled');
-
-  print "just about to make the scrollable text\n" if $locateBug;
-
-  # create the text scrollable window
-  my $T = $topFrame->Scrolled('Text',
-			      -scrollbars => 'e',		  
-			      -wrap       => 'none',
-			      -width      => 60,
-			      -height     => 15, 
-			      -font       => '-*-Courier-Medium-R-Normal--*-120-*-*-*-*-*-*',
-			      -setgrid    => 1,
-			     )->grid(qw/-sticky nsew/);
-  $T->bindtags(qw/widget_demo/);	# remove all bindings but dummy "widget_demo"
-  
-  # give the catalog window some items
-  $CatWin->{'Window'} = $Top;
-  $CatWin->{'Text'} = $T;
-
-  print "just before creating the done button\n" if $locateBug;
-
-  # create the Done button
-  my $buttonF2 = $Top->Frame->pack(-padx=>10, -fill =>'x');
-  my $buttonF = $Top->Frame->pack(-padx=>10, -pady=>10);
-  my $dBut = $buttonF->Button(
-		   -text         => 'Done',
-		   -command      => sub{
-		     $cBut->configure(-state=>'normal');
-		     $CATALOG_OPEN = 0;
-		     destroy $Top;
-		   }
-		  )->pack(-side=>'right');
-  $balloon->attach($dBut,
-		 -balloonmsg => "Press to close Catalog Window");  
-  
-  my $addCommand = sub {
-    if (@selected != ()) {
-      my $source;
-      $LAST_COMMAND = 'Add';
-      @UNDO_LIST = ();
-      $undoBut->configure(-state => 'normal') if $EDIT_OPEN;
-      foreach $source (@selected) {
-	if (!isWithin ($source, @SOURCE_LIST)) {
-	  my $s = $source->copy();
-	  $s->color(getColor());
-	  push (@SOURCE_LIST, $s);
-	  push (@UNDO_LIST, $source->copy());
-	}
-	$T->tag('configure', 'd'.$source->index(), -foreground => 'blue');
-      }
-      @selected = ();
-      if ($EDIT_OPEN) {
-	fillWithSourceList ($EditWin, 'full');
-      }
-      plot();
-    }
-  };
-
-  # create the Add button
-  my $addBut = $buttonF->Button( -text=>'Add', 
-		    -relief => 'raised', 
-		    -width        => 7,
-		    -command => $addCommand
-		    )->pack(-side=>'right', -padx=>20);
-  $balloon->attach($addBut,
-		 -balloonmsg => "Press to add the selected\nsources to the plot");  
-
-  # create the Search button
-  my $searchBut;
-  $searchBut = $buttonF->Button( -text=>'Search', 
-		    -relief => 'raised', 
-		    -width        => 7,
-		    -command => sub {
-		      $searchBut->configure(-state=>'disabled');
-		      my $source = new ObsDesk::Source;
-		      &getSource ($source);
-		      my $res = &waitForResponse();
-		      if ($res) {
-			@Sources = searchFor ($source, @Sources);
-		      }		      
-		      fillWithSourceList ($CatWin, 'full');
-		      $searchBut->configure(-state=>'normal');
-		    })->pack(-side=>'right');
-  $balloon->attach($searchBut,
-		 -balloonmsg => "Press to search for a specific\nsource in the catalog");  
-  
-  # declared for the catalog file
-  my $catEnt;
-
-  # create the Rescan button
-  my $rescanBut = $buttonF->Button( -text=>'Rescan', 
-		    -relief => 'raised', 
-		    -width        => 7,
-		    -command => sub {
-		      $CATALOG = $catEnt->get;
-		      @Sources = getSourcesFromFile($Top);
-		      fillWithSourceList ($CatWin, 'full');
-		    })->pack(-side=>'right', -padx =>'20');
-  $balloon->attach($rescanBut,
-		 -balloonmsg => "Press to reload the full catalog");  
-  
-  # create the catalog menu button
-  my $catB = $buttonF2->Menubutton( -text=>'Catalogs', -relief => 'raised', -width => 8);
-  $catB->command(-label =>'Default Catalog', -command=> sub{
-  		   $CATALOG = 'default';
-		   $catEnt->delete ('0','end');
-		   $catEnt->insert(0,$CATALOG);
-		   $MW->update;
-		   @Sources = getSourcesFromFile($Top);
-		   fillWithSourceList ($CatWin, 'full');
-  		  });
-  $catB->command(-label =>'File Catalog', -command=> sub{
-		   my $dir;
-		   chomp($dir = `pwd`);
-		   my $win = $Top->FileSelect(-directory => $dir);;
-		   my $file = $win->Show;
-		   if ($file ne '') {
-		     $catEnt->delete ('0','end');
-		     $catEnt->insert('0', $file);
-		     $CATALOG = $file;
-		     @Sources = getSourcesFromFile($Top);
-		     fillWithSourceList ($CatWin, 'full');
-		   }
-  		  });
-  $catB->pack (-side=>'left',-padx =>10);
-  $balloon->attach($catB,
-		 -balloonmsg => "Press to select different catalogs");  
-
-  # Create th catalog file label
-  $buttonF2->Label (
-  		     -text => "Catalog file:", 
-  		    )->pack(-side=>'left');
-  $catEnt = $buttonF2->Entry(-relief=>'sunken',
-  				-width=>37)->pack(-side=>'left', -padx =>10);
-  $catEnt->bind('<KeyPress-Return>' =>sub {
-		  $CATALOG = $catEnt->get;
-		  @Sources = getSourcesFromFile($Top);
-		  fillWithSourceList ($CatWin, 'full');
-		});
-  $catEnt->insert(0,$CATALOG);
-  
-  $CatWin->{'Selected'} = \@selected;
-  $CatWin->{'Sources'} = \@Sources;
-  $CatWin->{'Double'} = $addCommand;
-
-  print "made it past all the buttons and just about to fill...\n" if $locateBug;
-
-  @Sources = getSourcesFromFile($Top);
-  fillWithSourceList ($CatWin, 'full');
-  
-  $MW->update;
-
 }
 
 ############################################################
@@ -1122,8 +1009,7 @@ sub getSourcesFromFile {
 
     print "Creating a new source in getsourcefromfile\n" if $locateBug;
 
-    my $source = new ObsDesk::Source($parts[0], $ra, $dec, $epoc);
-
+    my $source = new Source($parts[0], $ra, $dec, $epoc);
     print "Created a new source in getsourcefromfile\n" if $locateBug;
 
     push (@sources, $source);
@@ -1308,7 +1194,7 @@ sub editSource {
   my $newBut = $manipF->Button( -text=>'New', 
 		    -width        => 4,
 		    -command=> sub{
-			my $source = new ObsDesk::Source();
+			my $source = new Source();
 			&getSource ($source);
 			my $res = &waitForResponse();
 			if ($res && !isWithin ($source, @SOURCE_LIST)) {
@@ -1336,6 +1222,7 @@ sub editSource {
 	  my $c = $k;
 	  $planBut->command(-label=>$plan, -command=> sub{
 	      &addPlanetSource ($plan, $c);
+	      print "$TEL is tel  \n";
 	      fillWithSourceList ($EditWin, 'full');
 	      plot();
 	  });
@@ -1376,13 +1263,27 @@ sub fillWithSourceList {
   my $selected = $Window->{'Selected'};
   my $arrayOfSources = $Window->{'Sources'};
   my $task = shift;
+  my $sort = shift;
   my $index = shift;
   my (@sources);
   my ($source);
   my @entered = ();
   my($line,$itag);
 
-  @sources = sort by_name @$arrayOfSources;
+  @sources = @$arrayOfSources;
+  #@sources = sort by_name @$arrayOfSources;
+
+  if(defined $sort)
+  {
+    for($sort)
+    { 	 
+	/unsorted/ and do { @sources = @$arrayOfSources;last;};
+	/name/	  and do { @sources = sort by_name @$arrayOfSources;last;};
+	/ra/	  and do { @sources = sort by_ra @$arrayOfSources;last;};
+	/dec/	  and do { @sources = sort by_dec @$arrayOfSources;last;};
+		die "Unknown value for form variable \$sort \n";	
+    }
+  }
   
   # Enable infobox for access
   $T->configure(-state=>'normal');
@@ -1523,23 +1424,6 @@ sub fillWithSourceList {
   
 }
 
-
-############################################################
-# Sort by name routine
-sub by_name {
-  my $b2 = $b->name;
-  my $a2 = $a->name;
-  $b2 =~ tr/A-Z/a-z/;
-  $a2 =~ tr/A-Z/a-z/;
-  if( $b2 eq '') {
-    return -1;
-  }
-  if( $a2 eq '') {
-    return 1;
-  }
-  ($a2 cmp $b2);
-}
-
 ############################################################
 #  plots the graphs, including axis
 #
@@ -1600,6 +1484,11 @@ sub plot {
     $minX = $lst;
     $maxX = $lst + 24*$lstDiffX;
     print "x-axis is time\n" if $debug;   
+  } elsif ($X_AXIS =~ /air mass/i) {
+    $xworldRatio = 90/($xplot - $xborder*2 - $XSpaceForTime);
+    $minX = 0;
+    $maxX = 90;
+    print "x-axis is ele\n" if $debug;
   } elsif ($X_AXIS =~ /elevation/i) {
     $xworldRatio = 90/($xplot - $xborder*2 - $XSpaceForTime);
     $minX = 0;
@@ -1657,6 +1546,11 @@ sub plot {
     $maxY = $lst + 24 * $lstDiffY;
     $minY = $lst;
     print "y-axis is time\n" if $debug;
+  } elsif ($Y_AXIS =~ /air mass/i) {
+    $yworldRatio = -90/($yplot - $yborder*2- $YSpaceForTime);
+    $maxY = 90;
+    $minY = 0;
+    print "y-axis is ele\n" if $debug;
   } elsif ($Y_AXIS =~ /elevation/i) {
     $yworldRatio = -90/($yplot - $yborder*2- $YSpaceForTime);
     $maxY = 90;
@@ -1677,7 +1571,7 @@ sub plot {
     $minY = 0;
     $maxY = 0;
   }
-  if ((($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /elevation/i)) || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /elevation/i))) {
+  if ((($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /elevation/i)) || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /elevation/i))|| (($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /air mass/i)) || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /air mass/i))) {
     $yworldRatio = -180/($yplot - $yborder*2);
     $xworldRatio = 180/($xplot - $xborder*2);
     $minY = 0;
@@ -1687,10 +1581,16 @@ sub plot {
     $plotter->usingWorld(0);
     $plotter->worldCenter($xplot/2, $yplot/2);
     $plotter->usingWorld(1);
-    $special = 1;
+    if(($X_AXIS =~ /elevation/i) || ($Y_AXIS =~ /elevation/i))
+    {
+    	$special = 1;
+    }
+    else  # air mass case
+    {
+	$special = 2;
+    }
     print "axes is special\n" if $debug;
   }
-
   print "    Setting the world coordinate system\n" if $locateBug;
   $plotter->worldToPixRatio($xworldRatio, $yworldRatio);
   $plotter->worldAtZero($minX, $minY);
@@ -1698,7 +1598,7 @@ sub plot {
   # draw the grid lines - x axis
   $plotter->fontColor('White');
   $plotter->drawColor('dark green');
-  if ($special) {
+  if (($special == 1) ||($special == 2)) {
     # draw the angle grid lines
     for (my $z = 0; $z < 360; $z += 15) {
       my $tz = (90 - $z) * pi / 180;
@@ -1706,7 +1606,6 @@ sub plot {
       my $y = 92 * sin $tz;      
       $plotter->drawLine (0,0,$x, $y, 'grid');
     }
-
     #label the angle grid lines
     for (my $z = 0; $z < 360; $z += 15) {
       my $tz = (90 - $z) * pi / 180;
@@ -1731,17 +1630,42 @@ sub plot {
     $plotter->drawOval(-90,-90,90,90, 'owhite');
     $plotter->penWidth(1);
 
+   if($special == 1) # elevation -azimuth case
+   {
+   	#draw the elevation labels
+     	$plotter->drawColor ('dark green');
+    	my $texty = $plotter->toWy(5) - $plotter->toWy(0);
+    	for (my $i = 0; $i<90; $i+=10) {
+      		$plotter->drawOval(-$i, -$i, $i, $i, 'grid');
+      		$plotter->drawText(0,$i-$texty,90 - $i, 'twhite');      
+    	}
+
+    	$plotter->usingWorld(0);
+    	$plotter->worldCenter($xborder, $yplot-$yborder);
+    	$plotter->usingWorld(1);
+   }
+   if ($special == 2)  #azimuth - air mass case
+   {
     #draw the elevation labels
     $plotter->drawColor ('dark green');
-    my $texty = $plotter->toWy(5) - $plotter->toWy(0);
-    for (my $i = 0; $i<90; $i+=10) {
-      $plotter->drawOval(-$i, -$i, $i, $i, 'grid');
-      $plotter->drawText(0,$i-$texty,90 - $i, 'twhite');      
+    my $ytext = $plotter->toWx(5) - $plotter->toWx(0);
+    for (qw/1.0 1.25 1.5 1.75 2.0 3.0 4.0 5.0/)  
+    {
+	my $new_el = 90 - am_to_deg($_);
+	$plotter->drawOval(-$new_el, -$new_el, $new_el, $new_el, 'grid');
     }
-
+    $plotter->drawText (0, 0,1.0,'twhite');
+    $plotter->drawText (0, 39,1.25,'twhite');
+    $plotter->drawText (0, 50,1.5,'twhite');
+    $plotter->drawText (0, 57,1.75,'twhite');
+    $plotter->drawText (0, 61,2.0,'twhite');
+    $plotter->drawText (0, 71,3.0,'twhite');
+    $plotter->drawText (0, 76,4.0,'twhite');
+    $plotter->drawText (0, 80,5.0,'twhite');
     $plotter->usingWorld(0);
     $plotter->worldCenter($xborder, $yplot-$yborder);
     $plotter->usingWorld(1);
+   } 
   }elsif ($X_AXIS =~ /time/i) {
     my $ho = $timeH - 8;
     for ( my $hour = $minX+$lstDiffX*4; $hour < $maxX; $hour += $lstDiffX*4 ) {
@@ -1789,6 +1713,28 @@ sub plot {
       $plotter->drawLine($deg, $minY, $deg, $maxY, 'grid');
       $plotter->drawText($deg, $y, $deg, 'twhite');
     }
+  } elsif ($X_AXIS =~ /air mass/i) {
+      my $dAt12 = 90 - (180 / pi * acos (1/1.25));
+      my $dAt15 = 90 - (180 / pi * acos (1/1.5));
+      my $dAt17 = 90 - (180 / pi * acos (1/1.75));
+      my $dAt3 = 90 - (180 / pi * acos (1/3));
+      my $dAt4 = 90 - (180 / pi * acos (1/4));
+      my $dAt5 = 90 - (180 / pi * acos (1/5));
+      $plotter->drawLine(30, $minY,30, $maxY, 'grid');
+      $plotter->drawLine($dAt12, $minY, $dAt12, $maxY, 'grid');
+      $plotter->drawLine($dAt15, $minY, $dAt15, $maxY, 'grid');
+      $plotter->drawLine($dAt17, $minY, $dAt17, $maxY, 'grid');
+      $plotter->drawLine($dAt3, $minY, $dAt3, $maxY, 'grid');
+      $plotter->drawLine($dAt4, $minY, $dAt4, $maxY, 'grid');
+      $plotter->drawLine($dAt5, $minY, $dAt5, $maxY, 'grid');
+      my $y = $plotter->toWy ($yplot - $yborder - 10);
+      $plotter->drawText($dAt12, $y, '1.25', 'twhite');
+      $plotter->drawText($dAt15, $y, '1.5', 'twhite');
+      $plotter->drawText($dAt17, $y, '1.75', 'twhite');
+      $plotter->drawText(30, $y, '2', 'twhite');
+      $plotter->drawText($dAt3, $y, '3', 'twhite');
+      $plotter->drawText($dAt4, $y, '4', 'twhite');
+      $plotter->drawText($dAt5, $y, '5', 'twhite');
   } elsif ($X_AXIS =~ /azimuth/i) {
     for ( my $deg = $minX+40; $deg < $maxX; $deg += 40 ) {
       $plotter->drawLine($deg, $minY, $deg, $maxY, 'grid');
@@ -1804,7 +1750,7 @@ sub plot {
   }
 
   # draw the grid lines - y axis
-  if ($special) {}
+  if (($special == 1) || ($special == 2))  {}
   elsif ($Y_AXIS =~ /time/i) {
     my $ho = $timeH - 8;
     for ( my $hour = $minY+$lstDiffY*4; $hour < $maxY; $hour += $lstDiffY*4 ) {
@@ -1854,6 +1800,23 @@ sub plot {
       my $x = $plotter->toWx ($xborder + 10);
       $plotter->drawText($x, $deg, $deg, 'twhite');
     }
+  } elsif ($Y_AXIS =~ /air mass/i) {
+        my $dAt12 = 90 - (180 / pi * acos (1/1.25));
+    	my $dAt15 = 90 - (180 / pi * acos (1/1.5));
+    	my $dAt17 = 90 - (180 / pi * acos (1/1.75));
+        my $x = $plotter->toWx ($xborder +15);
+	for(qw/1 2 3 4 5/)
+	{	 
+           my $dAt = 90 - (180 / pi * acos (1/$_));
+           $plotter->drawLine($minX, $dAt, $maxX, $dAt, 'grid');
+	   $plotter->drawText ($x, $dAt, $_, 'twhite');
+	}
+        $plotter->drawLine($minX, $dAt12, $maxX, $dAt12, 'grid');
+        $plotter->drawLine($minX, $dAt15, $maxX, $dAt15, 'grid');
+        $plotter->drawLine($minX, $dAt17, $maxX, $dAt17, 'grid');
+        $plotter->drawText ($x, $dAt12, '1.25', 'twhite');
+        $plotter->drawText ($x, $dAt15, '1.5', 'twhite');
+        $plotter->drawText ($x, $dAt17, '1.75', 'twhite');
   } elsif ($Y_AXIS =~ /azimuth/i) {
     for ( my $deg = $minY+40; $deg < $maxY; $deg += 40 ) {
       $plotter->drawLine($minX, $deg, $maxX, $deg, 'grid');
@@ -1907,20 +1870,40 @@ sub plot {
     my $yoff = $maxY + $plotter->toWy (5) - $plotter->toWy(0);
     my $toff = $plotter->toWy (10) - $plotter->toWy(0);
     $plotter->drawLine (30, $maxY, 30, $yoff, 'lwhite');
+    my $dAt12 = 90 - (180 / pi * acos (1/1.25));
+    my $dAt15 = 90 - (180 / pi * acos (1/1.5));
+    my $dAt17 = 90 - (180 / pi * acos (1/1.75));
     my $dAt3 = 90 - (180 / pi * acos (1/3));
     my $dAt4 = 90 - (180 / pi * acos (1/4));
     my $dAt5 = 90 - (180 / pi * acos (1/5));
+    $plotter->drawLine ($dAt12, $maxY, $dAt12, $yoff, 'lwhite');
+    $plotter->drawLine ($dAt15, $maxY, $dAt15, $yoff, 'lwhite');
+    $plotter->drawLine ($dAt17, $maxY, $dAt17, $yoff, 'lwhite');
     $plotter->drawLine ($dAt3, $maxY, $dAt3, $yoff, 'lwhite');
     $plotter->drawLine ($dAt4, $maxY, $dAt4, $yoff, 'lwhite');
     $plotter->drawLine ($dAt5, $maxY, $dAt5, $yoff, 'lwhite');
-    $plotter->drawText (90, $maxY - $toff, '1', 'twhite');
-    $plotter->drawText (30, $maxY - $toff, '2', 'twhite');
-    $plotter->drawText ($dAt3, $maxY - $toff, '3', 'twhite');
-    $plotter->drawText ($dAt4, $maxY - $toff, '4', 'twhite');
-    $plotter->drawText ($dAt5, $maxY - $toff, '5', 'twhite');
+    $plotter->drawText (90, $maxY + $toff, '1', 'twhite');
+    $plotter->drawText (30, $maxY + $toff, '2', 'twhite');
+    $plotter->drawText ($dAt12, $maxY + $toff, '1.25', 'twhite');
+    $plotter->drawText ($dAt15, $maxY + $toff, '1.5', 'twhite');
+    $plotter->drawText ($dAt17, $maxY + $toff, '1.75', 'twhite');
+    $plotter->drawText ($dAt3, $maxY + $toff, '3', 'twhite');
+    $plotter->drawText ($dAt4, $maxY + $toff, '4', 'twhite');
+    $plotter->drawText ($dAt5, $maxY + $toff, '5', 'twhite');
     $plotter->usingWorld(0);
     $plotter->drawText($xplot/2,$yborder/2, 'Air Mass', 'twhite');
     $plotter->drawText($xplot/2,$yplot - $yborder/2, 'Elevation', 'twhite');
+  } elsif ($X_AXIS =~ /air mass/i) {
+    $plotter->usingWorld(1);
+    my $yoff = $maxY + $plotter->toWy (5) - $plotter->toWy(0);
+    my $toff = $plotter->toWy (10) - $plotter->toWy(0);
+    for ( my $deg = $minX+20; $deg < $maxX; $deg += 20 ) {
+      	$plotter->drawLine ($deg, $maxY, $deg, $yoff, 'lwhite');
+    	$plotter->drawText ($deg, $maxY + $toff, $deg, 'twhite');
+    } 	
+    $plotter->usingWorld(0);
+    $plotter->drawText($xplot/2,$yborder/2, 'Elevation', 'twhite');
+    $plotter->drawText($xplot/2,$yplot - $yborder/2, 'Air Mass', 'twhite');
   } elsif ($X_AXIS =~ /azimuth/i) {
     $plotter->drawText($xplot/2,$yplot - $yborder/2, 'Azimuth', 'twhite');
   } elsif ($X_AXIS =~ /parallactic angle/i) {
@@ -1937,25 +1920,49 @@ sub plot {
     $plotter->drawLine($xplot - $xborder, $yborder, $xplot - $xborder, $yplot- $yborder, 'lwhite');
     $plotter->drawLine($xplot - $xborder, $yborder, $xplot - $xborder - $XSpaceForTime, $yborder, 'lwhite');
     $plotter->drawLine($xplot - $xborder, $yplot - $yborder, $xplot - $xborder - $XSpaceForTime, $yplot - $yborder, 'lwhite');
-  } elsif ($Y_AXIS =~ /elevation/i) {
+  } elsif ($Y_AXIS =~ /elevation/i)  {
     $plotter->usingWorld(1);
     my $xoff = $maxX - ($plotter->toWx (5) - $plotter->toWx(0));
-    my $toff = $plotter->toWx (10) - $plotter->toWx(0);
-    $plotter->drawLine ($maxX, 30, $xoff, 30, 'lwhite');
+    my $toff = $plotter->toWx (15) - $plotter->toWx(0);
+    my $dAt12 = 90 - (180 / pi * acos (1/1.25));
+    my $dAt15 = 90 - (180 / pi * acos (1/1.5));
+    my $dAt17 = 90 - (180 / pi * acos (1/1.75));
     my $dAt3 = 90 - (180 / pi * acos (1/3));
     my $dAt4 = 90 - (180 / pi * acos (1/4));
     my $dAt5 = 90 - (180 / pi * acos (1/5));
+    my $dAt1 = 90 - (180 / pi * acos (1));
+    my $dAt2 = 90 - (180 / pi * acos (1/2));
+    $plotter->drawLine ($maxX, $dAt1, $xoff, $dAt1, 'lwhite');
+    $plotter->drawLine ($maxX, $dAt2, $xoff, $dAt2, 'lwhite');
+    $plotter->drawLine ($maxX, $dAt12, $xoff, $dAt12, 'lwhite');
+    $plotter->drawLine ($maxX, $dAt15, $xoff, $dAt15, 'lwhite');
+    $plotter->drawLine ($maxX, $dAt17, $xoff, $dAt17, 'lwhite');
     $plotter->drawLine ($maxX, $dAt3, $xoff, $dAt3, 'lwhite');
     $plotter->drawLine ($maxX, $dAt4, $xoff, $dAt4, 'lwhite');
     $plotter->drawLine ($maxX, $dAt5, $xoff, $dAt5, 'lwhite');
-    $plotter->drawText ($maxX + $toff, 90, '1', 'twhite');
-    $plotter->drawText ($maxX + $toff, 30, '2', 'twhite');
-    $plotter->drawText ($maxX + $toff, $dAt3, '3', 'twhite');
-    $plotter->drawText ($maxX + $toff, $dAt4, '4', 'twhite');
-    $plotter->drawText ($maxX + $toff, $dAt5, '5', 'twhite');
+    $plotter->drawText ($maxX-$toff, 90, '1', 'twhite');
+    $plotter->drawText ($maxX-$toff, $dAt2, '2', 'twhite');
+    $plotter->drawText ($maxX-$toff, $dAt12, '1.25', 'twhite');
+    $plotter->drawText ($maxX-$toff, $dAt15, '1.5', 'twhite');
+    $plotter->drawText ($maxX-$toff, $dAt17, '1.75', 'twhite');
+    $plotter->drawText ($maxX-$toff, $dAt3, '3', 'twhite');
+    $plotter->drawText ($maxX-$toff, $dAt4, '4', 'twhite');
+    $plotter->drawText ($maxX-$toff, $dAt5, '5', 'twhite');
     $plotter->usingWorld(0);
     $plotter->drawTextVert($xplot - $xborder/2,$yplot/2, 'Air Mass', 'twhite');
     $plotter->drawTextVert($xborder/2,$yplot/2, 'Elevation', 'twhite');
+  } elsif ($Y_AXIS =~ /air mass/i) {
+    $plotter->usingWorld(1);
+    my $xoff = $maxX - ($plotter->toWx (5) - $plotter->toWx(0));
+    my $x = $plotter->toWx ($xplot - $xborder -10);
+    for ( my $deg = $minY+20; $deg < $maxY; $deg += 20 ) {
+       	$plotter->drawText($x, $deg, $deg, 'twhite');
+    	$plotter->drawLine ($maxX, $deg, $xoff, $deg, 'twhite');
+    }
+    $plotter->usingWorld(0);
+    $plotter->drawTextVert($xplot - $xborder/2,$yplot/2, 'Elevation', 'twhite');
+    $plotter->drawTextVert($xborder/2,$yplot/2, 'Air Mass', 'twhite');
+
   } elsif ($Y_AXIS =~ /azimuth/i) {
     $plotter->drawTextVert($xborder/2,$yplot/2, 'Azimuth', 'twhite');
   } elsif ($Y_AXIS =~ /parallactic angle/i) {
@@ -1965,7 +1972,9 @@ sub plot {
 
   # now interact them
   print "    Plotting the grid lines\n" if $locateBug;
-  if ($X_AXIS eq $Y_AXIS) {
+  if (($X_AXIS eq $Y_AXIS) || (($X_AXIS =~ /elevation/i) && 
+     ($Y_AXIS =~ /air mass/i)) || (($X_AXIS =~ /air mass/i) && 
+     ($Y_AXIS =~ /elevation/i))) {
     $plotter->drawColor('purple');
     $plotter->drawLine ($minX, $minY, $maxX, $maxY);
   } else {
@@ -1977,14 +1986,14 @@ sub plot {
       if ($source->active()) {
 	$source->calcPoints($DATE, $TIME, $NUM_POINTS, $MW, $telObject);
 	if ($X_AXIS =~ /time/i) {
-	  if ($Y_AXIS =~ /elevation/i) {
+	  if (($Y_AXIS =~ /elevation/i) || ($Y_AXIS =~ /air mass/i)){
 	    @points = $source->time_ele_points();
 	  } elsif ($Y_AXIS =~ /azimuth/i) {
 	    @points = $source->time_az_points();
 	  } elsif ($Y_AXIS =~ /parallactic angle/i) {
 	    @points = $source->time_pa_points();
 	  }
-	} elsif ($X_AXIS =~ /elevation/i) {
+	} elsif (($X_AXIS =~ /elevation/i) || ($X_AXIS =~ /air mass/i)) {
 	  if ($Y_AXIS =~ /time/i) {
 	    @points = $source->ele_time_points();
 	  } elsif ($Y_AXIS =~ /azimuth/i) {
@@ -1995,7 +2004,7 @@ sub plot {
 	} elsif ($X_AXIS =~ /azimuth/i) {
 	  if ($Y_AXIS =~ /time/i) {
 	    @points = $source->az_time_points();
-	  } elsif ($Y_AXIS =~ /elevation/i) {
+	  } elsif (($Y_AXIS =~ /elevation/i) || ($Y_AXIS =~ /air mass/i)){
 	    @points = $source->ele_az_points();
 	  } elsif ($Y_AXIS =~ /parallactic angle/i) {
 	    @points = $source->az_pa_points();
@@ -2003,7 +2012,7 @@ sub plot {
 	} elsif ($X_AXIS =~ /parallactic angle/i) {
 	  if ($Y_AXIS =~ /time/i) {
 	    @points = $source->pa_time_points();
-	  } elsif ($Y_AXIS =~ /elevation/i) {
+	  } elsif (($Y_AXIS =~ /elevation/i) || ($Y_AXIS =~ /air mass/i)){
 	    @points = $source->pa_ele_points();
 	  } elsif ($Y_AXIS =~ /azimuth/i) {
 	    @points = $source->pa_az_points();
@@ -2016,7 +2025,7 @@ sub plot {
 	print "color plotted is ".$source->color()."\n" if $debug;
 
 	my @times = $source->time_ele_points();
-	if ($special) {
+	if (($special == 1) || ($special == 2)) {
 	  my $i;
 	  my $len = @points;
 	  my @newpoints = ();
@@ -2265,6 +2274,13 @@ sub plot {
   print "Exit plot\n" if $locateBug;  
 }
 
+
+###########################################################
+#  converts air mass to radians
+sub am_to_deg {
+	(180/pi)*asin(1/$_[0]);
+}
+
 ############################################################
 #  returns a color
 #
@@ -2327,7 +2343,7 @@ sub calcTime {
       
       if ($X_AXIS =~ /time/i) {
 	$x = $lst;
-      } elsif ($X_AXIS =~ /elevation/i) {
+      } elsif (($X_AXIS =~ /elevation/i) || ($X_AXIS =~ /air mass/i)) {
 	$x = $ele;
       } elsif ($X_AXIS =~ /azimuth/i) {
 	$x = $az;
@@ -2336,7 +2352,7 @@ sub calcTime {
       }
       if ($Y_AXIS =~ /time/i) {
 	$y = $lst;
-      } elsif ($Y_AXIS =~ /elevation/i) {
+      } elsif (($Y_AXIS =~ /elevation/i)  || ($Y_AXIS =~ /air mass/i)) {
 	$y = $ele;
       } elsif ($Y_AXIS =~ /azimuth/i) {
 	$y = $az;
@@ -2344,7 +2360,9 @@ sub calcTime {
 	$y = $pa;
       }
       
-      if ((($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /elevation/i)) || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /elevation/i))) {
+      if ((($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /elevation/i)) || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /elevation/i)) || (($Y_AXIS =~ /azimuth/i) &&
+	 ($X_AXIS =~ /air mass/i)) || (($Y_AXIS =~ /air mass/i) &&
+	 ($X_AXIS =~ /azimuth/i))) {
 	$x = $ele;
 	$y = $az;
       }
@@ -2361,7 +2379,9 @@ sub calcTime {
       # draw the time dot
       if ($ele > 0) {
 	$plotter->drawColor($source->color());
-	if ((($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /elevation/i)) || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /elevation/i))) {
+        if ((($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /elevation/i)) || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /elevation/i)) || (($Y_AXIS =~ /azimuth/i) &&
+	 ($X_AXIS =~ /air mass/i)) || (($Y_AXIS =~ /air mass/i) &&
+	 ($X_AXIS =~ /azimuth/i))) {
 	  my $r = 90 - $source->timeDotX();
 	  if ($r < 90) {
 	    my $theta = (90 - $source->timeDotY()) * pi / 180;
@@ -2406,7 +2426,9 @@ sub calcTime {
       # draw the time dot
       if ($source->elevation() > 0) {
 	$plotter->drawColor($source->color());
-	if ((($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /elevation/i)) || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /elevation/i))) {
+        if ((($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /elevation/i)) || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /elevation/i)) || (($Y_AXIS =~ /azimuth/i) &&
+	 ($X_AXIS =~ /air mass/i)) || (($Y_AXIS =~ /air mass/i) &&
+	 ($X_AXIS =~ /azimuth/i))) {
 	  my $r = 90 - $source->timeDotX();
 	  if ($r < 90) {
 	    my $theta = (90 - $source->timeDotY()) * pi / 180;
