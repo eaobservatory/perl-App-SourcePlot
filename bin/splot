@@ -29,6 +29,10 @@
 #       DD/MM/YY: INIT  Comments
 #       --------- ----  --------
 #       $Log: splot,v $
+#       Revision 1.8  1999/08/13 02:01:30  rpt
+#       Draw RA-Dec box in addition to Az-El vectors when pointing
+#       on a source.
+#
 #       Revision 1.7  1999/08/11 20:54:07  rpt
 #       Allow ':' to be optional in time and coordinate input.
 #       Strip '+' and spurious blanks.
@@ -2444,16 +2448,29 @@ sub calcTime {
               sub {
 		$plotter->drawColor($source->color());
 		$plotter->drawFillOval($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2+$sY, 'ltimeDot'.$source->name());
+                # draw AZ-EL pointers
 	        $plotter->drawColor('red');
+	        $plotter->fontColor('red');
 		$plotter->penWidth(2);
 	        $plotter->drawLine ($x2 - $elex, $y2 - $eley, $x2, $y2, 'ltimeDot'.$source->name());
 	        $plotter->drawLine ($x2 - $azx, $y2 - $azy, $x2, $y2, 'ltimeDot'.$source->name());
 		$plotter->penWidth(1);
-	        $plotter->fontColor($source->color());
 		my ($xoff, $yoff) = $plotter->toW(7,7);
 		$xoff -= $plotter->toWx(0);
 		$yoff -= $plotter->toWy(0);
 	        $plotter->drawText ($x2 - $elex-$xoff, $y2 - $eley-$yoff, 'El', 'ltimeDot'. $source->name());
+                # and RA-Dec box
+                my $bx = 1.5*sqrt($azx*$azx+$elex*$elex);
+                my $by = 1.5*sqrt($azy*$azy+$eley*$eley);
+	        $plotter->drawLine ($x2 - $bx, $y2 - $by, $x2 - $bx, $y2 + $by, 'ltimeDot'.$source->name());
+	        $plotter->drawLine ($x2 - $bx, $y2 + $by, $x2 + $bx, $y2 + $by, 'ltimeDot'.$source->name());
+	        $plotter->drawLine ($x2 + $bx, $y2 + $by, $x2 + $bx, $y2 - $by, 'ltimeDot'.$source->name());
+	        $plotter->drawLine ($x2 + $bx, $y2 - $by, $x2 - $bx, $y2 - $by, 'ltimeDot'.$source->name());
+	        $plotter->drawText ($x2, $y2 - 1.2*$by, 'R.A.', 'ltimeDot'. $source->name());
+	        $plotter->drawText ($x2 - 1.12*$bx, $y2+0.2*$by, 'D', 'ltimeDot'. $source->name());
+	        $plotter->drawText ($x2 - 1.1*$bx, $y2, 'e', 'ltimeDot'. $source->name());
+	        $plotter->drawText ($x2 - 1.1*$bx, $y2-0.2*$by, 'c', 'ltimeDot'. $source->name());
+	        $plotter->fontColor($source->color());
               });
 	    $plotter->bindTag('ltimeDot'.$source->name(), '<Any-Leave>' => 
               sub {
@@ -2494,15 +2511,28 @@ sub calcTime {
 		$plotter->drawColor($source->color());
 		$plotter->drawFillOval($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2+$sY, 'ltimeDot'.$source->name());
 	        $plotter->drawColor('red');
+	        $plotter->fontColor('red');
 		$plotter->penWidth(2);
+                # draw AZ-EL pointers
 	        $plotter->drawLine ($x2 - $elex, $y2 - $eley, $x2, $y2, 'ltimeDot'.$source->name());
 	        $plotter->drawLine ($x2 - $azx, $y2 - $azy, $x2, $y2, 'ltimeDot'.$source->name());
 		$plotter->penWidth(1);
-	        $plotter->fontColor($source->color());
 		my ($xoff, $yoff) = $plotter->toW(7,7);
 		$xoff -= $plotter->toWx(0);
 		$yoff -= $plotter->toWy(0);
 	        $plotter->drawText ($x2 - $elex-$xoff, $y2 - $eley-$yoff, 'El', 'ltimeDot'. $source->name());
+                # and RA-Dec box
+                my $bx = 1.5*sqrt($azx*$azx+$elex*$elex);
+                my $by = 1.5*sqrt($azy*$azy+$eley*$eley);
+	        $plotter->drawLine ($x2 - $bx, $y2 - $by, $x2 - $bx, $y2 + $by, 'ltimeDot'.$source->name());
+	        $plotter->drawLine ($x2 - $bx, $y2 + $by, $x2 + $bx, $y2 + $by, 'ltimeDot'.$source->name());
+	        $plotter->drawLine ($x2 + $bx, $y2 + $by, $x2 + $bx, $y2 - $by, 'ltimeDot'.$source->name());
+	        $plotter->drawLine ($x2 + $bx, $y2 - $by, $x2 - $bx, $y2 - $by, 'ltimeDot'.$source->name());
+	        $plotter->drawText ($x2, $y2 - 1.2*$by, 'R.A.', 'ltimeDot'. $source->name());
+	        $plotter->drawText ($x2 - 1.12*$bx, $y2+0.2*$by, 'D', 'ltimeDot'. $source->name());
+	        $plotter->drawText ($x2 - 1.1*$bx, $y2, 'e', 'ltimeDot'. $source->name());
+	        $plotter->drawText ($x2 - 1.1*$bx, $y2-0.2*$by, 'c', 'ltimeDot'. $source->name());
+	        $plotter->fontColor($source->color());
               });
 	    $plotter->bindTag('ltimeDot'.$source->name(), '<Any-Leave>' => 
 	      sub {
