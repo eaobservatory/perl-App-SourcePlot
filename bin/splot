@@ -1,4 +1,10 @@
 #!/local/bin/perl
+
+eval 'exec /local/bin/perl  -S $0 ${1+"$@"}'
+    if 0; # not running under some shell
+
+use lib '/jcmt_sw/omp/inst/lib/perl5/site_perl';
+
 ########################################################################
 ####             J C M T   S O F T W A R E   G R O U P              ####
 #                -------------------------------------
@@ -27,6 +33,11 @@
 #   Modification History:
 #       DD/MM/YY: INIT  Comments
 #       --------- ----  --------
+#       $Log: splot,v $
+#       Revision 1.6  1999/08/11 03:00:40  rpt
+#       Fixed LST axis labeling, correctly rounding to hh:mm.
+#       Allow 'hh mm ss' in Option in addition to 'hh:mm:ss'.
+#
 #			
 ####                                                                ####
 ########################################################################
@@ -741,6 +752,9 @@ sub changeOpt {
 		       foreach (@SOURCE_LIST) {$_->eraseTimeDot()};
 		     }
 		     $TIME = $timeEnt;
+                     $TIME =~ s/^\s+//;
+                     $TIME =~ s/\s+$//;
+                     $TIME =~ s/\s+/:/g;
 		     $TEL = $telEnt;
 		     $telObject->name($TEL);
 		     plot();
@@ -761,6 +775,9 @@ sub changeOpt {
 		       foreach (@SOURCE_LIST) {$_->eraseTimeDot()};
 		     }
 		     $TIME = $timeEnt;
+                     $TIME =~ s/^\s+//;
+                     $TIME =~ s/\s+$//;
+                     $TIME =~ s/\s+/:/g;
 		     $TEL = $telEnt;
 		     $telObject->name($TEL);
 		     plot();
@@ -931,6 +948,9 @@ sub searchFor {
     # check the Ra
     if ($iRa ne '') {
       my $Ra = $source->ra;
+      $Ra =~ s/^\s+//; 
+      $Ra =~ s/\s+$//; 
+      $Ra =~ s/s+/:/g; 
       $Ra =~ s/\..*// if !$RaDecimal;
       print "checking ra  $iRa   vs   $Ra\n" if $debug;
       my @raParts = split (/:/, $Ra);
@@ -947,6 +967,9 @@ sub searchFor {
     # check the Dec
     if ($iDec ne '') {
       my $Dec = $source->dec;
+      $Dec =~ s/^\s+//; 
+      $Dec =~ s/\s+$//; 
+      $Dec =~ s/s+/:/g; 
       my $decNeg = ($Dec =~ /\-/);
       if ($decNeg != $idecNeg) {
 	$passed = 0;
@@ -1003,6 +1026,7 @@ sub getSourcesFromFile {
     chomp $line;
     next if ($line =~ /[\*\%]/);
     next if ($line =~ /^\s*$/);
+    $line =~ s/:/\s/g;
     @parts = split (/\s+/, $line);
     $ra = $parts[1] . ':'. $parts[2].':'.$parts[3];
     if ($parts[4] =~ /^[\+\-]$/) {
@@ -1438,6 +1462,9 @@ sub plot {
   print "Entered plot\n" if $locateBug;
   my ($xworldRatio, $yworldRatio);
   my $debug = 0;
+  $TIME =~ s/^\s+//;
+  $TIME =~ s/\s+$//;
+  $TIME =~ s/\s+/:/g;
   my ($timeH, $min, $sec) = split (/:/, $TIME,3);
   my $XSpaceForTime = 0;
   my $YSpaceForTime = 0;
@@ -1705,11 +1732,14 @@ sub plot {
 	$lst -= 2*pi;
       }
       &slaDr2tf(2, $lst, $si, \@parts);
-      my ($lh, $lm, @rest) = @parts;
-      $lm = ('.'.$lm) * 60;
+      my ($lh, $lm, $ls, @rest) = @parts;
+      $lm += 1 if $ls >= 30;
+      if ($lm >= 60) {
+	$lm -= 60;
+	$lh += 1;
+        $lh -= 24 if $lh > 24;
+      }
       $lm = '0'.$lm if $lm < 10;
-      $lm = '0'.$lm if $lm < 10;
-      $lm =~ s/\..*//;
       my $ly = $plotter->toWy ($yborder*3/2);
       $plotter->drawText($hour, $ly, sprintf("%2s:%2s", $lh, $lm), 'twhite');
       $ho += 4;
@@ -1792,11 +1822,14 @@ sub plot {
 	$lst -= 2*pi;
       }
       &slaDr2tf(2, $lst, $si, \@parts);
-      my ($lh, $lm, @rest) = @parts;
-      $lm = ('.'.$lm) * 60;
+      my ($lh, $lm, $ls, @rest) = @parts;
+      $lm += 1 if $ls >= 30;
+      if ($lm >= 60) {
+	$lm -= 60;
+	$lh += 1;
+        $lh -= 24 if $lh > 24;
+      }
       $lm = '0'.$lm if $lm < 10;
-      $lm = '0'.$lm if $lm < 10;
-      $lm =~ s/\..*//;
       my $lx = $plotter->toWx ($xplot - $xborder*3/2);
       $plotter->drawText($lx, $hour, sprintf("%2s:%2s", $lh, $lm), 'twhite');
       $ho += 4;
