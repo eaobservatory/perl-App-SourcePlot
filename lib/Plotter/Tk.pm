@@ -3,7 +3,6 @@ package Plotter::Tk;
 =head1 NAME
 
 Plotter::Tk - creates a Tk canvas with easy-to-use method names.
-By Casey Best (University of Victoria)
 
 =head1 DESCRIPTION
 
@@ -22,7 +21,7 @@ use vars qw/$VERSION/;
 # Load Tk module
 use Tk;
 
-$VERSION = '0.10';
+$VERSION = '0.11';
 
 =head1 EXTERNAL MODULES
 
@@ -82,7 +81,7 @@ sub new {
     for ($i=0;$i<$numy;$i++) {
       $frame = $screen->Frame;
       for ($j=0;$j<$numx;$j++) {
-	$ET->{CANVAS}[$i*$numy + $j] = $frame->Canvas(     
+	$ET->{CANVAS}[$i*$numy + $j] = $frame->Canvas(
             -background=>"LightCyan3",
             -relief => 'raised', 
             -width  => $ET->{X_SIZE},
@@ -97,7 +96,7 @@ sub new {
   } else {
     $ET->{MW} = MainWindow->new;
     $ET->{MW}->resizable(0,0);
-    $ET->{CANVAS} = $ET->{MW}->Canvas(     
+    $ET->{CANVAS} = $ET->{MW}->Canvas(
           -background=>"LightCyan3",
           -relief => 'raised', 
           -width  => $ET->{X_SIZE},
@@ -149,6 +148,7 @@ new features to this module with ease by accessing the Tk canvas
   $can = $plotter->getCanvas();
 
 =cut
+
 # canvas object returned
 sub getCanvas {
   my $self = shift;
@@ -165,6 +165,7 @@ canvass number.
   $plotter->currentCanvasNum(3);
 
 =cut
+
 sub currentCanvasNum {
   my $self = shift;
   if (@_) {
@@ -182,6 +183,7 @@ passing the last.
   $plotter->nextCanvas();
 
 =cut
+
 sub nextCanvas {
   my $self = shift;
   my $c = $self->currentCanvasNum() + 1;
@@ -201,6 +203,7 @@ Sets and returns the number of canvases.
   $plotter->numCanvases(3);
 
 =cut 
+
 sub numCanvases {
   my $self = shift;
   if (@_) {
@@ -222,6 +225,7 @@ Returns the default suffix for graphics files
   $plotter->defaultSuffix('gif');
 
 =cut
+
 sub defaultSuffix {
   my $self = shift;
   $self->{SUFFIX} = shift if @_;
@@ -236,10 +240,11 @@ Returns the width of a canvas.
   $w = $plotter->width();
 
 =cut
+
 sub width {
   my $self = shift;
   return $self->toWx ($self->{X_SIZE});
-}    
+}
 
 
 =item height
@@ -249,10 +254,11 @@ Returns the width of a canvas.
   $w = $plotter->height();
 
 =cut
+
 sub height {
   my $self = shift;
   return $self->toWy($self->{Y_SIZE});
-}    
+}
 
 
 =item setBackground
@@ -262,6 +268,7 @@ Sets the background color
   $plotter->setBackground('black');
 
 =cut
+
 sub setBackground {
   my $self = shift;
   my $color = shift;
@@ -276,6 +283,7 @@ Sets the foreground color
   $plotter->setForeground('black');
 
 =cut
+
 sub setForeground {
   my $self = shift;
   my $color = shift;
@@ -292,6 +300,7 @@ Sets and returns the font currently being used
   $plotter->font($f);
 
 =cut
+
 sub font {
   my $self = shift;
   if (@_) {
@@ -308,6 +317,7 @@ Sets and returns the font color
   $plotter->fontColor('black');
 
 =cut
+
 sub fontColor {
   my $self = shift;
   if (@_) {
@@ -325,6 +335,7 @@ Sets and returns the font size
   $size = $plotter->fontSize();
 
 =cut
+
 sub fontSize {
   my $self = shift;
   my $font = $self->font();
@@ -351,13 +362,14 @@ Sets and returns the drawing color, used for filling as well.
   $c = $plotter->drawColor();
 
 =cut
+
 sub drawColor {
   my $self = shift;
   if (@_) {
     $self->{DRAW_COLOR} = shift;
   }
   return $self->{DRAW_COLOR};
-}  
+}
 
 
 =item penWidth
@@ -368,6 +380,7 @@ Sets and returns the width lines, circles, etc will be drawn in.
   $w = $plotter->penWidth();
 
 =cut
+
 sub penWidth {
   my $self = shift;
   if (@_) {
@@ -385,6 +398,7 @@ or frame.
   $plotter->pack(-side => 'left');
 
 =cut
+
 sub pack {
   my $self = shift;
   $self->getCanvas()->pack(@_);
@@ -404,13 +418,14 @@ set at this point using worldAtZero.
   $plotter->worldCenter ($centerx, $centery);
 
 =cut
+
 sub worldCenter {
   my $self = shift;
   if (@_) {
     ($self->{W_CENT_X}, $self->{W_CENT_Y}) = $self->toP (shift, shift);
   }
   return ($self->{W_CENT_X}, $self->{W_CENT_Y});
-}  
+}
 
 
 =item worldAtZero
@@ -421,6 +436,7 @@ coordinates to be the new centre coordinates.
   $plotter->worldAtZero ($centerx, $centery);
 
 =cut
+
 sub worldAtZero {
   my $self = shift;
   if (@_) {
@@ -431,7 +447,7 @@ sub worldAtZero {
     return ($self->{ZCENT_X}, $self->{ZCENT_Y});
   }
   return (0,0);
-}  
+}
 
 
 =item worldToPixelRatio
@@ -441,6 +457,7 @@ Sets the ratio between the world coordinates and pixels
   $plotter->worldToPixRatio ($dx, $dy);
 
 =cut
+
 sub worldToPixRatio {
   my $self = shift;
   if (@_) {
@@ -467,6 +484,7 @@ the value (1 for on, 0 for off)
   $plotter->usingWorld(1);
 
 =cut
+
 sub usingWorld {
   my $self = shift;
   if (@_) {
@@ -484,7 +502,9 @@ coordinates and pixels
   $plotter->setWorldSize ($centerx, $centery, $dx, $dy);
 
 =cut
+
 # must specify (x-center, y-center, x-ratio-to-pixel, y-rat)
+
 sub setWorldSize {
   my $self = shift;
   $self->worldCenter(shift, shift);
@@ -502,6 +522,7 @@ to be associated with the value in usingWorld.
   ($y) = $plotter->toPy ($y1);
 
 =cut
+
 # converts passed in paramter into pixels
 # must specify (x, y)
 sub toP {
@@ -563,6 +584,7 @@ coordinates are assumed to be associated with the value in usingWorld.
   ($y) = $plotter->toWy ($y1);
 
 =cut
+
 # converts passed in paramter into the current system being used
 # must specify (x, y)
 sub toW {
@@ -623,6 +645,7 @@ Removes all drawn objects from the canvas.
   $plotter->clean();
 
 =cut
+
 sub clean {
   my $self = shift;
   $self->getCanvas()->delete('all');
@@ -636,6 +659,7 @@ Deletes all objects with one specific tag.
   $plotter->delete ('oval');
 
 =cut
+
 sub delete {
   my $self = shift;
   my $tag = shift;
@@ -651,6 +675,7 @@ Prints the canvas to a printer
   $plotter->printCanvas ('printer', '-PHello');
 
 =cut
+
 sub printCanvas {
   my $self = shift;
   my $choice = shift;
@@ -693,6 +718,7 @@ Configures the items with the given tag.
   $plotter->configureTag ('oval', -fill => 'black');
 
 =cut
+
 sub configureTag {
   my $self = shift;
   my $tag = shift;
@@ -708,6 +734,7 @@ Binds the items with the given tag.
   $plotter->bindTag ('oval', '<Any-Enter>' => sub {print "hello"});
 
 =cut
+
 sub bindTag {
   my $self = shift;
   my $tag = shift;
@@ -723,6 +750,7 @@ Returns the number of items associated with that tag
   $exists = $plotter->existTag ('oval');
 
 =cut
+
 sub existTag {
   my $self = shift;
   my $tag = shift;
@@ -740,6 +768,7 @@ tag.
   $plotter->raiseAbove ('oval', 'square');
 
 =cut
+
 sub raiseAbove {
   my $self = shift;
   my $tag = shift;
@@ -756,6 +785,7 @@ second tag.
   $plotter->lowerBelow ('oval', 'square');
 
 =cut
+
 sub lowerBelow {
   my $self = shift;
   my $tag = shift;
@@ -764,7 +794,7 @@ sub lowerBelow {
 }
 
 
-=item drawText
+=item drawTextVert
 
 Draws text on the current canvas in the given (x, y) coordinates using
 the current font, font size, and font Color. Returns the text item
@@ -774,6 +804,7 @@ number.  Adds a tag name if one is given.  Draws it vertically
   $id = $plotter->drawTextVert (5,5, "hello", 'text');
 
 =cut
+
 # must specify (x, y, text)
 sub drawTextVert {
   my $self = shift;
@@ -813,6 +844,7 @@ number.  Adds a tag name if one is given.
   $id = $plotter->drawText (5,5, "hello", 'text');
 
 =cut
+
 # must specify (x, y, text)
 sub drawText {
   my $self = shift;
@@ -829,9 +861,9 @@ sub drawText {
     $num = s/\..+//;
     $font = $before . $num  . '0' . $end;
   }
-  my $t = $self->getCanvas()->create('text', $self->toP($x, $y), 
-     -text => $text, 
-     -font => $font, 
+  my $t = $self->getCanvas()->create('text', $self->toP($x, $y),
+     -text => $text,
+     -font => $font,
      -fill => $self->fontColor());
   if (@_) {
     my $tag = shift;
@@ -851,6 +883,7 @@ number.  Adds a tag name if one is given.
   $id = $plotter->drawTextFromLeft (5,5, "hello", 'text');
 
 =cut
+
 # must specify (x, y, text)
 sub drawTextFromLeft {
   my $self = shift;
@@ -890,6 +923,7 @@ number.  Adds a tag name if one is given.
   $id = $plotter->drawTextFromRight (5,5, "hello", 'text');
 
 =cut
+
 # must specify (x, y, text)
 sub drawTextFromRight {
   my $self = shift;
@@ -929,6 +963,7 @@ given.
   $id = $plotter->drawOval (5,5, 10, 10, 'oval');
 
 =cut
+
 # must specify (left, top, right, bottom)
 sub drawOval {
   my $self = shift;
@@ -956,6 +991,7 @@ name if one is given.
   $id = $plotter->drawFillOval (5,5, 10, 10, 'oval');
 
 =cut
+
 # must specify (left, top, right, bottom)
 sub drawFillOval {
   my $self = shift;
@@ -984,6 +1020,7 @@ given.
   $id = $plotter->drawLine (5,5, 10, 10, 'line');
 
 =cut
+
 # must specify (x, y, x2, y2)
 sub drawLine {
   my $self = shift;
@@ -1009,6 +1046,7 @@ coordinates.  Gives the object the tag $tag if one is given
   $id = $plotter->drawSmoothLine (5=>5, 10=>10, 15=>5, 20=>0, $tag);
 
 =cut
+
 sub drawSmoothLine {
   my $self = shift;
   my @points = @_;
@@ -1025,7 +1063,7 @@ sub drawSmoothLine {
     } else {
        $points[$i] = $self->toPy($points[$i]);
     }
-  }       
+  }
   my $line = $self->getCanvas()->createLine(
       @points,
       -width=>$self->penWidth(),
@@ -1052,6 +1090,7 @@ given.
   $id = $plotter->drawBox (5,5, 10, 10, 'box');
 
 =cut
+
 # must specify (x, y, x2, y2)
 sub drawBox {
   my $self = shift;
@@ -1076,6 +1115,7 @@ Sets the light intensity for the image.
   $plotter->gamma(3);
 
 =cut
+
 sub gamma {
   my $self = shift;
   if (@_) {
@@ -1182,6 +1222,7 @@ Sets the image stored in the file specified by photFile into memory.
   $plotter->setImage();
 
 =cut
+
 sub setImage {
   my $self = shift;
 
@@ -1216,6 +1257,7 @@ Retrieves an image from the specified file.  Returns the image object
   $plotter->phot(100, 100);
 
 =cut
+
 # must specify (width, height) to get
 sub phot {
   my $self = shift;
@@ -1248,6 +1290,7 @@ can be changed by using the phot method.
   $plotter->drawPhot ();
 
 =cut
+
 # must specify ()
 sub drawPhot {
   my $self = shift;
@@ -1261,6 +1304,58 @@ sub drawPhot {
   }
 }
 
+=item monitorXY
+
+Monitor the X and Y coordinates of the cursor on the canvas.
+This can be used to provide feedback to the user as to the
+current cursor position.
+
+Arguments are 2 scalar references. These references are updated
+to contain the current value of the cursor position or
+a value of 'undef' (a string) when the cursor is not present
+in the plotting area.
+
+If called without arguments, the bindings are removed.
+
+=cut
+
+sub monitorXY {
+  my $self = shift;
+  if (@_) {
+    my ($xref, $yref) = @_;
+    croak "Arguments must be scalar references" 
+      unless (ref($xref)eq 'SCALAR' && ref($yref) eq 'SCALAR');
+
+    # Get the canvas
+    my $canvas = $self->getCanvas;
+
+    # Set up a binding for click
+    # Call a separate sub for clarity rather than use a closure
+    $canvas->Tk::bind("<Button-1>", 
+		      [ $self => '_XYcallback', 
+			$canvas, Ev('x'), Ev('y'), $xref, $yref ]);
+
+  } else {
+    # Remove bindings
+  }
+
+}
+
+# internal routine used by monitorXY
+sub _XYcallback {
+  my $self = shift;
+  my ($canv, $x, $y, $xref, $yref) = @_;
+
+  # Need to translate widget coordinates to canvas coordinates and
+  # then to World coordinates
+  my ($$xref, $$yref) = $self->toW( $canv->canvasx($x), $canv->canvasy($y) );
+
+  print "Coordinates: $$xref, $$yref ",
+    $canv->canvasx($x)," ",$canv->canvasy($y),"\n";
+}
+
+
+
 
 =item zoomOut
 
@@ -1269,6 +1364,7 @@ Zooms the world to pixel ratio and the current image out.
   $plotter->zoomOut ();
 
 =cut
+
 sub zoomOut {
   my $self = shift;
   return if ($self->zoomNum()/2 < 1 );
@@ -1286,6 +1382,7 @@ Zooms the world to pixel ratio and the current image in.
   $plotter->zoomIn();
 
 =cut
+
 sub zoomIn {
   my $self = shift;
   $self->zoomNum($self->zoomNum()*2);
@@ -1303,6 +1400,7 @@ Returns the zoom factor for the picture
   $num = $plotter->zoomNum();
 
 =cut
+
 sub zoomNum {
   my $self = shift;
   $self->{ZOOMNUM} = shift if (@_);
@@ -1349,11 +1447,10 @@ sub error {
 
 =head1 AUTHOR
 
-Casey Best
+Casey Best (University of Victoria) with help from Tim Jenness.
 
-=head1 WITH TONS OF HELP FROM
-
-Tim Jenness
+Copyright 1998-2000 Particle Physics and Astronomy Research Council.
+All Rights Reserved.
 
 =cut
 
