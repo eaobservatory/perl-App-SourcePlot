@@ -1,10 +1,5 @@
 #!/local/bin/perl
 
-eval 'exec /local/bin/perl  -S $0 ${1+"$@"}'
-    if 0; # not running under some shell
-
-use lib '/jcmt_sw/omp/inst/lib/perl5/site_perl';
-
 ########################################################################
 ####             J C M T   S O F T W A R E   G R O U P              ####
 #                -------------------------------------
@@ -34,6 +29,10 @@ use lib '/jcmt_sw/omp/inst/lib/perl5/site_perl';
 #       DD/MM/YY: INIT  Comments
 #       --------- ----  --------
 #       $Log: splot,v $
+#       Revision 1.7  1999/08/11 20:54:07  rpt
+#       Allow ':' to be optional in time and coordinate input.
+#       Strip '+' and spurious blanks.
+#
 #       Revision 1.6  1999/08/11 03:00:40  rpt
 #       Fixed LST axis labeling, correctly rounding to hh:mm.
 #       Allow 'hh mm ss' in Option in addition to 'hh:mm:ss'.
@@ -969,6 +968,8 @@ sub searchFor {
       my $Dec = $source->dec;
       $Dec =~ s/^\s+//; 
       $Dec =~ s/\s+$//; 
+      $Dec =~ s/\+//g; 
+      $Dec =~ s/\-\s+/\-/; 
       $Dec =~ s/s+/:/g; 
       my $decNeg = ($Dec =~ /\-/);
       if ($decNeg != $idecNeg) {

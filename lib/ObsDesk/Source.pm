@@ -1,4 +1,4 @@
-package ObsDesk::Source;
+Package ObsDesk::Source;
 
 =head1 NAME
 
@@ -7,7 +7,7 @@ ObsDesk::Source - creates a observation source
 =head1 SYNOPSIS
 
  use ObsDesk::Source;
- $src = new ObsDesk::Source;
+ $src = new Obsdesk::Source;
 
 =head1 DESCRIPTION
 
@@ -235,7 +235,11 @@ returns and sets the ra of the source
 sub ra {
   my $self = shift;
   if (@_) {
-    $self->{RA} = shift;
+    my $sra = shift;
+    $sra =~ s/^\s+//;
+    $sra =~ s/\s+$//;
+    $sra =~ s/\s+/:/g;
+    $self->{RA} = $sra;
     $self->{RA2000} = undef;
     $self->{DEC2000} = undef;
   }
@@ -255,7 +259,13 @@ returns and sets the dec of the source
 sub dec {
   my $self = shift;
   if (@_) {
-    $self->{DEC} = shift;
+    my $sdec = shift;
+    $sdec =~ s/^\s+//;
+    $sdec =~ s/\s+$//;
+    $sdec =~ s/\+//g;
+    $sdec =~ s/\-\s+/\-/;
+    $sdec =~ s/\s+/:/g;
+    $self->{DEC} = $sdec;
     $self->{RA2000} = undef;
     $self->{DEC2000} = undef;
   }
