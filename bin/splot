@@ -33,6 +33,11 @@
 #       DD/MM/YY: INIT  Comments
 #       --------- ----  --------
 #       $Log: splot,v $
+#       Revision 1.13  2000/06/21 00:19:24  timj
+#       - Check status from eval "plotter"
+#       - Fix error in airmass read-only variable
+#       - tidy up some blank spaces
+#
 #       Revision 1.12  2000/05/10 21:06:42  timj
 #       Fix progress bar
 #
@@ -79,7 +84,7 @@ BEGIN {
  
     use Tk;                     # define Tk objects and methods
     use Tk::ProgressBar;
-    $VERSION = sprintf "%d.%03d", q$Revision: 1.12 $ =~ /(\d+)\.(\d+)/;
+    $VERSION = sprintf "%d.%03d", q$Revision: 1.13 $ =~ /(\d+)\.(\d+)/;
     $MW = MainWindow->new;
     $MW->positionfrom('user');
     $MW->geometry('+0+90');
@@ -119,6 +124,7 @@ if ($plotterType eq 'gaia') {
 } else {
   eval 'use Plotter::Tk';
 }
+die "Error loading plotter module: $@" if $@;
 
 update_status 'Loading Date Module', 25;
 
@@ -265,6 +271,10 @@ if ($plotterType eq 'gaia') {
 $plotter->setBackground('black');
 $plotter->worldCenter($xborder, $yplot-$yborder);
 $plotter->usingWorld(1);
+
+# Set up the X Y coordinate feedback
+#my ($XPOS, $YPOS);
+#$plotter->monitorXY( \$XPOS, \$YPOS );
 
 my $buttonFrame = $MW->Frame(
 		   -takefocus => 1,
@@ -1540,7 +1550,7 @@ sub plot {
     $xworldRatio = (24*$lstDiffX)/($xplot - $xborder*2 - $XSpaceForTime);
     $minX = $lst;
     $maxX = $lst + 24*$lstDiffX;
-    print "x-axis is time\n" if $debug;   
+    print "x-axis is time\n" if $debug;
   } elsif ($X_AXIS =~ /air mass/i) {
     $xworldRatio = 90/($xplot - $xborder*2 - $XSpaceForTime);
     $minX = 0;
@@ -1660,7 +1670,7 @@ sub plot {
     for (my $z = 0; $z < 360; $z += 15) {
       my $tz = (90 - $z) * pi / 180;
       my $x = 92 * cos $tz;
-      my $y = 92 * sin $tz;      
+      my $y = 92 * sin $tz;
       $plotter->drawLine (0,0,$x, $y, 'grid');
     }
     #label the angle grid lines
@@ -1694,7 +1704,7 @@ sub plot {
     	my $texty = $plotter->toWy(5) - $plotter->toWy(0);
     	for (my $i = 0; $i<90; $i+=10) {
       		$plotter->drawOval(-$i, -$i, $i, $i, 'grid');
-      		$plotter->drawText(0,$i-$texty,90 - $i, 'twhite');      
+      		$plotter->drawText(0,$i-$texty,90 - $i, 'twhite');
     	}
 
     	$plotter->usingWorld(0);
@@ -1706,7 +1716,7 @@ sub plot {
     #draw the elevation labels
     $plotter->drawColor ('dark green');
     my $ytext = $plotter->toWx(5) - $plotter->toWx(0);
-    for (qw/1.0 1.25 1.5 1.75 2.0 3.0 4.0 5.0/)  
+    for (qw/1.0 1.25 1.5 1.75 2.0 3.0 4.0 5.0/)
     {
 	my $new_el = 90 - am_to_deg($_);
 	$plotter->drawOval(-$new_el, -$new_el, $new_el, $new_el, 'grid');
@@ -1817,7 +1827,7 @@ sub plot {
       # draw the time lines
       my $tel = $telObject;
       $plotter->drawLine($minX, $hour, $maxX, $hour, 'grid');
-      
+
       # calculate the HST time
       my $ti = $ho;
       $ti -= 24 if $ti >= 24;
@@ -1828,13 +1838,13 @@ sub plot {
       $m = '0'.$m if $m < 10;
       my $x = $plotter->toWx ($xborder*3/2);
       $plotter->drawText($x, $hour, sprintf("%2s:%2s", $h, $m), 'twhite');
-      
+
       # calculate the ut time
       my $uh = $h + 10;
       $uh -= 24 if $uh >= 24;
       my $ux = $plotter->toWx ($xplot - $xborder/2);
       $plotter->drawText($ux, $hour, sprintf("%2s:%2s", $uh, $m), 'twhite');
-      
+
       #calculate the lst time
       my $lst;
       my $si = '+';
@@ -1868,11 +1878,11 @@ sub plot {
     	my $dAt15 = 90 - (180 / pi * acos (1/1.5));
     	my $dAt17 = 90 - (180 / pi * acos (1/1.75));
         my $x = $plotter->toWx ($xborder +15);
-	for(qw/1 2 3 4 5/)
-	{	 
-           my $dAt = 90 - (180 / pi * acos (1/$_));
+	for my $am (qw/1 2 3 4 5/)
+	{
+           my $dAt = 90 - (180 / pi * acos (1/$am));
            $plotter->drawLine($minX, $dAt, $maxX, $dAt, 'grid');
-	   $plotter->drawText ($x, $dAt, $_, 'twhite');
+	   $plotter->drawText ($x, $dAt, $am, 'twhite');
 	}
         $plotter->drawLine($minX, $dAt12, $maxX, $dAt12, 'grid');
         $plotter->drawLine($minX, $dAt15, $maxX, $dAt15, 'grid');
