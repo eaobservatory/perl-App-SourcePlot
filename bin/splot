@@ -23,12 +23,19 @@
 #   Programmer(s):      Casey Best (University of Victoria)
 #                       Pam Shimek (University of Victoria)
 #
+#   Copyright:
+#       Copyright (C) 1998, 1999 Particle Physics and Astronomy Research
+#         Council. All Rights Reserved.
+#
 #   Comments:
 #
 #   Modification History:
 #       DD/MM/YY: INIT  Comments
 #       --------- ----  --------
 #       $Log: splot,v $
+#       Revision 1.9  1999/08/13 21:33:51  timj
+#       Add 'use FindBin'
+#
 #       Revision 1.8  1999/08/13 02:01:30  rpt
 #       Draw RA-Dec box in addition to Az-El vectors when pointing
 #       on a source.
@@ -50,7 +57,8 @@ require 5.004;
 
 use strict;
 
-#use lib '/jcmt_sw/omp/obsdesk/Perl5Lib';
+use FindBin;
+use lib "$FindBin::Bin/../lib/perl5/site_perl";
 
 my $plotterType = 'Tk';
 my $locateBug = 0;
