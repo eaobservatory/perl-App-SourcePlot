@@ -33,6 +33,10 @@
 #       DD/MM/YY: INIT  Comments
 #       --------- ----  --------
 #       $Log: splot,v $
+#       Revision 1.10  1999/08/13 21:51:10  timj
+#       Derive version number from CVS string.
+#       Use FindBin::RealBin rather than FindBin::Bin so that links are resolved.
+#
 #       Revision 1.9  1999/08/13 21:33:51  timj
 #       Add 'use FindBin'
 #
@@ -58,7 +62,7 @@ require 5.004;
 use strict;
 
 use FindBin;
-use lib "$FindBin::Bin/../lib/perl5/site_perl";
+use lib "$FindBin::RealBin/../lib/perl5/site_perl";
 
 my $plotterType = 'Tk';
 my $locateBug = 0;
@@ -69,7 +73,7 @@ BEGIN {
  
     use Tk;                     # define Tk objects and methods
     use Tk::ProgressBar;
-    $VERSION = '1.0';
+    $VERSION = sprintf "%d.%03d", q$Revision: 1.10 $ =~ /(\d+)\.(\d+)/;
     $MW = MainWindow->new;
     $MW->positionfrom('user');
     $MW->geometry('+0+90');
