@@ -1,4 +1,4 @@
-Package ObsDesk::Source;
+package ObsDesk::Source;
 
 =head1 NAME
 
@@ -262,8 +262,8 @@ sub dec {
     my $sdec = shift;
     $sdec =~ s/^\s+//;
     $sdec =~ s/\s+$//;
-    $sdec =~ s/\+//g;
-    $sdec =~ s/\-\s+/\-/;
+    $sdec =~ s/\+\s*//g;
+    $sdec =~ s/\-\s*/\-/;
     $sdec =~ s/\s+/:/g;
     $self->{DEC} = $sdec;
     $self->{RA2000} = undef;
