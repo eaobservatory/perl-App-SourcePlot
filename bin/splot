@@ -33,6 +33,9 @@
 #       DD/MM/YY: INIT  Comments
 #       --------- ----  --------
 #       $Log: splot,v $
+#       Revision 1.14  2004/07/15 19:57:24  timj
+#       be more explicit about which plotter module failed to load
+#
 #       Revision 1.13  2000/06/21 00:19:24  timj
 #       - Check status from eval "plotter"
 #       - Fix error in airmass read-only variable
@@ -84,7 +87,7 @@ BEGIN {
  
     use Tk;                     # define Tk objects and methods
     use Tk::ProgressBar;
-    $VERSION = sprintf "%d.%03d", q$Revision: 1.13 $ =~ /(\d+)\.(\d+)/;
+    $VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)\.(\d+)/;
     $MW = MainWindow->new;
     $MW->positionfrom('user');
     $MW->geometry('+0+90');
@@ -121,10 +124,11 @@ update_status 'Loading Graphics Module', 15;
 # Load in the plotter class
 if ($plotterType eq 'gaia') {
   eval 'use Plotter::Gaia';
+  die "Error loading Plotter::Gaia Module: $@" if $@;
 } else {
   eval 'use Plotter::Tk';
+  die "Error loading Plotter::Tk Module: $@" if $@;
 }
-die "Error loading plotter module: $@" if $@;
 
 update_status 'Loading Date Module', 25;
 
