@@ -33,6 +33,9 @@
 #       DD/MM/YY: INIT  Comments
 #       --------- ----  --------
 #       $Log: splot,v $
+#       Revision 1.11  1999/10/28 19:51:15  timj
+#       Y2K compliant (add 1900 to year)
+#
 #       Revision 1.10  1999/08/13 21:51:10  timj
 #       Derive version number from CVS string.
 #       Use FindBin::RealBin rather than FindBin::Bin so that links are resolved.
@@ -73,7 +76,7 @@ BEGIN {
  
     use Tk;                     # define Tk objects and methods
     use Tk::ProgressBar;
-    $VERSION = sprintf "%d.%03d", q$Revision: 1.10 $ =~ /(\d+)\.(\d+)/;
+    $VERSION = sprintf "%d.%03d", q$Revision: 1.11 $ =~ /(\d+)\.(\d+)/;
     $MW = MainWindow->new;
     $MW->positionfrom('user');
     $MW->geometry('+0+90');
@@ -2362,6 +2365,7 @@ sub calcTime {
   $md = '0'.$md if length($md) < 2;
   $mm = '0'.$mm if length($mm) < 2;
   $ss = '0'.$ss if length($ss) < 2;
+  $yr += 1900;
   my ($sety, $setm, $setd) = split (/\//, $DATE);
   if ((!$yr =~ /$sety/) || $setm != $mo || $setd != $md) {
     return;
