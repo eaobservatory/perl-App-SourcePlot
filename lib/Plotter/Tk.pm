@@ -22,21 +22,11 @@ use vars qw/$VERSION/;
 # Load Tk module
 use Tk;
 
-# Use some PDL
-use PDL::Lite;
-#use PDL::IO::Pic;
-
-# Load in the image getting tools
-use Plotter::Tool::Dss;
-
-$VERSION = undef; # -w protection
 $VERSION = '0.10';
 
 =head1 EXTERNAL MODULES
 
   Tk
-  PDL::Lite
-  Plotter::Tool::Dss
 
 =cut
 
@@ -1161,27 +1151,28 @@ sub origPhot {
 }
 
 
-=item getFits
-
-Retrieves an image from the dss.  Must specify the RA and Dec of the
-source.
-
-  $plotter->getFits($ra, $dec);
-
-=cut
-sub getFits {
-  my $self = shift;
-  my $ra = shift;
-  my $dec = shift;
-  my $cent_crd = shift;
-  my $noObs = shift;
-
-  my $tool = new Plotter::Tool::Dss($ra, $dec, $cent_crd);
-
-  my ($x, $y) = $self->photoWorldSize();
-  $tool->getFile($x/60, $y/60);
-
-}
+#=item getFits
+#
+#Retrieves an image from the dss.  Must specify the RA and Dec of the
+#source.
+#
+#  $plotter->getFits($ra, $dec);
+#
+#=cut
+#
+#sub getFits {
+#  my $self = shift;
+#  my $ra = shift;
+#  my $dec = shift;
+#  my $cent_crd = shift;
+#  my $noObs = shift;
+#
+#  my $tool = new Plotter::Tool::Dss($ra, $dec, $cent_crd);
+#
+#  my ($x, $y) = $self->photoWorldSize();
+#  $tool->getFile($x/60, $y/60);
+#
+#}
 
 
 =item setImage
