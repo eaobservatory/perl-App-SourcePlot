@@ -35,7 +35,8 @@ require 5.004;
 
 use strict;
 
-use lib '/jcmt_sw/omp/obsdesk/Perl5Lib';
+#use lib '/jcmt_sw/omp/obsdesk/Perl5Lib';
+use lib '/jcmt_sw/omp/obsdesk/neworg/cvsorg/inst';
 
 my $plotterType = 'Tk';
 my $locateBug = 0;
@@ -81,6 +82,7 @@ if ($plotterType eq 'gaia') {
 } else {
   eval 'use Plotter::Tk';
 }
+die "Error loading Plotter Module: $@" if $@;
 
 update_status 'Loading Date Module', 25;
 
@@ -89,7 +91,7 @@ die "Error loading Date::Manip Module: $@" if $@;
 
 update_status 'Loading Source Module', 35;
 
-eval 'use Source';
+eval 'use ObsDesk::Source';
 die "Error loading Source Module: $@" if $@;
 
 update_status 'Loading SLA Module', 45;
@@ -716,7 +718,7 @@ sub changeOpt {
 sub addPlanetSource {
   my $name = shift;
   my $number = shift;
-  my $source = new Source($name);
+  my $source = new ObsDesk::Source($name);
   $source->type('planet');
   $source->planetnum($number);
   if (!isWithin ($source, @SOURCE_LIST)) {
@@ -909,7 +911,7 @@ sub catalogWin {
 		    -width        => 7,
 		    -command => sub {
 		      $searchBut->configure(-state=>'disabled');
-		      my $source = new Source;
+		      my $source = new ObsDesk::Source;
 		      &getSource ($source);
 		      my $res = &waitForResponse();
 		      if ($res) {
@@ -1120,7 +1122,7 @@ sub getSourcesFromFile {
 
     print "Creating a new source in getsourcefromfile\n" if $locateBug;
 
-    my $source = new Source($parts[0], $ra, $dec, $epoc);
+    my $source = new ObsDesk::Source($parts[0], $ra, $dec, $epoc);
 
     print "Created a new source in getsourcefromfile\n" if $locateBug;
 
@@ -1306,7 +1308,7 @@ sub editSource {
   my $newBut = $manipF->Button( -text=>'New', 
 		    -width        => 4,
 		    -command=> sub{
-			my $source = new Source();
+			my $source = new ObsDesk::Source();
 			&getSource ($source);
 			my $res = &waitForResponse();
 			if ($res && !isWithin ($source, @SOURCE_LIST)) {
