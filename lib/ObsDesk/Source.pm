@@ -2,8 +2,12 @@ package ObsDesk::Source;
 
 =head1 NAME
 
-Source - creates a observation source
-By Casey Best (University of Victoria)
+ObsDesk::Source - creates a observation source
+
+=head1 SYNOPSIS
+
+ use ObsDesk::Source;
+ $src = new ObsDesk::Source;
 
 =head1 DESCRIPTION
 
@@ -22,9 +26,7 @@ use Math::Trig;
 use Astro::SLA;
 use Date::Manip;
 use Astro::Instrument::SCUBA::Array;
-use Tk::ProgressBar;
 
-$VERSION = undef; # -w protection
 $VERSION = '1.00';
 
 my $locateBug = 0;
@@ -35,7 +37,6 @@ my $locateBug = 0;
   Astro::SLA
   Date::Manip
   Astro::Instrument::SCUBA::Array
-  Tk::ProgressBar
 
 =cut
 
@@ -51,10 +52,10 @@ Create a new Source object.
 A new source object will be created.  You can specify nothing, just the 
 name, or the RA, DEC and Epoc.
 
-  $obs = new Source();
-  $obs = new Source($name);
-  $obs = new Source($name, $RA, $DEC, $Epoc);
-  $obs = new Source('', $RA, $DEC, $Epoc);
+  $obs = new ObsDesk::Source();
+  $obs = new ObsDesk::Source($name);
+  $obs = new ObsDesk::Source($name, $RA, $DEC, $Epoc);
+  $obs = new ObsDesk::Source('', $RA, $DEC, $Epoc);
 
 =cut
 
@@ -300,7 +301,7 @@ sub dec2000 {
 
 =item epoc
 
-returns and sets the epoc of the source
+returns and sets the epoch of the source
 
   $epoc = $obs->epoc();
   $obs->epoc('RB');
