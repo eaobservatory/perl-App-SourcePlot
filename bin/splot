@@ -60,8 +60,14 @@ BEGIN {
     $STATUS = $MW->Label(qw(-width 40 -anchor w -foreground blue),
                          -text => "Source Plot $VERSION ...");
     $STATUS->grid(-row => 0, -column => 0, -sticky => 'w'); 
-    $BAR = $MW->ProgressBar->grid(-sticky => 's');
-    $BAR->configure(-step => 0, -max => 100);
+    $BAR = $MW->ProgressBar(-from =>0, -to=>100, 
+			    -width=>270, -length=>15,
+			    -blocks => 20, -anchor => 'e',
+			    -colors => [0, 'blue'],
+			    -relief => 'sunken',
+			    -borderwidth => 3,
+			    -troughcolor => 'grey',
+			   )->grid(-sticky => 's');
     $MW->update;
 
 }
@@ -473,7 +479,8 @@ sub update_status {
     my($status_text, $something) = @_;
  
     $STATUS->configure(-text => "$status_text ...");
-    $BAR->configure(-step=>$something);
+#    $BAR->configure(-step=>$something);
+    $BAR->value($something);
     $MW->update;
  
 } # end update_status
