@@ -33,6 +33,9 @@
 #       DD/MM/YY: INIT  Comments
 #       --------- ----  --------
 #       $Log: splot,v $
+#       Revision 1.15  2004/07/15 20:20:14  timj
+#       Fix pady -> -pady problems with perl5.8 and tk804
+#
 #       Revision 1.14  2004/07/15 19:57:24  timj
 #       be more explicit about which plotter module failed to load
 #
@@ -87,7 +90,7 @@ BEGIN {
  
     use Tk;                     # define Tk objects and methods
     use Tk::ProgressBar;
-    $VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)\.(\d+)/;
+    $VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)\.(\d+)/;
     $MW = MainWindow->new;
     $MW->positionfrom('user');
     $MW->geometry('+0+90');
@@ -878,7 +881,7 @@ sub getSource {
   my $Top = $MW->Toplevel;
   $Top->title('Source Plot');
   $Top->resizable(0,0);
-  my $topFrame = $Top->Frame(-relief=>'groove', -borderwidth =>2, -width =>50)->pack(-padx=>10, -fill => 'x', -ipady=>10, pady => 10);
+  my $topFrame = $Top->Frame(-relief=>'groove', -borderwidth =>2, -width =>50)->pack(-padx=>10, -fill => 'x', -ipady=>10, -pady => 10);
 
   $topFrame->Label (
 		    -text => "Name:"
@@ -1100,7 +1103,7 @@ sub editSource {
   $Top->geometry('+600+90');
   $Top->title('Source Plot: Edit Window');
   $Top->resizable(0,0);
-  my $topFrame = $Top->Frame(-relief=>'groove', -borderwidth =>2, -width =>50)->pack(-padx=>10, -fill => 'x', -ipady=>3, pady => 10);
+  my $topFrame = $Top->Frame(-relief=>'groove', -borderwidth =>2, -width =>50)->pack(-padx=>10, -fill => 'x', -ipady=>3, -pady => 10);
   
   # create the header
   my $headFrame = $topFrame->Frame(-relief=>'flat', -borderwidth =>2)->grid(-row=>0, -sticky=>'nsew', -ipadx => 3);
@@ -2641,7 +2644,7 @@ sub error {
   $errWin->Label (
     -text => "\nError!\n\n   ".$message."   \n", 
     -relief=>'sunken'
-  )->pack(-side=>'bottom', pady => 10);
+  )->pack(-side=>'bottom', -pady => 10);
   $errWin->title(shift) if @_;
   $MW->update;
   $errWin->grab;
