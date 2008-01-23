@@ -33,6 +33,9 @@
 #       DD/MM/YY: INIT  Comments
 #       --------- ----  --------
 #       $Log: splot,v $
+#       Revision 1.16  2008/01/23 19:04:52  hps
+#       Fix path for default catalog to work on 64-bit systems.
+#
 #       Revision 1.15  2004/07/15 20:20:14  timj
 #       Fix pady -> -pady problems with perl5.8 and tk804
 #
@@ -90,7 +93,7 @@ BEGIN {
  
     use Tk;                     # define Tk objects and methods
     use Tk::ProgressBar;
-    $VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)\.(\d+)/;
+    $VERSION = sprintf "%d.%03d", q$Revision: 1.16 $ =~ /(\d+)\.(\d+)/;
     $MW = MainWindow->new;
     $MW->positionfrom('user');
     $MW->geometry('+0+90');
@@ -180,8 +183,11 @@ my $DATE;
 my $TODAY;
 my $TIME;
 my @SOURCE_LIST = ();
+my $arch = qx/uname -m/;
+chomp $arch;
 my $CATALOG = 'default';
-my $defaultCatalog = "/local/progs/etc/poi.dat";
+my $defaultCatalog = ($arch eq "x86_64" ? "/local32/progs/etc/poi.dat" :
+		      "/local/progs/etc/poi.dat");
 $defaultCatalog = $ENV{SPLOT_CAT} if (exists $ENV{SPLOT_CAT});
 my @planets = ('Sun', 'Mercury', 'Venus', 'Moon', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto');
 
