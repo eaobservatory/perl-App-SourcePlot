@@ -1,195 +1,60 @@
 #!/local/bin/perl
 
-########################################################################
-####             J C M T   S O F T W A R E   G R O U P              ####
-#                -------------------------------------
-#
-#   Language:		PERL
-#
-#   Application:	splot
-#
-#   Purpose:
-#       To plot an observation on a graph, allowing both the x and y
-#       axes to be adjusted to many attributes of the observation
-#
-#   Creation Date:      Jul 2, 1998
-#
-#   SCCS Data           : @(#)
-#       Module Name     : splot
-#       Version Number  : 1.0
-#       Release Number  : 1
-#       Last Updated    : 07/02/98
-#
-#   Programmer(s):      Casey Best (University of Victoria)
-#                       Pam Shimek (University of Victoria)
-#
-#   Copyright:
-#       Copyright (C) 1998, 1999 Particle Physics and Astronomy Research
-#         Council. All Rights Reserved.
-#
-#   Comments:
-#
-#   Modification History:
-#       DD/MM/YY: INIT  Comments
-#       --------- ----  --------
-#       $Log: splot,v $
-#       Revision 1.16  2008/01/23 19:04:52  hps
-#       Fix path for default catalog to work on 64-bit systems.
-#
-#       Revision 1.15  2004/07/15 20:20:14  timj
-#       Fix pady -> -pady problems with perl5.8 and tk804
-#
-#       Revision 1.14  2004/07/15 19:57:24  timj
-#       be more explicit about which plotter module failed to load
-#
-#       Revision 1.13  2000/06/21 00:19:24  timj
-#       - Check status from eval "plotter"
-#       - Fix error in airmass read-only variable
-#       - tidy up some blank spaces
-#
-#       Revision 1.12  2000/05/10 21:06:42  timj
-#       Fix progress bar
-#
-#       Revision 1.11  1999/10/28 19:51:15  timj
-#       Y2K compliant (add 1900 to year)
-#
-#       Revision 1.10  1999/08/13 21:51:10  timj
-#       Derive version number from CVS string.
-#       Use FindBin::RealBin rather than FindBin::Bin so that links are resolved.
-#
-#       Revision 1.9  1999/08/13 21:33:51  timj
-#       Add 'use FindBin'
-#
-#       Revision 1.8  1999/08/13 02:01:30  rpt
-#       Draw RA-Dec box in addition to Az-El vectors when pointing
-#       on a source.
-#
-#       Revision 1.7  1999/08/11 20:54:07  rpt
-#       Allow ':' to be optional in time and coordinate input.
-#       Strip '+' and spurious blanks.
-#
-#       Revision 1.6  1999/08/11 03:00:40  rpt
-#       Fixed LST axis labeling, correctly rounding to hh:mm.
-#       Allow 'hh mm ss' in Option in addition to 'hh:mm:ss'.
-#
-#			
-####                                                                ####
-########################################################################
-#
+=head1 NAME
+
+splot
+
+=head1 PURPOSE
+
+To plot an observation on a graph, allowing both the x and y
+axes to be adjusted to many attributes of the observation
+
+=cut
+
+package App::sourceplot;
 
 require 5.004;
 
 use strict;
+#use warnings;
 
-use FindBin;
-use lib "$FindBin::RealBin/../lib/perl5/site_perl";
-
-my $plotterType = 'Tk';
+our $VERSION = '1.17';
 my $locateBug = 0;
 
-my ($VERSION, $MW, $BAR, $STATUS);
-
-BEGIN {
- 
-    use Tk;                     # define Tk objects and methods
-    use Tk::ProgressBar;
-    $VERSION = sprintf "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/;
-    $MW = MainWindow->new;
-    $MW->positionfrom('user');
-    $MW->geometry('+0+90');
-    $MW->title('Source Plot');
-    $MW->resizable(0,0);
-    $MW->iconname('source plot');
-
-#    $MW->iconbitmap("\@$LIBDIR/monds.xbm");
-    
-    $STATUS = $MW->Label(qw(-width 40 -anchor w -foreground blue),
-                         -text => "Source Plot $VERSION ...");
-    $STATUS->grid(-row => 0, -column => 0, -sticky => 'w'); 
-    $BAR = $MW->ProgressBar(-from =>0, -to=>100, 
-			    -width=>15, -length=>270,
-			    -blocks => 20, -anchor => 'w',
-			    -colors => [0, 'blue'],
-			    -relief => 'sunken',
-			    -borderwidth => 3,
-			    -troughcolor => 'grey',
-			   )->grid(-sticky => 's');
-    $MW->update;
-
-}
-# Preinit subs
-use subs 'update_status';
-
-update_status 'Loading FileSelect Module', 5;
-
-eval 'use Tk::FileSelect';
-die "Error loading Tk::FileSelect Module: $@" if $@;
-
-update_status 'Loading Graphics Module', 15;
-
-# Load in the plotter class
-if ($plotterType eq 'gaia') {
-  eval 'use Plotter::Gaia';
-  die "Error loading Plotter::Gaia Module: $@" if $@;
-} else {
-  eval 'use Plotter::Tk';
-  die "Error loading Plotter::Tk Module: $@" if $@;
-}
-
-update_status 'Loading Date Module', 25;
-
-eval 'use Date::Manip';
-die "Error loading Date::Manip Module: $@" if $@;
-
-update_status 'Loading Defaults Module', 30;
-
-eval 'use ObsDesk::Defaults';
-die "Error loading Defaults Module: $@" if $@;
-
-update_status 'Loading Source Module', 35;
-
-eval 'use ObsDesk::Source';
-die "Error loading Source Module: $@" if $@;
-
-update_status 'Loading SrcCatalog Module', 45;
-
-eval 'use Tk::SrcCatalog';
-die "Error loading Tk::SrcCatalog: $@" if $@;
-
-update_status 'Loading SLA Module', 45;
-
-eval 'use Astro::SLA';
-die "Error loading Astro::SLA Module: $@" if $@;
-
-update_status 'Loading array Module', 55;
-
-eval 'use Astro::Instrument::SCUBA::Array';
-die "Error loading Astro::Instrument::SCUBA::Array Module: $@" if $@;
-
-update_status 'Loading telescope Module', 67;
-
-eval 'use Astro::Telescope';
-die "Error loading Astro::Telescope Module: $@" if $@;
-
-update_status 'Loading balloons', 85;
-
-eval 'use Tk::Balloon';
-die "Error loading Tk::Balloon Module: $@" if $@;
-
+use Tk;
+use Tk::Balloon;
+#use Tk::ProgressBar;
+use Tk::FileSelect;
+use Plotter::Tk;
+use Date::Manip;
+use ObsDesk::Defaults;
+use ObsDesk::Source;
+use Tk::SrcCatalog;
+use Astro::SLA;
+use Astro::Instrument::SCUBA::Array;
+use Astro::Telescope;
 use Math::Trig;
+
+my $MW = new MainWindow();
+$MW->positionfrom('user');
+$MW->geometry('+0+90');
+$MW->title('Source Plot');
+$MW->resizable(0, 0);
+$MW->iconname('Source Plot');
+$MW->update;
+
+
+
 #global variables that will be used....
 
-my $DATE;
 my $TODAY;
 my $TIME;
 my @SOURCE_LIST = ();
-my $arch = qx/uname -m/;
-chomp $arch;
 my $CATALOG = 'default';
-my $defaultCatalog = ($arch eq "x86_64" ? "/local32/progs/etc/poi.dat" :
-		      "/local/progs/etc/poi.dat");
+my $defaultCatalog = "/local/progs/etc/poi.dat";
 $defaultCatalog = $ENV{SPLOT_CAT} if (exists $ENV{SPLOT_CAT});
-my @planets = ('Sun', 'Mercury', 'Venus', 'Moon', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto');
+my @planets = qw/Sun Mercury Venus Moon Mars Jupiter
+                 Saturn Uranus Neptune Pluto/;
 
 my $CATALOG_OPEN;
 my $EDIT_OPEN;
@@ -202,19 +67,16 @@ my $TimeLap = 30000;    # time between white dot updates
 my $dotSizeX = 4;
 my $dotSizeY = 4;
 
-my @telescopes = ('JCMT', 'UKIRT');
-#my $telObject = new Astro::Telescope('JCMT');
-
 my @axes = ('Time', 'Elevation', 'Air Mass', 'Azimuth', 'Parallactic Angle');
 my %defaults = (
-		TEL => 'JCMT',
-		XAXIS => 'Time',
-		YAXIS => 'Elevation',
-		TIME => '1:30:00'
-		);
+                TEL => 'JCMT',
+                XAXIS => 'Time',
+                YAXIS => 'Elevation',
+                TIME => '1:30:00'
+                );
 
 # setting up default values for Source Plot Options
-my $defaults = ObsDesk::Defaults->new;
+my $defaults = new ObsDesk::Defaults();
 $defaults->file('.splotcfg');
 $defaults->r_defaults(\%defaults);
 my $TEL = $defaults->values('TEL');
@@ -245,7 +107,8 @@ $CatWin->{'Changeable'} = 0;
 
 my $RESPONSE;
 
-my @COLOR_LIST = ('#ffAAAA', '#00ff00','#ff55ff','#ffff00','#00ffff','#ff00ff','#ffffff','#ff5555','#55ff55','#55ffff', '#ffff55');
+my @COLOR_LIST = qw/#ffaaaa #00ff00 #ff55ff #ffff00 #00ffff #ff00ff
+                    #ffffff #ff5555 #55ff55 #55ffff #ffff55/;
 my $COLOR_INDEX = 0;
 my $H_LIGHT = undef;
 my $H_WIDTH = 3;
@@ -259,7 +122,7 @@ $mo++;   # this catches the month up to the current date
 $mo = '0'.$mo if length($mo) < 2;
 $md = '0'.$md if length($md) < 2;
 $yr += 1900;
-$DATE .= "$yr\/$mo\/$md\/";
+my $DATE = "$yr\/$mo\/$md\/";
 $TODAY = $DATE;
 $TIME = "1:30:00";
 
@@ -270,17 +133,12 @@ my $yplot = 550;
 my $yborder = 30;
 
 my $canFrame = $MW->Frame(
-		   -takefocus => 1,
-		   -width => $xplot,
+                   -takefocus => 1,
+                   -width => $xplot,
 );
 
-# Create a cancas and calculate the world to pixel ratio
-my $plotter;
-if ($plotterType eq 'gaia') {
-  $plotter = new Plotter::Gaia($xplot, $yplot, 1, 1, $canFrame);
-} else {
-  $plotter = new Plotter::Tk($xplot, $yplot, 1, 1, $canFrame);
-}
+# Create a canvas and calculate the world to pixel ratio
+my $plotter = new Plotter::Tk($xplot, $yplot, 1, 1, $canFrame);
 $plotter->setBackground('black');
 $plotter->worldCenter($xborder, $yplot-$yborder);
 $plotter->usingWorld(1);
@@ -290,11 +148,9 @@ $plotter->usingWorld(1);
 #$plotter->monitorXY( \$XPOS, \$YPOS );
 
 my $buttonFrame = $MW->Frame(
-		   -takefocus => 1,
-		   -width =>$xplot
+                   -takefocus => 1,
+                   -width =>$xplot
 );
-
-update_status 'Setting up buttons', 90;
 
 my $exitBut = $buttonFrame->Button(
    -text         => 'Exit',
@@ -302,48 +158,48 @@ my $exitBut = $buttonFrame->Button(
    -command      => sub{destroy $MW;}
 )->pack(-side=>'right');
 $balloon->attach($exitBut,
-		 -balloonmsg => "Press to Exit program");  
+                 -balloonmsg => "Press to Exit program");
 
 my $printBut = $buttonFrame->Button(
    -text         => 'Print',
    -width        => 8,
-   -command      => sub{     
+   -command      => sub{
      my $choice = 'printer';
 
      my $Top = $MW->Toplevel();
-     $Top->title('Source Plot Printer Options');    
+     $Top->title('Source Plot Printer Options');
      $Top->resizable(0,0);
      my $radf = $Top->Frame()->pack(-padx=>10, -pady=>10, -side=>'top');
      my $tf = $Top->Frame(-relief=>'groove', -borderwidth =>2)->pack(-padx=>10, -side=>'top');
-     
+
      # create the radio button for the file option
      my $radbut = $radf->Radiobutton( -text => "To File",
-	-value => 'file',
-	-variable => \$choice );
+        -value => 'file',
+        -variable => \$choice );
      $radbut->grid(-column=>0, -row=>0, -padx => 10);
 
      # create the print radio button
      my $radbut2 = $radf->Radiobutton( -text => "To Printer",
-	-value => 'printer',
-	-variable => \$choice );
+        -value => 'printer',
+        -variable => \$choice );
      $radbut2->grid(-column=>1, -row=>0, -padx => 10);
 
      # create the file entry
      $tf->Label (
-	 -text => "Filename",
-	 -justify => 'right'
+         -text => "Filename",
+         -justify => 'right'
        )->grid(-sticky => 'e', -column=>2, -row=>0);
      my $fileEnt = $tf->Entry(-relief=>'sunken',
        -width=>20)->grid(-column=>3, -row=>0, -padx =>10, -pady=>5);
-     
+
      # create the printer options box
      $tf->Label (
-	 -text => "Printer Command",
-	 -justify => 'right'
+         -text => "Printer Command",
+         -justify => 'right'
        )->grid(-column=>2, -row=>1, -sticky=>'e');
      my $printerEnt = 'lp';
      $tf->Entry(-relief=>'sunken',
-		-textvariable=>\$printerEnt,
+                -textvariable=>\$printerEnt,
        -width=>20)->grid(-column=>3, -row=>1, -padx =>10, -pady=>5);
 
      # create the print button
@@ -352,36 +208,36 @@ my $printBut = $buttonFrame->Button(
        -text         => 'Print',
        -width        => 8,
        -command      => sub {
-	 tagOnOff('white', 1, 'dark green');
-	 tagOnOff('black', 1, 'white');
-	 foreach my $source (@SOURCE_LIST) {
-	   tagOnOff($source->name(), 1, 'dark green');
-	 }
-	 if ($choice eq 'printer') {
-	   $plotter->printCanvas($choice, $printerEnt, $MW);
-	 } else {
-	   $plotter->printCanvas($choice, $fileEnt->get, $MW);
-	 }
-	 tagOnOff('white', 1, 'white');
-	 tagOnOff('black', 1, 'black');
-	 foreach my $source (@SOURCE_LIST) {
-	   tagOnOff($source->name(), 1, $source->color());
-	 }
-	 destroy $Top;
-       }	 
+         tagOnOff('white', 1, 'dark green');
+         tagOnOff('black', 1, 'white');
+         foreach my $source (@SOURCE_LIST) {
+           tagOnOff($source->name(), 1, 'dark green');
+         }
+         if ($choice eq 'printer') {
+           $plotter->printCanvas($choice, $printerEnt, $MW);
+         } else {
+           $plotter->printCanvas($choice, $fileEnt->get, $MW);
+         }
+         tagOnOff('white', 1, 'white');
+         tagOnOff('black', 1, 'black');
+         foreach my $source (@SOURCE_LIST) {
+           tagOnOff($source->name(), 1, $source->color());
+         }
+         destroy $Top;
+       }
      )->pack(-side=>'right', -padx => 10);
 
      my $optBut = $bf->Button(
        -text         => 'Cancel',
        -width        => 8,
-       -command      => sub {destroy $Top;}	 
+       -command      => sub {destroy $Top;}
      )->pack(-side=>'right', -padx =>10);
 
      $Top->update;
      $Top->grab;
    })->pack(-side=>'right');
 $balloon->attach($printBut,
-		 -balloonmsg => "Press to print the graph");  
+                 -balloonmsg => "Press to print the graph");
 
 my $optBut = $buttonFrame->Button(
    -text         => 'Options',
@@ -389,7 +245,7 @@ my $optBut = $buttonFrame->Button(
    -command      => \&changeOpt
 )->pack(-side=>'left');
 $balloon->attach($optBut,
-		 -balloonmsg => "Press to change the x and y axes");  
+                 -balloonmsg => "Press to change the x and y axes");
 
 my $dateBut = $buttonFrame->Button(
    -text         => 'UT Date',
@@ -397,9 +253,7 @@ my $dateBut = $buttonFrame->Button(
    -command      => \&changeDate
 )->pack(-side=>'left');
 $balloon->attach($dateBut,
-		 -balloonmsg => "Press to change the UT date");  
-
-update_status 'Adding Edit button', 100;
+                 -balloonmsg => "Press to change the UT date");
 
 print "made it to just before the menu button, planet\n" if $locateBug;
 
@@ -411,10 +265,10 @@ my $eBut = $buttonFrame->Button(
        $EDIT_OPEN = 1;
        &editSource ();
      }
-   }   
+   }
 )->pack(-side=>'left');
 $balloon->attach($eBut,
-		 -balloonmsg => "Press to open the Edit Window");  
+                 -balloonmsg => "Press to open the Edit Window");
 
 $cBut = $buttonFrame->Button(
    -text         => 'Catalog',
@@ -425,13 +279,10 @@ $cBut = $buttonFrame->Button(
        $CATALOG_OPEN = 1;
        $cBut->configure(-state=> 'disabled');
      }
-   }   
+   }
 )->pack(-side=>'left');
 $balloon->attach($cBut,
-		 -balloonmsg => "Press to open the Catalog Window");  
-
-destroy $STATUS;
-destroy $BAR;
+                 -balloonmsg => "Press to open the Catalog Window");
 
 $canFrame->grid(qw/-sticky nsew/);
 $buttonFrame->grid(qw/-sticky nsew/);
@@ -457,34 +308,34 @@ MainLoop;
 
 sub reset
 {
-	$CATALOG_OPEN = 0;
-	$cBut->configure(-state=>'normal');
+        $CATALOG_OPEN = 0;
+        $cBut->configure(-state=>'normal');
 }
 
 sub addCommand
 {
-	my $selected = shift;
-	if(@{$selected} != ())
-	{
-		my $source;
-		$LAST_COMMAND = 'Add';
-		@UNDO_LIST = ();
-		$undoBut->configure(-state => 'normal') if $EDIT_OPEN;
-		foreach $source (@$selected)
-		{
-			if(!isWithin($source, @SOURCE_LIST))
-			{
-				my $s = $source->copy();
-				$s->color(getColor());
-				push (@SOURCE_LIST, $s);
-				push (@UNDO_LIST, $source->copy());
-			}
-		}
-		if ($EDIT_OPEN) {
-			fillWithSourceList ($EditWin, 'full');
-		}
-		plot();
-	}
+        my $selected = shift;
+        if(@{$selected} != ())
+        {
+                my $source;
+                $LAST_COMMAND = 'Add';
+                @UNDO_LIST = ();
+                $undoBut->configure(-state => 'normal') if $EDIT_OPEN;
+                foreach $source (@$selected)
+                {
+                        if(!isWithin($source, @SOURCE_LIST))
+                        {
+                                my $s = $source->copy();
+                                $s->color(getColor());
+                                push (@SOURCE_LIST, $s);
+                                push (@UNDO_LIST, $source->copy());
+                        }
+                }
+                if ($EDIT_OPEN) {
+                        fillWithSourceList ($EditWin, 'full');
+                }
+                plot();
+        }
 }
 
 
@@ -517,7 +368,7 @@ sub remove {
   my $len = @$array;
   my @temp;
   my $flag = 0;
-  
+
   for (my $index = 0; $index < $len; $index++) {
     if ($element->name() eq $$array[$index]->name() && $element->ra() eq $$array[$index]->ra() && $element->dec() eq $$array[$index]->dec() && $element->epoc() eq $$array[$index]->epoc()) {
       $flag = -1;
@@ -530,15 +381,8 @@ sub remove {
 }
 
 sub update_status {
- 
-    my($status_text, $something) = @_;
- 
-    $STATUS->configure(-text => "$status_text ...");
-#    $BAR->configure(-step=>$something);
-    $BAR->value($something);
     $MW->update;
- 
-} # end update_status
+}
 
 
 ############################################################
@@ -547,7 +391,8 @@ sub changeDate {
 
   $dateBut->configure(-state => 'disabled');
 
-  my @months = ('January', 'February', 'March', 'April','May','June','July','August','September','October','November','December');
+  my @months = qw/January February March April May June July August
+                  September October November December/;
   my $name;
 
   my $Top = $MW->Toplevel;
@@ -557,43 +402,43 @@ sub changeDate {
 
   # create the day entry
   $topFrame->Label (
-		    -text => "Day:"
-		   )->grid(-column=>0, -row=>0);
+                    -text => "Day:"
+                   )->grid(-column=>0, -row=>0);
   my $dayEnt = $topFrame->Entry(-relief=>'sunken',
-				-width=>10)->grid(-column=>1, -row=>0, -padx =>10, -pady=>5);
-  
+                                -width=>10)->grid(-column=>1, -row=>0, -padx =>10, -pady=>5);
+
   # create the month menu button
   $topFrame->Label (
-		    -text => "Month:"
-		   )->grid(-column=>0, -row=>1, -padx =>5, -pady=>5);
-  
+                    -text => "Month:"
+                   )->grid(-column=>0, -row=>1, -padx =>5, -pady=>5);
+
   my ($yy, $mm, $dd) = split (/\//, $DATE);
   my $monthEnt = UnixDate ($mm.'/'.$dd.'/'.$yy, '%B');
   my $mb = $topFrame->Menubutton( -text=>$monthEnt, -relief => 'raised', -width => 10);
   foreach $name (@months) {
     $mb->command(-label =>$name, -command=> sub{
-		   $mb->configure( -text => $name );
-		   $monthEnt = $name;
-		 });
+                   $mb->configure( -text => $name );
+                   $monthEnt = $name;
+                 });
   }
   $mb->grid(-column=>1, -row=>1, -padx =>10, -pady=>5, -sticky=>'w');
-  
+
   # create the year entry
   $topFrame->Label (
-		    -text => "Year:"
-		   )->grid(-column=>0, -row=>2, -padx =>5, -pady=>5);
+                    -text => "Year:"
+                   )->grid(-column=>0, -row=>2, -padx =>5, -pady=>5);
   my $yearEnt = $topFrame->Entry(-relief=>'sunken',
-				 -width=>10)->grid(-column=>1, -row=>2, -padx =>10, -pady=>5);
+                                 -width=>10)->grid(-column=>1, -row=>2, -padx =>10, -pady=>5);
   $yearEnt->bind('<KeyPress-Return>' =>sub {
-		     my $mo = UnixDate ("$monthEnt ".$dayEnt->get." ".$yearEnt->get, '%m');
-		     my $day = $dayEnt->get;
-		     $day = 1 if ($day < 1);
-		     $day = 31 if ($day >31);
-		     while (length $day < 2) {$day = "0$day";}
-		     $DATE = $yearEnt->get."\/$mo\/$day";
-		     destroy $Top;
-		});
-  
+                     my $mo = UnixDate ("$monthEnt ".$dayEnt->get." ".$yearEnt->get, '%m');
+                     my $day = $dayEnt->get;
+                     $day = 1 if ($day < 1);
+                     $day = 31 if ($day >31);
+                     while (length $day < 2) {$day = "0$day";}
+                     $DATE = $yearEnt->get."\/$mo\/$day";
+                     destroy $Top;
+                });
+
   # create the update subroutine
   my $complete = sub{
     my $mo = UnixDate ("$monthEnt ".$dayEnt->get." ".$yearEnt->get, '%m');
@@ -612,35 +457,33 @@ sub changeDate {
   my $F = $Top->Frame->pack();
   my $buttonF = $F->Frame->pack(-side => 'left', -padx => 5, -pady => 10);
   my $okBut = $buttonF->Button(
-		   -text         => 'Apply',
-		   -command      => $complete
-		  )->pack(-side=>'left');
+                   -text         => 'Apply',
+                   -command      => $complete
+                  )->pack(-side=>'left');
   $okBut->bind('<KeyPress-Return>' => $complete);
 
   # create the accept button
   $buttonF = $F->Frame->pack(-side => 'right', -padx => 5, -pady => 10);
   my $okBut = $buttonF->Button(
-		   -text         => 'Accept',
-		   -command      => sub {&$complete; destroy $Top; $dateBut->configure(-state => 'normal');}
-		  )->pack(-side=>'right');
+                   -text         => 'Accept',
+                   -command      => sub {&$complete; destroy $Top; $dateBut->configure(-state => 'normal');}
+                  )->pack(-side=>'right');
   $okBut->bind('<KeyPress-Return>' => sub {&$complete; destroy $Top; $dateBut->configure(-state => 'normal');});
 
   # create the cancel button
   my $canBut = $buttonF->Button(
-		   -text         => 'Cancel',
-		   -command      => sub{destroy $Top; $dateBut->configure(-state => 'normal');}
-		  )->pack(-side=>'right');
+                   -text         => 'Cancel',
+                   -command      => sub{destroy $Top; $dateBut->configure(-state => 'normal');}
+                  )->pack(-side=>'right');
   $canBut->bind('<KeyPress-Return>' =>sub {destroy $Top; $dateBut->configure(-state => 'normal');});
-  
+
   $dayEnt->insert(0,$dd);
-  $yearEnt->insert(0,$yy);  
+  $yearEnt->insert(0,$yy);
 
   $MW->update;
 }
 
 
-############################################################
-# changes the date to a new date
 sub changeOpt {
   my $name;
   my $telEnt = $TEL;
@@ -655,14 +498,14 @@ sub changeOpt {
 
   # place the telescope menuButton
   $topFrame->Label (
-		    -text => "Telescope:"
-		   )->grid(-column=>0, -row=>0);  
+                    -text => "Telescope:"
+                   )->grid(-column=>0, -row=>0);
   my $f = $topFrame->Frame()->
     grid(-column=>1, -row=>0, -padx =>10, -pady=>5, -sticky=>'w');
   my $f2 = $topFrame->Frame()->
     grid(-column=>1, -row=>1, -padx =>10, -pady=>5, -sticky=>'w');
-  $tb = $f->Menubutton( -text=>$telEnt, -relief => 'raised', 
-			-width => 15)->pack(-side=>'left');
+  $tb = $f->Menubutton( -text=>$telEnt, -relief => 'raised',
+                        -width => 15)->pack(-side=>'left');
   $tb->cascade(-label => 'A - C', -underline => 0);
   $tb->cascade(-label => 'D - F', -underline => 0);
   $tb->cascade(-label => 'G - I', -underline => 0);
@@ -673,7 +516,7 @@ sub changeOpt {
   $tb->cascade(-label => 'V - X', -underline => 0);
   $tb->cascade(-label => 'Y - Z', -underline => 0);
 
-  my $cm = $tb->cget(-menu); 
+  my $cm = $tb->cget(-menu);
   my $ac = $cm->Menu;
   my $df = $cm->Menu;
   my $gi = $cm->Menu;
@@ -697,161 +540,161 @@ sub changeOpt {
   foreach $name ($telObject->telNames()) {
     if ($name =~ /^[A-Ca-c]/) {
       $ac->command(-label =>$name, -command=> sub{
-		   $tb->configure( -text => $name );
-		   $telEnt = $name;
-		 });
+                   $tb->configure( -text => $name );
+                   $telEnt = $name;
+                 });
     } elsif ($name =~ /^[D-Fd-f]/) {
       $df->command(-label =>$name, -command=> sub{
-		   $tb->configure( -text => $name );
-		   $telEnt = $name;
-		 });
+                   $tb->configure( -text => $name );
+                   $telEnt = $name;
+                 });
     } elsif ($name =~ /^[G-Ig-i]/) {
       $gi->command(-label =>$name, -command=> sub{
-		   $tb->configure( -text => $name );
-		   $telEnt = $name;
-		 });
+                   $tb->configure( -text => $name );
+                   $telEnt = $name;
+                 });
     }elsif ($name =~ /^[J-Lj-l]/) {
       $jl->command(-label =>$name, -command=> sub{
-		   $tb->configure( -text => $name );
-		   $telEnt = $name;
-		 });
+                   $tb->configure( -text => $name );
+                   $telEnt = $name;
+                 });
     }elsif ($name =~ /^[M-Om-o]/) {
       $mo->command(-label =>$name, -command=> sub{
-		   $tb->configure( -text => $name );
-		   $telEnt = $name;
-		 });
+                   $tb->configure( -text => $name );
+                   $telEnt = $name;
+                 });
     }elsif ($name =~ /^[P-Rp-r]/) {
       $pr->command(-label =>$name, -command=> sub{
-		   $tb->configure( -text => $name );
-		   $telEnt = $name;
-		 });
+                   $tb->configure( -text => $name );
+                   $telEnt = $name;
+                 });
     } elsif ($name =~ /^[S-Us-u]/) {
       $su->command(-label =>$name, -command=> sub{
-		   $tb->configure( -text => $name );
-		   $telEnt = $name;
-		 });
+                   $tb->configure( -text => $name );
+                   $telEnt = $name;
+                 });
     } elsif ($name =~ /^[V-Xv-x]/) {
       $vx->command(-label =>$name, -command=> sub{
-		   $tb->configure( -text => $name );
-		   $telEnt = $name;
-		 });
+                   $tb->configure( -text => $name );
+                   $telEnt = $name;
+                 });
     } elsif ($name =~ /^[Y-Zy-z]/) {
       $yz->command(-label =>$name, -command=> sub{
-		   $tb->configure( -text => $name );
-		   $telEnt = $name;
-		 });
+                   $tb->configure( -text => $name );
+                   $telEnt = $name;
+                 });
     }
   }
 
   # place the middle time field
   $topFrame->Label (
-		    -text => "Center Time (in HST):"
-		   )->grid(-column=>0, -row=>2, -padx =>5, -pady=>5);
+                    -text => "Center Time (in HST):"
+                   )->grid(-column=>0, -row=>2, -padx =>5, -pady=>5);
   my $timeEnt = $TIME;
   $topFrame->Entry(-relief=>'sunken',
-		   -textvariable=> \$timeEnt,
-		   -width=>10)->grid(-column=>1, -row=>2, -padx =>10, -pady=>5);
+                   -textvariable=> \$timeEnt,
+                   -width=>10)->grid(-column=>1, -row=>2, -padx =>10, -pady=>5);
 
   # place the y-axis menuButton
   $topFrame->Label (
-		    -text => "y-axis:"
-		   )->grid(-column=>0, -row=>4, -padx =>5, -pady=>5);
+                    -text => "y-axis:"
+                   )->grid(-column=>0, -row=>4, -padx =>5, -pady=>5);
   my $yEnt = $Y_AXIS;
   my $yb = $topFrame->Menubutton( -text=>$yEnt, -relief => 'raised', -width => 15);
   foreach $name (@axes) {
     $yb->command(-label =>$name, -command=> sub{
-		   $yb->configure( -text => $name );
-		   $yEnt = $name;
-		 });
+                   $yb->configure( -text => $name );
+                   $yEnt = $name;
+                 });
   }
   $yb->grid(-column=>1, -row=>4, -padx =>10, -pady=>5, -sticky=>'w');
 
   # inserting cascading choices
-    
+
   # place the x-axis menuButton
   $topFrame->Label (
-		    -text => "x-axis:"
-		   )->grid(-column=>0, -row=>3, -padx =>5, -pady=>5);
+                    -text => "x-axis:"
+                   )->grid(-column=>0, -row=>3, -padx =>5, -pady=>5);
   my $xEnt = $X_AXIS;
   my $xb = $topFrame->Menubutton( -text=>$xEnt, -relief => 'raised', -width => 15);
   foreach $name (@axes) {
     $xb->command(-label =>$name, -command=> sub{
-		   $xb->configure( -text => $name );
-		   $xEnt = $name;
-		 });
+                   $xb->configure( -text => $name );
+                   $xEnt = $name;
+                 });
   }
   $xb->grid(-column=>1, -row=>3, -padx =>10, -pady=>5, -sticky=>'w');
-  
+
   # place the Apply button
   my $F = $Top->Frame->pack();
   my $buttonF = $F->Frame->pack(-side => 'left', -padx => 5, -pady => 10);
   $buttonF->Button(
-		   -text         => 'Apply',
-		   -command      => sub{
-		     $X_AXIS = $xEnt;
-		     $Y_AXIS = $yEnt;
-		     if ($TEL ne $telEnt || $TIME ne $timeEnt) {
-		       foreach (@SOURCE_LIST) {$_->erasePoints()};
-		     } else {
-		       foreach (@SOURCE_LIST) {$_->eraseTimeDot()};
-		     }
-		     $TIME = $timeEnt;
+                   -text         => 'Apply',
+                   -command      => sub{
+                     $X_AXIS = $xEnt;
+                     $Y_AXIS = $yEnt;
+                     if ($TEL ne $telEnt || $TIME ne $timeEnt) {
+                       foreach (@SOURCE_LIST) {$_->erasePoints()};
+                     } else {
+                       foreach (@SOURCE_LIST) {$_->eraseTimeDot()};
+                     }
+                     $TIME = $timeEnt;
                      $TIME =~ s/^\s+//;
                      $TIME =~ s/\s+$//;
                      $TIME =~ s/\s+/:/g;
-		     $TEL = $telEnt;
-		     $telObject->name($TEL);
-		     plot();
-		   }
-		  )->pack(-side=>'left');
+                     $TEL = $telEnt;
+                     $telObject->name($TEL);
+                     plot();
+                   }
+                  )->pack(-side=>'left');
 
   # place the ok button
   $buttonF = $F->Frame->pack(-side => 'right', -padx => 5, -pady => 10);
   $buttonF->Button(
-		   -text         => 'Accept',
-		   -command      => sub{
-		     $optBut->configure(-state => 'normal');
-		     $X_AXIS = $xEnt;
-		     $Y_AXIS = $yEnt;
-		     if ($TEL ne $telEnt || $TIME ne $timeEnt) {
-		       foreach (@SOURCE_LIST) {$_->erasePoints()};
-		     } else {
-		       foreach (@SOURCE_LIST) {$_->eraseTimeDot()};
-		     }
-		     $TIME = $timeEnt;
+                   -text         => 'Accept',
+                   -command      => sub{
+                     $optBut->configure(-state => 'normal');
+                     $X_AXIS = $xEnt;
+                     $Y_AXIS = $yEnt;
+                     if ($TEL ne $telEnt || $TIME ne $timeEnt) {
+                       foreach (@SOURCE_LIST) {$_->erasePoints()};
+                     } else {
+                       foreach (@SOURCE_LIST) {$_->eraseTimeDot()};
+                     }
+                     $TIME = $timeEnt;
                      $TIME =~ s/^\s+//;
                      $TIME =~ s/\s+$//;
                      $TIME =~ s/\s+/:/g;
-		     $TEL = $telEnt;
-		     $telObject->name($TEL);
-		     plot();
-		     destroy $Top;
-		   }
-		  )->pack(-side=>'right');
+                     $TEL = $telEnt;
+                     $telObject->name($TEL);
+                     plot();
+                     destroy $Top;
+                   }
+                  )->pack(-side=>'right');
 
   # place the cancel button
   $buttonF->Button(
-		   -text         => 'Cancel',
-		   -command      => sub{
-		     $optBut->configure(-state => 'normal');
-		     destroy $Top;
-		   }
-		  )->pack(-side=>'right');
+                   -text         => 'Cancel',
+                   -command      => sub{
+                     $optBut->configure(-state => 'normal');
+                     destroy $Top;
+                   }
+                  )->pack(-side=>'right');
 
   $buttonF->Button(
-		   -text         => 'Save Setting',
-		   -command      => sub{
-			$X_AXIS = $xEnt;
-			$Y_AXIS = $yEnt;
-			$TEL = $telEnt;
-			$TIME = $timeEnt;
-			$defaults->values('TEL', $TEL);
-			$defaults->values('XAXIS', $X_AXIS);
-			$defaults->values('YAXIS', $Y_AXIS);
-			$defaults->values('TIME', $TIME);
-			$defaults->w_defaults();
-		   }
-		  )->pack(-side=>'right');
+                   -text         => 'Save Setting',
+                   -command      => sub{
+                        $X_AXIS = $xEnt;
+                        $Y_AXIS = $yEnt;
+                        $TEL = $telEnt;
+                        $TIME = $timeEnt;
+                        $defaults->values('TEL', $TEL);
+                        $defaults->values('XAXIS', $X_AXIS);
+                        $defaults->values('YAXIS', $Y_AXIS);
+                        $defaults->values('TIME', $TIME);
+                        $defaults->w_defaults();
+                   }
+                  )->pack(-side=>'right');
   $MW->update;
 }
 
@@ -890,58 +733,58 @@ sub getSource {
   my $topFrame = $Top->Frame(-relief=>'groove', -borderwidth =>2, -width =>50)->pack(-padx=>10, -fill => 'x', -ipady=>10, -pady => 10);
 
   $topFrame->Label (
-		    -text => "Name:"
-		   )->grid(-column=>0, -row=>0);
+                    -text => "Name:"
+                   )->grid(-column=>0, -row=>0);
   my $nameEnt = $topFrame->Entry(-relief=>'sunken',
-				-width=>15)->grid(-column=>1, -row=>0, -padx =>10, -pady=>3);
+                                -width=>15)->grid(-column=>1, -row=>0, -padx =>10, -pady=>3);
   $nameEnt->insert(0,$source->name());
 
   $topFrame->Label (
-		    -text => "Ra:"
-		   )->grid(-column=>0, -row=>1);
+                    -text => "Ra:"
+                   )->grid(-column=>0, -row=>1);
   my $raEnt = $topFrame->Entry(-relief=>'sunken',
-				-width=>15)->grid(-column=>1, -row=>1, -padx =>10, -pady=>3);
+                                -width=>15)->grid(-column=>1, -row=>1, -padx =>10, -pady=>3);
   $raEnt->insert(0,$source->ra());
 
   $topFrame->Label (
-		    -text => "Dec:"
-		   )->grid(-column=>0, -row=>2);
+                    -text => "Dec:"
+                   )->grid(-column=>0, -row=>2);
   my $decEnt = $topFrame->Entry(-relief=>'sunken',
-				-width=>15)->grid(-column=>1, -row=>2, -padx =>10, -pady=>3);
+                                -width=>15)->grid(-column=>1, -row=>2, -padx =>10, -pady=>3);
   $decEnt->insert(0,$source->dec());
 
   $topFrame->Label (
-		    -text => "Epoc:"
-		   )->grid(-column=>0, -row=>3, -padx =>5, -pady=>5);
+                    -text => "Epoc:"
+                   )->grid(-column=>0, -row=>3, -padx =>5, -pady=>5);
   my $epocEnt = $source->epoc();
   my $epocB = $topFrame->Menubutton( -text=>$epocEnt, -relief => 'raised', -width => 15);
   foreach $name (@Epocs) {
     $epocB->command(-label =>$name, -command=> sub{
-		   $epocB->configure( -text => $name );
-		   $epocEnt = $name;
-		 });
+                   $epocB->configure( -text => $name );
+                   $epocEnt = $name;
+                 });
   }
   $epocB->grid(-column=>1, -row=>3, -padx =>10, -pady=>5, -sticky=>'w');
-    
+
   my $buttonF = $Top->Frame->pack(-padx=>10, -pady=>10);
   $buttonF->Button(
-		   -text         => 'Ok',
-		   -command      => sub{		     
-		     $source->name($nameEnt->get);
-		     $source->ra($raEnt->get);
-		     $source->dec($decEnt->get);
-		     $source->epoc($epocEnt);		     
-		     destroy $Top;
-		     $RESPONSE = 1;
-		   }
-		  )->pack(-side=>'right');
+                   -text         => 'Ok',
+                   -command      => sub{
+                     $source->name($nameEnt->get);
+                     $source->ra($raEnt->get);
+                     $source->dec($decEnt->get);
+                     $source->epoc($epocEnt);
+                     destroy $Top;
+                     $RESPONSE = 1;
+                   }
+                  )->pack(-side=>'right');
   $buttonF->Button(
-		   -text         => 'Cancel',
-		   -command      => sub{
-		     destroy $Top;
-		     $RESPONSE = -1;
-		   }
-		  )->pack(-side=>'right');
+                   -text         => 'Cancel',
+                   -command      => sub{
+                     destroy $Top;
+                     $RESPONSE = -1;
+                   }
+                  )->pack(-side=>'right');
   $Top->update;
   $Top->grab;
 }
@@ -982,55 +825,55 @@ sub searchFor {
       $name =~ tr/A-Z/a-z/;
       print "checking names  $iname   vs   $name" if $debug;
       if (!($name =~ /$iname/)) {
-	print "...Did not match ...\n" if $debug;
-	$passed = 0;
+        print "...Did not match ...\n" if $debug;
+        $passed = 0;
       } else {
-	print "\n" if $debug;
+        print "\n" if $debug;
       }
     }
 
     # check the Ra
     if ($iRa ne '') {
       my $Ra = $source->ra;
-      $Ra =~ s/^\s+//; 
-      $Ra =~ s/\s+$//; 
-      $Ra =~ s/s+/:/g; 
+      $Ra =~ s/^\s+//;
+      $Ra =~ s/\s+$//;
+      $Ra =~ s/s+/:/g;
       $Ra =~ s/\..*// if !$RaDecimal;
       print "checking ra  $iRa   vs   $Ra\n" if $debug;
       my @raParts = split (/:/, $Ra);
       $i = 0;
       foreach (@iraParts) {
-	print "     checking $_ vs $raParts[$i]\n" if $debug;
-	if ($_ != $raParts[$i]) {
-	  $passed = 0;
-	}
-	$i++;
+        print "     checking $_ vs $raParts[$i]\n" if $debug;
+        if ($_ != $raParts[$i]) {
+          $passed = 0;
+        }
+        $i++;
       }
     }
 
     # check the Dec
     if ($iDec ne '') {
       my $Dec = $source->dec;
-      $Dec =~ s/^\s+//; 
-      $Dec =~ s/\s+$//; 
-      $Dec =~ s/\+//g; 
-      $Dec =~ s/\-\s+/\-/; 
-      $Dec =~ s/s+/:/g; 
+      $Dec =~ s/^\s+//;
+      $Dec =~ s/\s+$//;
+      $Dec =~ s/\+//g;
+      $Dec =~ s/\-\s+/\-/;
+      $Dec =~ s/s+/:/g;
       my $decNeg = ($Dec =~ /\-/);
       if ($decNeg != $idecNeg) {
-	$passed = 0;
+        $passed = 0;
       } else {
-	$Dec =~ s/\..*// if !$DecDecimal;
-	print "checking dec  $iDec   vs   $Dec\n" if $debug;
-	my @decParts = split (/:/, $Dec);
-	$i = 0;
-	foreach (@idecParts) {
-	  print "     checking $_ vs $decParts[$i]\n" if $debug;
-	  if ($_ != $decParts[$i]) {
-	    $passed = 0;
-	  }
-	  $i++;
-	}
+        $Dec =~ s/\..*// if !$DecDecimal;
+        print "checking dec  $iDec   vs   $Dec\n" if $debug;
+        my @decParts = split (/:/, $Dec);
+        $i = 0;
+        foreach (@idecParts) {
+          print "     checking $_ vs $decParts[$i]\n" if $debug;
+          if ($_ != $decParts[$i]) {
+            $passed = 0;
+          }
+          $i++;
+        }
       }
     }
 
@@ -1042,58 +885,6 @@ sub searchFor {
   return @rSources;
 }
 
-############################################################
-#
-#  getSourcesFromFile parses a catalog file and returns an 
-#  array of sources.
-#
-sub getSourcesFromFile {
-  my $Win = shift;
-  local *FILE;
-  my @sources = ();
-  my $line;
-  my @parts = ();
-  my ($ra, $dec, $epoc);
-
-  print "Entered into the getting sources from file\n" if $locateBug;
-
-  unless ($CATALOG =~ /default/i) {
-    if (!open (FILE, $CATALOG)) {
-      error ($Win, "Can't open catalog file", 'Source Plot Error!');
-      return;
-    }
-  } else {
-    if (!open (FILE, $defaultCatalog)){
-      error ($Win, "Can't open default catalog file: $defaultCatalog", 'Source Plot Error!');
-      return;
-    }
-  }
-  while ($line = <FILE>) {
-    chomp $line;
-    next if ($line =~ /[\*\%]/);
-    next if ($line =~ /^\s*$/);
-    $line =~ s/:/\s/g;
-    @parts = split (/\s+/, $line);
-    $ra = $parts[1] . ':'. $parts[2].':'.$parts[3];
-    if ($parts[4] =~ /^[\+\-]$/) {
-      $dec = $parts[4] . $parts[5].':'.$parts[6].':'.$parts[7];
-      $epoc = $parts[8];
-    } else {
-      print "There was no Plus...".$parts[4].':'.$parts[5].':'.$parts[6]."\n";
-      $dec = $parts[4] . ':'. $parts[5].':'.$parts[6];
-      $epoc = $parts[7];
-    }
-
-    print "Creating a new source in getsourcefromfile\n" if $locateBug;
-
-    my $source = new ObsDesk::Source($parts[0], $ra, $dec, $epoc);
-    print "Created a new source in getsourcefromfile\n" if $locateBug;
-
-    push (@sources, $source);
-  }
-  print "Exitting getsourcesfromfile method\n" if $locateBug;
-  return @sources;
-}
 
 ############################################################
 #
@@ -1102,15 +893,15 @@ sub getSourcesFromFile {
 sub editSource {
   my (@selected) = ();
   my $udeb = 0;   #debugger
-  
+
   $eBut->configure(-state=>'disabled');
-  
+
   my $Top = $MW->Toplevel ();
   $Top->geometry('+600+90');
   $Top->title('Source Plot: Edit Window');
   $Top->resizable(0,0);
   my $topFrame = $Top->Frame(-relief=>'groove', -borderwidth =>2, -width =>50)->pack(-padx=>10, -fill => 'x', -ipady=>3, -pady => 10);
-  
+
   # create the header
   my $headFrame = $topFrame->Frame(-relief=>'flat', -borderwidth =>2)->grid(-row=>0, -sticky=>'nsew', -ipadx => 3);
   my $head = $topFrame->Text(
@@ -1118,7 +909,7 @@ sub editSource {
       -relief     => 'flat',
       -foreground => 'midnightblue',
       -width      => 50,
-      -height     => 1, 
+      -height     => 1,
       -font       => '-*-Courier-Medium-R-Normal--*-120-*-*-*-*-*-*',
       -takefocus  => 0
   )->grid (-sticky=>'ew', -row =>0);
@@ -1128,197 +919,197 @@ sub editSource {
 
   # create the scollable text
   my $T = $topFrame->Scrolled('Text',
-			      -scrollbars => 'e',		  
-			      -background => '#333333',
-			      -wrap       => 'none',
-			      -width      => 60,
-			      -height     => 15, 
-			      -font       => '-*-Courier-Medium-R-Normal--*-120-*-*-*-*-*-*',
-			      -setgrid    => 1,
-			     )->grid(qw/-sticky nsew/, -row=>1);
-  $T->bindtags(qw/widget_demo/);	# remove all bindings but dummy "widget_demo"
-  
+                              -scrollbars => 'e',
+                              -background => '#333333',
+                              -wrap       => 'none',
+                              -width      => 60,
+                              -height     => 15,
+                              -font       => '-*-Courier-Medium-R-Normal--*-120-*-*-*-*-*-*',
+                              -setgrid    => 1,
+                             )->grid(qw/-sticky nsew/, -row=>1);
+  $T->bindtags(qw/widget_demo/);        # remove all bindings but dummy "widget_demo"
+ 
   # create the done button
   my $buttonF = $Top->Frame->pack(-padx=>10, -pady=>10, -fill =>'x');
   my $doneBut = $buttonF->Button(
-		   -text         => 'Done',
-		   -width        => 4,
-		   -command      => sub{
-		     $eBut->configure(-state=>'normal');
-		     $EDIT_OPEN = 0;		     
-		     destroy $Top;
-		   }
-		  )->pack(-side=>'right');
+                   -text         => 'Done',
+                   -width        => 4,
+                   -command      => sub{
+                     $eBut->configure(-state=>'normal');
+                     $EDIT_OPEN = 0;
+                     destroy $Top;
+                   }
+                  )->pack(-side=>'right');
   $balloon->attach($doneBut,
-		 -balloonmsg => "Press to close the Edit Window");
-  
+                 -balloonmsg => "Press to close the Edit Window");
+
   # create the On / Off button
-  my $OOBut = $buttonF->Button( -text=>'ON/Off', 
-		    -width        => 5,
-		    -command=> sub{
-		      my $source;
-		      foreach $source (@selected) {
-			if ($source->active()) {
-			  tagOnOff ($source->name(), 0);
-			  $source->active(0);
-			  $T->tag('configure', 'd'.$source->index(), -foreground => 'black');
-			} else {
-			  tagOnOff ($source->name(), 1, $source->color(), 'yellow');
-			  $source->active(1);
-			  $T->tag('configure', 'd'.$source->index(), -foreground => $source->color());
-			}
-		      }
-		      @selected = ();
-		    })->pack(-side => 'left');
+  my $OOBut = $buttonF->Button( -text=>'ON/Off',
+                    -width        => 5,
+                    -command=> sub{
+                      my $source;
+                      foreach $source (@selected) {
+                        if ($source->active()) {
+                          tagOnOff ($source->name(), 0);
+                          $source->active(0);
+                          $T->tag('configure', 'd'.$source->index(), -foreground => 'black');
+                        } else {
+                          tagOnOff ($source->name(), 1, $source->color(), 'yellow');
+                          $source->active(1);
+                          $T->tag('configure', 'd'.$source->index(), -foreground => $source->color());
+                        }
+                      }
+                      @selected = ();
+                    })->pack(-side => 'left');
   $balloon->attach($OOBut,
-		 -balloonmsg => "Press to turn the selected\nsources On/Off");
+                 -balloonmsg => "Press to turn the selected\nsources On/Off");
 
   # create the delete all button
   my $manipF = $buttonF->Frame->pack(-side=>'left', -padx=>30);
   my $DABut = $manipF->Button(
-		   -text         => 'Delete All',
-		   -width        => 8,
-		   -command      => sub{
-		     $LAST_COMMAND = 'Delete';
-		     foreach my $source (@SOURCE_LIST) {
-		       tagOnOff ($source->name(), 1, $source->color(), 'yellow');
-		       $source->active(1);
-		       $EditWin->{Text}->tagDelete('d'.$source->index());
-		     }
-		     @UNDO_LIST = @SOURCE_LIST;
-		     $undoBut->configure(-state => 'normal') if $EDIT_OPEN;
-		     @SOURCE_LIST = ();
-		     @selected = ();
-		     fillWithSourceList ($EditWin, 'full');
-		     plot();
-		   }
-		  )->pack(-side=>'left');
+                   -text         => 'Delete All',
+                   -width        => 8,
+                   -command      => sub{
+                     $LAST_COMMAND = 'Delete';
+                     foreach my $source (@SOURCE_LIST) {
+                       tagOnOff ($source->name(), 1, $source->color(), 'yellow');
+                       $source->active(1);
+                       $EditWin->{Text}->tagDelete('d'.$source->index());
+                     }
+                     @UNDO_LIST = @SOURCE_LIST;
+                     $undoBut->configure(-state => 'normal') if $EDIT_OPEN;
+                     @SOURCE_LIST = ();
+                     @selected = ();
+                     fillWithSourceList ($EditWin, 'full');
+                     plot();
+                   }
+                  )->pack(-side=>'left');
   $balloon->attach($DABut,
-		 -balloonmsg => "Press to delete all sources\nfrom the Edit Window");
+                 -balloonmsg => "Press to delete all sources\nfrom the Edit Window");
 
   # create the delete button
   my $delBut = $manipF->Button(
-		   -text         => 'Delete',
-		   -width        => 6,
-		   -command      => sub{
-		     my $len = @selected;
-		     $LAST_COMMAND = 'Delete';
-		     @UNDO_LIST = ();
-		     if ($len > 0) {
-		       $undoBut->configure(-state => 'normal');
-		     } else {
-		       $undoBut->configure(-state => 'disabled');
-		     }
-		     foreach my $source (@selected) {
-		       tagOnOff ($source->name(), 1, $source->color(), 'yellow');
-		       $source->active(1);
-		       push (@UNDO_LIST, $source);
-		       $plotter->delete('l'.$source->name());
-		       $plotter->delete('fo'.$source->name());
-		       $plotter->delete('t'.$source->name());
-		       $plotter->delete('time'.$source->name());
-		       $plotter->delete('ttimeDot'.$source->name());
-		       $plotter->delete('ltimeDot'.$source->name());
-		       $plotter->delete('timeDot'.$source->name());
-		       $EditWin->{Text}->tagDelete('d'.$source->index());
-		       remove ($source, \@SOURCE_LIST);		       
-		     }
-		     @selected = ();
-		     fillWithSourceList ($EditWin, 'full');
-		   }
-		  )->pack(-side=>'left');
+                   -text         => 'Delete',
+                   -width        => 6,
+                   -command      => sub{
+                     my $len = @selected;
+                     $LAST_COMMAND = 'Delete';
+                     @UNDO_LIST = ();
+                     if ($len > 0) {
+                       $undoBut->configure(-state => 'normal');
+                     } else {
+                       $undoBut->configure(-state => 'disabled');
+                     }
+                     foreach my $source (@selected) {
+                       tagOnOff ($source->name(), 1, $source->color(), 'yellow');
+                       $source->active(1);
+                       push (@UNDO_LIST, $source);
+                       $plotter->delete('l'.$source->name());
+                       $plotter->delete('fo'.$source->name());
+                       $plotter->delete('t'.$source->name());
+                       $plotter->delete('time'.$source->name());
+                       $plotter->delete('ttimeDot'.$source->name());
+                       $plotter->delete('ltimeDot'.$source->name());
+                       $plotter->delete('timeDot'.$source->name());
+                       $EditWin->{Text}->tagDelete('d'.$source->index());
+                       remove ($source, \@SOURCE_LIST);
+                     }
+                     @selected = ();
+                     fillWithSourceList ($EditWin, 'full');
+                   }
+                  )->pack(-side=>'left');
   $balloon->attach($delBut,
-		 -balloonmsg => "Press to delete the\nselected sources");
-  
+                 -balloonmsg => "Press to delete the\nselected sources");
+
   # create the delete button
   $undoBut = $manipF->Button(
-		   -text         => 'Undo',
-		   -command      => sub{
-		     if ($LAST_COMMAND eq 'Add') {
-		       print "Last command was add\n" if $udeb;
-		       foreach my $source (@UNDO_LIST) {
-			 remove ($source, \@SOURCE_LIST);
-			 print "removing ".$source->name."\n" if $udeb;
-		       }
-		     } elsif ($LAST_COMMAND eq 'Delete') {
-		       print "Last command was removed\n" if $udeb;
-		       foreach my $source (@UNDO_LIST) {
-			 push (@SOURCE_LIST, $source);
-			 print "Adding ".$source->name."\n" if $udeb;
-		       }
-		     } elsif ($LAST_COMMAND eq 'Change') {
-		       print "Last command was changed\n" if $udeb;
-		       my $chan = pop (@UNDO_LIST);
-		       my $orig = pop (@UNDO_LIST);		       
-		       remove ($chan, \@SOURCE_LIST);
-		       print "Removin ".$chan->name."\n" if $udeb;
-		       push (@SOURCE_LIST, $orig);
-		       print "Placing ".$orig->name." back\n" if $udeb;
-		     }
-		     $LAST_COMMAND = '';
-		     @UNDO_LIST = ();
-		     @selected = ();
-		     $undoBut->configure(-state => 'disabled') if $EDIT_OPEN;
-		     fillWithSourceList ($EditWin, 'full');
-		     plot();
-		   }
-		  )->pack(-side=>'left');
+                   -text         => 'Undo',
+                   -command      => sub{
+                     if ($LAST_COMMAND eq 'Add') {
+                       print "Last command was add\n" if $udeb;
+                       foreach my $source (@UNDO_LIST) {
+                         remove ($source, \@SOURCE_LIST);
+                         print "removing ".$source->name."\n" if $udeb;
+                       }
+                     } elsif ($LAST_COMMAND eq 'Delete') {
+                       print "Last command was removed\n" if $udeb;
+                       foreach my $source (@UNDO_LIST) {
+                         push (@SOURCE_LIST, $source);
+                         print "Adding ".$source->name."\n" if $udeb;
+                       }
+                     } elsif ($LAST_COMMAND eq 'Change') {
+                       print "Last command was changed\n" if $udeb;
+                       my $chan = pop (@UNDO_LIST);
+                       my $orig = pop (@UNDO_LIST);
+                       remove ($chan, \@SOURCE_LIST);
+                       print "Removin ".$chan->name."\n" if $udeb;
+                       push (@SOURCE_LIST, $orig);
+                       print "Placing ".$orig->name." back\n" if $udeb;
+                     }
+                     $LAST_COMMAND = '';
+                     @UNDO_LIST = ();
+                     @selected = ();
+                     $undoBut->configure(-state => 'disabled') if $EDIT_OPEN;
+                     fillWithSourceList ($EditWin, 'full');
+                     plot();
+                   }
+                  )->pack(-side=>'left');
   $undoBut->configure(-state => 'disabled') if $EDIT_OPEN;
   $balloon->attach($undoBut,
-		 -balloonmsg => "Press to undo the last\nmajor command");
-  
+                 -balloonmsg => "Press to undo the last\nmajor command");
+
   # create the add button
-  my $newBut = $manipF->Button( -text=>'New', 
-		    -width        => 4,
-		    -command=> sub{
-			my $source = new ObsDesk::Source();
-			&getSource ($source);
-			my $res = &waitForResponse();
-			if ($res && !isWithin ($source, @SOURCE_LIST)) {
-			  $source->color(getColor());
-			  push (@SOURCE_LIST, $source);
-			  fillWithSourceList ($EditWin, 'full');
-			  $LAST_COMMAND = 'Add';
-			  @UNDO_LIST = ();
-			  $undoBut->configure(-state => 'normal') if $EDIT_OPEN;
-			  push (@UNDO_LIST, $source);
-			  plot();
-			}
-		      })->pack(-side => 'left');
+  my $newBut = $manipF->Button( -text=>'New',
+                    -width        => 4,
+                    -command=> sub{
+                        my $source = new ObsDesk::Source();
+                        &getSource ($source);
+                        my $res = &waitForResponse();
+                        if ($res && !isWithin ($source, @SOURCE_LIST)) {
+                          $source->color(getColor());
+                          push (@SOURCE_LIST, $source);
+                          fillWithSourceList ($EditWin, 'full');
+                          $LAST_COMMAND = 'Add';
+                          @UNDO_LIST = ();
+                          $undoBut->configure(-state => 'normal') if $EDIT_OPEN;
+                          push (@UNDO_LIST, $source);
+                          plot();
+                        }
+                      })->pack(-side => 'left');
   $balloon->attach($newBut,
-		 -balloonmsg => "Press to manually\nadd a source");
+                 -balloonmsg => "Press to manually\nadd a source");
 
   # create the planet button
-  my $planBut = $manipF->Menubutton( 
-     -text         =>'Planets', 
+  my $planBut = $manipF->Menubutton(
+     -text         =>'Planets',
      -width        => 7,
      -relief       => 'raised');
   {
       my $k = 0;
       foreach my $plan (@planets) {
-	  my $c = $k;
-	  $planBut->command(-label=>$plan, -command=> sub{
-	      &addPlanetSource ($plan, $c);
-	      print "$TEL is tel  \n" if $locateBug;
-	      fillWithSourceList ($EditWin, 'full');
-	      plot();
-	  });
-	  $k++;
+          my $c = $k;
+          $planBut->command(-label=>$plan, -command=> sub{
+              &addPlanetSource ($plan, $c);
+              print "$TEL is tel  \n" if $locateBug;
+              fillWithSourceList ($EditWin, 'full');
+              plot();
+          });
+          $k++;
       }
   }
   $planBut->command(-label=>'All', -command=> sub{
-		      my $j = 0;
-		      foreach (@planets) {
-			&addPlanetSource ($_, $j);
-			$j++;
-		      }
-		      fillWithSourceList ($EditWin, 'full');
-		      plot();
-	       });
+                      my $j = 0;
+                      foreach (@planets) {
+                        &addPlanetSource ($_, $j);
+                        $j++;
+                      }
+                      fillWithSourceList ($EditWin, 'full');
+                      plot();
+               });
   $planBut->pack(-side => 'left');
   $balloon->attach($planBut,
-		 -balloonmsg => "Press to add a planet\nto the plot");
-  
+                 -balloonmsg => "Press to add a planet\nto the plot");
+
   $EditWin->{'Window'} = $Top;
   $EditWin->{'Text'} = $T;
   $EditWin->{'Selected'} = \@selected;
@@ -1334,7 +1125,7 @@ sub editSource {
 #  fills a Text box with the list of current sources
 #
 sub fillWithSourceList {
-  my(@bold, @normal);  
+  my(@bold, @normal);
   my $Window = shift;
   my $T = $Window->{'Text'};
   my $selected = $Window->{'Selected'};
@@ -1353,15 +1144,15 @@ sub fillWithSourceList {
   if(defined $sort)
   {
     for($sort)
-    { 	 
-	/unsorted/ and do { @sources = @$arrayOfSources;last;};
-	/name/	  and do { @sources = sort by_name @$arrayOfSources;last;};
-	/ra/	  and do { @sources = sort by_ra @$arrayOfSources;last;};
-	/dec/	  and do { @sources = sort by_dec @$arrayOfSources;last;};
-		die "Unknown value for form variable \$sort \n";	
+    {
+        /unsorted/ and do { @sources = @$arrayOfSources;last;};
+        /name/          and do { @sources = sort by_name @$arrayOfSources;last;};
+        /ra/          and do { @sources = sort by_ra @$arrayOfSources;last;};
+        /dec/          and do { @sources = sort by_dec @$arrayOfSources;last;};
+                die "Unknown value for form variable \$sort \n";
     }
   }
-  
+
   # Enable infobox for access
   $T->configure(-state=>'normal');
 
@@ -1372,7 +1163,7 @@ sub fillWithSourceList {
       $T->tagDelete('d'.$source->index());
     }
   }
-  
+
   # Set up display styles
   if ($T->depth > 1) {
     @bold   = (-background => "#eeeeee", qw/-relief raised -borderwidth 1/);
@@ -1387,7 +1178,7 @@ sub fillWithSourceList {
   foreach ( @COLOR_LIST ){
     $T->tag('configure',$_, -foreground => $_);
   }
-  
+
   # Insert the current values
   if (defined $task && $task eq 'full') {
     my $len = @sources;
@@ -1396,109 +1187,109 @@ sub fillWithSourceList {
       $source->index($index);
       $line = $source->dispLine();
       if (&isWithin ($source, @$selected)) {
-	inswt($T,"$line\n","d$index",'selected');
+        inswt($T,"$line\n","d$index",'selected');
       } else {
-	if ($source->active()) {
-	  if ($source->color() ne '') {
-	    inswt($T,"$line\n","d$index",$source->color());
-	  } else {
-	    inswt($T,"$line\n","d$index",'normal');
-	  }
-	} else {
-	  inswt($T,"$line\n","d$index",'inactive');
-	}
+        if ($source->active()) {
+          if ($source->color() ne '') {
+            inswt($T,"$line\n","d$index",$source->color());
+          } else {
+            inswt($T,"$line\n","d$index",'normal');
+          }
+        } else {
+          inswt($T,"$line\n","d$index",'inactive');
+        }
       }
     }
-  
+
     $len = @sources;
     for ($itag=0; $itag < $len; $itag++) {
       my $dtag = "d$itag";
-      $T->tag('bind', $dtag, '<Any-Enter>' => 
-	      sub {
-		shift->tag('configure', $dtag, @bold);
-		if ($Window->{'Changeable'} && $sources[substr($dtag,1,99)]->active()) {
-		  $plotter->configureTag ('l'.$sources[substr($dtag,1,99)]->name(), -width => 3);
-		}
-	      }
-	     );
+      $T->tag('bind', $dtag, '<Any-Enter>' =>
+              sub {
+                shift->tag('configure', $dtag, @bold);
+                if ($Window->{'Changeable'} && $sources[substr($dtag,1,99)]->active()) {
+                  $plotter->configureTag ('l'.$sources[substr($dtag,1,99)]->name(), -width => 3);
+                }
+              }
+             );
       $T->tag('bind', $dtag, '<Any-Leave>' =>
-	      sub {
-		shift->tag('configure', $dtag, @normal);
-		if ($Window->{'Changeable'} && $sources[substr($dtag,1,99)]->active()) {
-		  $plotter->configureTag ('l'.$sources[substr($dtag,1,99)]->name(), -width => 1);
-		}
-	      }
-	     );
-      $T->tag('bind', $dtag, '<ButtonRelease-1>' => 
-	      sub {
-		if (!$BUSY){
-		  if (! &isWithin ($sources[substr($dtag,1,99)], @$selected) ) {
-		    shift->tag('configure', $dtag, -foreground => 'red');
-		    push (@$selected, $sources[substr($dtag,1,99)]);
-		  } else {
-		    if ($sources[substr($dtag,1,99)]->color() ne '') {
-		      shift->tag('configure', $dtag, -foreground => $sources[substr($dtag,1,99)]->color());
-		    } else {
-		      shift->tag('configure', $dtag, -foreground => 'blue');
-		    }		    
-		    &remove ($sources[substr($dtag,1,99)], $selected);
-		  }
-		}
-	      }
-	     );
+              sub {
+                shift->tag('configure', $dtag, @normal);
+                if ($Window->{'Changeable'} && $sources[substr($dtag,1,99)]->active()) {
+                  $plotter->configureTag ('l'.$sources[substr($dtag,1,99)]->name(), -width => 1);
+                }
+              }
+             );
+      $T->tag('bind', $dtag, '<ButtonRelease-1>' =>
+              sub {
+                if (!$BUSY){
+                  if (! &isWithin ($sources[substr($dtag,1,99)], @$selected) ) {
+                    shift->tag('configure', $dtag, -foreground => 'red');
+                    push (@$selected, $sources[substr($dtag,1,99)]);
+                  } else {
+                    if ($sources[substr($dtag,1,99)]->color() ne '') {
+                      shift->tag('configure', $dtag, -foreground => $sources[substr($dtag,1,99)]->color());
+                    } else {
+                      shift->tag('configure', $dtag, -foreground => 'blue');
+                    }
+                    &remove ($sources[substr($dtag,1,99)], $selected);
+                  }
+                }
+              }
+             );
       if ($Window->{'Changeable'}) {
-	$T->tag('bind', $dtag, '<Double-1>' => sub {
-		  my $source = $sources[substr($dtag,1,99)];
-		  $LAST_COMMAND = 'Change';
-		  @UNDO_LIST = ();
-		  push (@UNDO_LIST, $source->copy);
-		  &getSource ($source);
-		  my $res = &waitForResponse();
-		  if( $res ) {
-		    $undoBut->configure(-state => 'normal') if $EDIT_OPEN;
-		  } else {
-		    $undoBut->configure(-state => 'disabled') if $EDIT_OPEN;
-		  }
-		  push (@UNDO_LIST, $source);
-		  $source->erasePoints();
-		  fillWithSourceList ($EditWin, 'full');
-		  plot();
-	      });
+        $T->tag('bind', $dtag, '<Double-1>' => sub {
+                  my $source = $sources[substr($dtag,1,99)];
+                  $LAST_COMMAND = 'Change';
+                  @UNDO_LIST = ();
+                  push (@UNDO_LIST, $source->copy);
+                  &getSource ($source);
+                  my $res = &waitForResponse();
+                  if( $res ) {
+                    $undoBut->configure(-state => 'normal') if $EDIT_OPEN;
+                  } else {
+                    $undoBut->configure(-state => 'disabled') if $EDIT_OPEN;
+                  }
+                  push (@UNDO_LIST, $source);
+                  $source->erasePoints();
+                  fillWithSourceList ($EditWin, 'full');
+                  plot();
+              });
       }else {
-	$T->tag('bind', $dtag, '<Double-1>' => sub {
-		  $BUSY = 1;
-		  my $source = $sources[substr($dtag,1,99)];
-		  push (@$selected, $source);
-		  $LAST_COMMAND = 'Add';
-		  @UNDO_LIST = ();
-		  $undoBut->configure(-state => 'normal') if $EDIT_OPEN;
-		  $MW->update();
-		  my $T = shift;
-		  foreach $source (@$selected) {
-		    if (!isWithin ($source, @SOURCE_LIST)) {
-		      my $s = $source->copy();
-		      $s->color(getColor());
-		      push (@SOURCE_LIST, $s);
-		      push (@UNDO_LIST, $s);
-		    }
-		    $T->tag('configure', 'd'.$source->index(), -foreground => 'blue');
-		  }
-		  @$selected = ();
-		  if ($EDIT_OPEN) {
-		    fillWithSourceList ($EditWin, 'full');
-		  }
-		  plot();
-		  $BUSY = 0;
-		});
+        $T->tag('bind', $dtag, '<Double-1>' => sub {
+                  $BUSY = 1;
+                  my $source = $sources[substr($dtag,1,99)];
+                  push (@$selected, $source);
+                  $LAST_COMMAND = 'Add';
+                  @UNDO_LIST = ();
+                  $undoBut->configure(-state => 'normal') if $EDIT_OPEN;
+                  $MW->update();
+                  my $T = shift;
+                  foreach $source (@$selected) {
+                    if (!isWithin ($source, @SOURCE_LIST)) {
+                      my $s = $source->copy();
+                      $s->color(getColor());
+                      push (@SOURCE_LIST, $s);
+                      push (@UNDO_LIST, $s);
+                    }
+                    $T->tag('configure', 'd'.$source->index(), -foreground => 'blue');
+                  }
+                  @$selected = ();
+                  if ($EDIT_OPEN) {
+                    fillWithSourceList ($EditWin, 'full');
+                  }
+                  plot();
+                  $BUSY = 0;
+                });
       }
     }
   }
-  
+
   $T->mark(qw/set insert 1.0/);
-  
+
   # Disable access to infobox
   $T->configure(-state=>'disabled');
-  
+
 }
 
 ############################################################
@@ -1527,7 +1318,7 @@ sub plot {
 
   # calc the world coords
   print "    Calculating the world coordinate system\n" if $locateBug;
-  if ($X_AXIS =~ /time/i) {    
+  if ($X_AXIS =~ /time/i) {
     my ($y, $mo, $d) = split (/\//, $DATE, 3);
     my $offset = -2;
     my $date;
@@ -1621,7 +1412,7 @@ sub plot {
     if ($lst2 < $lst) {
       $lst2 += 2*pi;
     }
-    $lstDiffY = $lst2 - $lst;   
+    $lstDiffY = $lst2 - $lst;
     $yworldRatio = (-24*$lstDiffY)/($yplot - $yborder*2 - $YSpaceForTime);
     $maxY = $lst + 24 * $lstDiffY;
     $minY = $lst;
@@ -1663,11 +1454,11 @@ sub plot {
     $plotter->usingWorld(1);
     if(($X_AXIS =~ /elevation/i) || ($Y_AXIS =~ /elevation/i))
     {
-    	$special = 1;
+            $special = 1;
     }
     else  # air mass case
     {
-	$special = 2;
+        $special = 2;
     }
     print "axes is special\n" if $debug;
   }
@@ -1692,15 +1483,15 @@ sub plot {
       my $x = 95 * cos $tz;
       my $y = 95 * sin $tz;
       if ($z == 0) {
-	$plotter->drawText ($x, $y, 'N', 'twhite');
+        $plotter->drawText ($x, $y, 'N', 'twhite');
       } elsif ($z == 90) {
-	$plotter->drawText ($x, $y, 'E', 'twhite');
+        $plotter->drawText ($x, $y, 'E', 'twhite');
       } elsif ($z == 180) {
-	$plotter->drawText ($x, $y, 'S', 'twhite');
+        $plotter->drawText ($x, $y, 'S', 'twhite');
       } elsif ($z == 270) {
-	$plotter->drawText ($x, $y, 'W', 'twhite');
+        $plotter->drawText ($x, $y, 'W', 'twhite');
       } else {
-	$plotter->drawText ($x, $y, $z, 'twhite');
+        $plotter->drawText ($x, $y, $z, 'twhite');
       }
     }
 
@@ -1712,17 +1503,17 @@ sub plot {
 
    if($special == 1) # elevation -azimuth case
    {
-   	#draw the elevation labels
-     	$plotter->drawColor ('dark green');
-    	my $texty = $plotter->toWy(5) - $plotter->toWy(0);
-    	for (my $i = 0; $i<90; $i+=10) {
-      		$plotter->drawOval(-$i, -$i, $i, $i, 'grid');
-      		$plotter->drawText(0,$i-$texty,90 - $i, 'twhite');
-    	}
+           #draw the elevation labels
+             $plotter->drawColor ('dark green');
+            my $texty = $plotter->toWy(5) - $plotter->toWy(0);
+            for (my $i = 0; $i<90; $i+=10) {
+                      $plotter->drawOval(-$i, -$i, $i, $i, 'grid');
+                      $plotter->drawText(0,$i-$texty,90 - $i, 'twhite');
+            }
 
-    	$plotter->usingWorld(0);
-    	$plotter->worldCenter($xborder, $yplot-$yborder);
-    	$plotter->usingWorld(1);
+            $plotter->usingWorld(0);
+            $plotter->worldCenter($xborder, $yplot-$yborder);
+            $plotter->usingWorld(1);
    }
    if ($special == 2)  #azimuth - air mass case
    {
@@ -1731,8 +1522,8 @@ sub plot {
     my $ytext = $plotter->toWx(5) - $plotter->toWx(0);
     for (qw/1.0 1.25 1.5 1.75 2.0 3.0 4.0 5.0/)
     {
-	my $new_el = 90 - am_to_deg($_);
-	$plotter->drawOval(-$new_el, -$new_el, $new_el, $new_el, 'grid');
+        my $new_el = 90 - am_to_deg($_);
+        $plotter->drawOval(-$new_el, -$new_el, $new_el, $new_el, 'grid');
     }
     $plotter->drawText (0, 0,1.0,'twhite');
     $plotter->drawText (0, 39,1.25,'twhite');
@@ -1775,14 +1566,14 @@ sub plot {
       $si = '-' if ($hour < 0);
       $lst = $hour;
       while ($lst > 2 * pi) {
-	$lst -= 2*pi;
+        $lst -= 2*pi;
       }
       &slaDr2tf(2, $lst, $si, \@parts);
       my ($lh, $lm, $ls, @rest) = @parts;
       $lm += 1 if $ls >= 30;
       if ($lm >= 60) {
-	$lm -= 60;
-	$lh += 1;
+        $lm -= 60;
+        $lh += 1;
         $lh -= 24 if $lh > 24;
       }
       $lm = '0'.$lm if $lm < 10;
@@ -1865,14 +1656,14 @@ sub plot {
       $si = '-' if ($hour < 0);
       $lst = $hour;
       while ($lst > 2 * pi) {
-	$lst -= 2*pi;
+        $lst -= 2*pi;
       }
       &slaDr2tf(2, $lst, $si, \@parts);
       my ($lh, $lm, $ls, @rest) = @parts;
       $lm += 1 if $ls >= 30;
       if ($lm >= 60) {
-	$lm -= 60;
-	$lh += 1;
+        $lm -= 60;
+        $lh += 1;
         $lh -= 24 if $lh > 24;
       }
       $lm = '0'.$lm if $lm < 10;
@@ -1888,15 +1679,15 @@ sub plot {
     }
   } elsif ($Y_AXIS =~ /air mass/i) {
         my $dAt12 = 90 - (180 / pi * acos (1/1.25));
-    	my $dAt15 = 90 - (180 / pi * acos (1/1.5));
-    	my $dAt17 = 90 - (180 / pi * acos (1/1.75));
+            my $dAt15 = 90 - (180 / pi * acos (1/1.5));
+            my $dAt17 = 90 - (180 / pi * acos (1/1.75));
         my $x = $plotter->toWx ($xborder +15);
-	for my $am (qw/1 2 3 4 5/)
-	{
+        for my $am (qw/1 2 3 4 5/)
+        {
            my $dAt = 90 - (180 / pi * acos (1/$am));
            $plotter->drawLine($minX, $dAt, $maxX, $dAt, 'grid');
-	   $plotter->drawText ($x, $dAt, $am, 'twhite');
-	}
+           $plotter->drawText ($x, $dAt, $am, 'twhite');
+        }
         $plotter->drawLine($minX, $dAt12, $maxX, $dAt12, 'grid');
         $plotter->drawLine($minX, $dAt15, $maxX, $dAt15, 'grid');
         $plotter->drawLine($minX, $dAt17, $maxX, $dAt17, 'grid');
@@ -1928,7 +1719,7 @@ sub plot {
     $plotter->drawBox($west, $minY, $east, $bottom, 'foblack');
     $plotter->drawBox($west, $bottom, $minX, $top, 'foblack');
     $plotter->drawBox($maxX, $bottom, $east, $top, 'foblack');
-	
+
     # plot the axes and graphs - last to make look neat
     print "    Plotting the grid border and labels\n" if $locateBug;
     $plotter->drawColor('White');
@@ -1984,9 +1775,9 @@ sub plot {
     my $yoff = $maxY + $plotter->toWy (5) - $plotter->toWy(0);
     my $toff = $plotter->toWy (10) - $plotter->toWy(0);
     for ( my $deg = $minX+20; $deg < $maxX; $deg += 20 ) {
-      	$plotter->drawLine ($deg, $maxY, $deg, $yoff, 'lwhite');
-    	$plotter->drawText ($deg, $maxY + $toff, $deg, 'twhite');
-    } 	
+              $plotter->drawLine ($deg, $maxY, $deg, $yoff, 'lwhite');
+            $plotter->drawText ($deg, $maxY + $toff, $deg, 'twhite');
+    }
     $plotter->usingWorld(0);
     $plotter->drawText($xplot/2,$yborder/2, 'Elevation', 'twhite');
     $plotter->drawText($xplot/2,$yplot - $yborder/2, 'Air Mass', 'twhite');
@@ -2042,8 +1833,8 @@ sub plot {
     my $xoff = $maxX - ($plotter->toWx (5) - $plotter->toWx(0));
     my $x = $plotter->toWx ($xplot - $xborder -10);
     for ( my $deg = $minY+20; $deg < $maxY; $deg += 20 ) {
-       	$plotter->drawText($x, $deg, $deg, 'twhite');
-    	$plotter->drawLine ($maxX, $deg, $xoff, $deg, 'twhite');
+               $plotter->drawText($x, $deg, $deg, 'twhite');
+            $plotter->drawLine ($maxX, $deg, $xoff, $deg, 'twhite');
     }
     $plotter->usingWorld(0);
     $plotter->drawTextVert($xplot - $xborder/2,$yplot/2, 'Elevation', 'twhite');
@@ -2070,285 +1861,285 @@ sub plot {
     my $Top;
     foreach my $source (@SOURCE_LIST) {
       if ($source->active()) {
-	$source->calcPoints($DATE, $TIME, $NUM_POINTS, $MW, $telObject);
-	if ($X_AXIS =~ /time/i) {
-	  if (($Y_AXIS =~ /elevation/i) || ($Y_AXIS =~ /air mass/i)){
-	    @points = $source->time_ele_points();
-	  } elsif ($Y_AXIS =~ /azimuth/i) {
-	    @points = $source->time_az_points();
-	  } elsif ($Y_AXIS =~ /parallactic angle/i) {
-	    @points = $source->time_pa_points();
-	  }
-	} elsif (($X_AXIS =~ /elevation/i) || ($X_AXIS =~ /air mass/i)) {
-	  if ($Y_AXIS =~ /time/i) {
-	    @points = $source->ele_time_points();
-	  } elsif ($Y_AXIS =~ /azimuth/i) {
-	    @points = $source->ele_az_points();
-	  } elsif ($Y_AXIS =~ /parallactic angle/i) {
-	    @points = $source->ele_pa_points();
-	  }
-	} elsif ($X_AXIS =~ /azimuth/i) {
-	  if ($Y_AXIS =~ /time/i) {
-	    @points = $source->az_time_points();
-	  } elsif (($Y_AXIS =~ /elevation/i) || ($Y_AXIS =~ /air mass/i)){
-	    @points = $source->ele_az_points();
-	  } elsif ($Y_AXIS =~ /parallactic angle/i) {
-	    @points = $source->az_pa_points();
-	  }
-	} elsif ($X_AXIS =~ /parallactic angle/i) {
-	  if ($Y_AXIS =~ /time/i) {
-	    @points = $source->pa_time_points();
-	  } elsif (($Y_AXIS =~ /elevation/i) || ($Y_AXIS =~ /air mass/i)){
-	    @points = $source->pa_ele_points();
-	  } elsif ($Y_AXIS =~ /azimuth/i) {
-	    @points = $source->pa_az_points();
-	  }
-	}
+        $source->calcPoints($DATE, $TIME, $NUM_POINTS, $MW, $telObject);
+        if ($X_AXIS =~ /time/i) {
+          if (($Y_AXIS =~ /elevation/i) || ($Y_AXIS =~ /air mass/i)){
+            @points = $source->time_ele_points();
+          } elsif ($Y_AXIS =~ /azimuth/i) {
+            @points = $source->time_az_points();
+          } elsif ($Y_AXIS =~ /parallactic angle/i) {
+            @points = $source->time_pa_points();
+          }
+        } elsif (($X_AXIS =~ /elevation/i) || ($X_AXIS =~ /air mass/i)) {
+          if ($Y_AXIS =~ /time/i) {
+            @points = $source->ele_time_points();
+          } elsif ($Y_AXIS =~ /azimuth/i) {
+            @points = $source->ele_az_points();
+          } elsif ($Y_AXIS =~ /parallactic angle/i) {
+            @points = $source->ele_pa_points();
+          }
+        } elsif ($X_AXIS =~ /azimuth/i) {
+          if ($Y_AXIS =~ /time/i) {
+            @points = $source->az_time_points();
+          } elsif (($Y_AXIS =~ /elevation/i) || ($Y_AXIS =~ /air mass/i)){
+            @points = $source->ele_az_points();
+          } elsif ($Y_AXIS =~ /parallactic angle/i) {
+            @points = $source->az_pa_points();
+          }
+        } elsif ($X_AXIS =~ /parallactic angle/i) {
+          if ($Y_AXIS =~ /time/i) {
+            @points = $source->pa_time_points();
+          } elsif (($Y_AXIS =~ /elevation/i) || ($Y_AXIS =~ /air mass/i)){
+            @points = $source->pa_ele_points();
+          } elsif ($Y_AXIS =~ /azimuth/i) {
+            @points = $source->pa_az_points();
+          }
+        }
 
-	$plotter->penWidth($source->lineWidth());
-	$plotter->penWidth($H_WIDTH) if ($H_LIGHT == $source);
-	$plotter->drawColor($source->color());
-	print "color plotted is ".$source->color()."\n" if $debug;
+        $plotter->penWidth($source->lineWidth());
+        $plotter->penWidth($H_WIDTH) if ($H_LIGHT == $source);
+        $plotter->drawColor($source->color());
+        print "color plotted is ".$source->color()."\n" if $debug;
 
-	my @times = $source->time_ele_points();
-	if (($special == 1) || ($special == 2)) {
-	  my $i;
-	  my $len = @points;
-	  my @newpoints = ();
-	  my $prevr;
-	  my $prevt;
-	  my $dotColor = "#55ffff";
-	  for ($i = 0; $i < $len; $i += 2) {
-	    my $r = $points[$i];
-	      $r = 90 - $r;
-	      my $theta = $points[$i+1];
-	      $theta = (90 - $theta)*pi/180;
-	      my $x = 90 + $r * cos $theta;
-	      my $y = 90 + $r * sin $theta;
-	    my $len2 = @newpoints;
-	    if ($r < 90 ) {
-	      if ($len2 == 0 && defined $prevr && $prevr > 90) {
-		my $dr = 90 - $r;
-		my $pdr = $prevr - 90;
-		my $nt = $dr / ($dr + $pdr) * ($prevt - $theta) + $theta;
-		my $x2 = 90+90 * cos $nt;
-		my $y2 = 90+90 * sin $nt;
-		push (@newpoints, $x2);
-		push (@newpoints, $y2);
-	      }
-	      if ($r > 60 && defined $prevr && $prevr < 60){
-		my $time = $timeH - 12 + int($i/2) * ( 24 / ($NUM_POINTS - 1));		
-		$time += 24 if $time < 0;
-		$time -= 24 if $time > 24;
-		my ($h, $m) = split (/\./, $time);
-		$m = ('.'.$m) * 60;
-		$m = '0'.$m if $m < 10;
-		$h = '0'.$h if $h < 10;
-		$time = sprintf ("%2s:%2s", $h, $m);
-		$plotter->fontColor('#ffff00');
-		$plotter->drawText($x, $y+3, "$time", 'time'.$source->name());
-		$plotter->drawFillOval ($x-1, $y-1, $x+1, $y+1, 'fo'.$source->name());
-	      } elsif ($r < 60 && defined $prevr && $prevr > 60) {
-		my $time = $timeH - 12 + int($i/2) * ( 24 / ($NUM_POINTS - 1));		
-		my $di = 24 / ($NUM_POINTS - 1);
-		$time -= $di;
-		$time += 24 if $time < 0;
-		$time -= 24 if $time > 24;
-		my ($h, $m) = split (/\./, $time);
-		$m = ('.'.$m) * 60;
-		$m = '0'.$m if $m < 10;
-		$h = '0'.$h if $h < 10;
-		$time = sprintf ("%2s:%2s", $h, $m);
-		my $x2 = 90 + $prevr * cos $prevt;
-		my $y2 = 90 + $prevr * sin $prevt;
-		$plotter->fontColor('#ffff00');
-		$plotter->drawText($x2, $y2+3, "$time", 'time'.$source->name());
-		$plotter->drawFillOval ($x2-1, $y2-1, $x2+1, $y2+1, 'fo'.$source->name());
-	      }
-	      $plotter->drawFillOval ($x-.5, $y-.5, $x+.5, $y+.5, 'fo'.$source->name());
-	      push (@newpoints, $x);
-	      push (@newpoints, $y);
-	    } elsif ($len2 > 0 && defined $prevr && $prevr < 90) {
-	      my $dr = $r - 90;
-	      my $pdr = 90 - $prevr;
-	      my $nt = $dr / ($dr + $pdr) * ($prevt - $theta) + $theta;
-	      $x = 90+90 * cos $nt;
-	      $y = 90+90 * sin $nt;
-	      $plotter->fontColor($source->color());
-	      $plotter->drawTextFromLeft($x+5, $y, $source->name(), 't'.$source->name());
-	      push (@newpoints, $x);
-	      push (@newpoints, $y);
-	      $plotter->drawSmoothLine (@newpoints, 'l'.$source->name());
-	      @newpoints = ();
-	    } elsif (defined $len2 and $len2 >= 4) {
-	      $plotter->drawSmoothLine (@newpoints, 'l'.$source->name());
-	      @newpoints = ();
-	    }	 
-	    $prevr = $r;
-	    $prevt = $theta;
-	  }
-	  @points = @newpoints;
-	} else {
-   	  #give the points some labels
-	  my $max = $points[1];
-	  my $xm = $points[0];
-	  my $len = @points;
-	  my $xw = $plotter->toWx(1) - $plotter->toWx(0);
-	  my $yw = $plotter->toWy(1) - $plotter->toWy(0);
-	  for (my $i = 1; $i < $len; $i+=2) {
-	    my $x = $points[$i-1];
-	    my $y = $points[$i];
-	    $plotter->drawFillOval ($x-$xw, $y-$yw, $x+$xw, $y+$yw, 'fo'.$source->name());
-	    if ($points[$i] > $max) {
-	      $max = $points[$i];
-	      $xm = $points[$i-1];
-	    }
-	  }
-	  my $ya = $plotter->toWy(5) - $plotter->toWy(0);
-	  $plotter->fontColor($source->color());
-	  $plotter->drawTextFromLeft($xm, $max-$ya, $source->name(), 't'.$source->name());
+        my @times = $source->time_ele_points();
+        if (($special == 1) || ($special == 2)) {
+          my $i;
+          my $len = @points;
+          my @newpoints = ();
+          my $prevr;
+          my $prevt;
+          my $dotColor = "#55ffff";
+          for ($i = 0; $i < $len; $i += 2) {
+            my $r = $points[$i];
+              $r = 90 - $r;
+              my $theta = $points[$i+1];
+              $theta = (90 - $theta)*pi/180;
+              my $x = 90 + $r * cos $theta;
+              my $y = 90 + $r * sin $theta;
+            my $len2 = @newpoints;
+            if ($r < 90 ) {
+              if ($len2 == 0 && defined $prevr && $prevr > 90) {
+                my $dr = 90 - $r;
+                my $pdr = $prevr - 90;
+                my $nt = $dr / ($dr + $pdr) * ($prevt - $theta) + $theta;
+                my $x2 = 90+90 * cos $nt;
+                my $y2 = 90+90 * sin $nt;
+                push (@newpoints, $x2);
+                push (@newpoints, $y2);
+              }
+              if ($r > 60 && defined $prevr && $prevr < 60){
+                my $time = $timeH - 12 + int($i/2) * ( 24 / ($NUM_POINTS - 1));
+                $time += 24 if $time < 0;
+                $time -= 24 if $time > 24;
+                my ($h, $m) = split (/\./, $time);
+                $m = ('.'.$m) * 60;
+                $m = '0'.$m if $m < 10;
+                $h = '0'.$h if $h < 10;
+                $time = sprintf ("%2s:%2s", $h, $m);
+                $plotter->fontColor('#ffff00');
+                $plotter->drawText($x, $y+3, "$time", 'time'.$source->name());
+                $plotter->drawFillOval ($x-1, $y-1, $x+1, $y+1, 'fo'.$source->name());
+              } elsif ($r < 60 && defined $prevr && $prevr > 60) {
+                my $time = $timeH - 12 + int($i/2) * ( 24 / ($NUM_POINTS - 1));
+                my $di = 24 / ($NUM_POINTS - 1);
+                $time -= $di;
+                $time += 24 if $time < 0;
+                $time -= 24 if $time > 24;
+                my ($h, $m) = split (/\./, $time);
+                $m = ('.'.$m) * 60;
+                $m = '0'.$m if $m < 10;
+                $h = '0'.$h if $h < 10;
+                $time = sprintf ("%2s:%2s", $h, $m);
+                my $x2 = 90 + $prevr * cos $prevt;
+                my $y2 = 90 + $prevr * sin $prevt;
+                $plotter->fontColor('#ffff00');
+                $plotter->drawText($x2, $y2+3, "$time", 'time'.$source->name());
+                $plotter->drawFillOval ($x2-1, $y2-1, $x2+1, $y2+1, 'fo'.$source->name());
+              }
+              $plotter->drawFillOval ($x-.5, $y-.5, $x+.5, $y+.5, 'fo'.$source->name());
+              push (@newpoints, $x);
+              push (@newpoints, $y);
+            } elsif ($len2 > 0 && defined $prevr && $prevr < 90) {
+              my $dr = $r - 90;
+              my $pdr = 90 - $prevr;
+              my $nt = $dr / ($dr + $pdr) * ($prevt - $theta) + $theta;
+              $x = 90+90 * cos $nt;
+              $y = 90+90 * sin $nt;
+              $plotter->fontColor($source->color());
+              $plotter->drawTextFromLeft($x+5, $y, $source->name(), 't'.$source->name());
+              push (@newpoints, $x);
+              push (@newpoints, $y);
+              $plotter->drawSmoothLine (@newpoints, 'l'.$source->name());
+              @newpoints = ();
+            } elsif (defined $len2 and $len2 >= 4) {
+              $plotter->drawSmoothLine (@newpoints, 'l'.$source->name());
+              @newpoints = ();
+            }
+            $prevr = $r;
+            $prevt = $theta;
+          }
+          @points = @newpoints;
+        } else {
+             #give the points some labels
+          my $max = $points[1];
+          my $xm = $points[0];
+          my $len = @points;
+          my $xw = $plotter->toWx(1) - $plotter->toWx(0);
+          my $yw = $plotter->toWy(1) - $plotter->toWy(0);
+          for (my $i = 1; $i < $len; $i+=2) {
+            my $x = $points[$i-1];
+            my $y = $points[$i];
+            $plotter->drawFillOval ($x-$xw, $y-$yw, $x+$xw, $y+$yw, 'fo'.$source->name());
+            if ($points[$i] > $max) {
+              $max = $points[$i];
+              $xm = $points[$i-1];
+            }
+          }
+          my $ya = $plotter->toWy(5) - $plotter->toWy(0);
+          $plotter->fontColor($source->color());
+          $plotter->drawTextFromLeft($xm, $max-$ya, $source->name(), 't'.$source->name());
 
-	  my @second = ();
-	  my $prevx = $points[0];
-	  my $prevy = $points[1];
-	  my $plotNow = 0;
-	  for (my $i = 3; $i < $len; $i+=2) {
-	    my $x = $points[$i-1];
-	    my $y = $points[$i];
-	    my $plotx = $x;
-	    my $ploty = $y;
-	    my $plotxn = $x;
-	    my $plotyn = $y;
-	    push (@second, $prevx);
-	    push (@second, $prevy);
-	    if ($Y_AXIS =~ /parallactic angle/i) {
-	      if ($prevy < -80 && $y > 80) {
-		my $len2 = @second;     
-		if ($len2 > 0) {
-		  $ploty = $y - 360;
-		  $plotyn = $prevy + 360;
-		  $plotNow = 1;
-		}
-	      } elsif ($y < -80 && $prevy > 80) {
-		my $len2 = @second;
-		if ($len2 > 0) {
-		  $ploty = $y + 360;
-		  $plotyn = $prevy - 360;
-		  $plotNow = 1;
-		}
-	      }
-	    } elsif ($X_AXIS =~ /parallactic angle/i) {
-	      if ($prevx < -80 && $x > 80) {
-		my $len2 = @second;     
-		if ($len2 > 0) {
-		  $plotx = $x - 360;
-		  $plotxn = $prevx + 360;
-		  $plotNow = 1;
-		}
-	      } elsif ($x < -80 && $prevx > 80) {
-		my $len2 = @second;
-		if ($len2 > 0) {
-		  $plotx = $x + 360;
-		  $plotxn = $prevx - 360;
-		  $plotNow = 1;
-		}
-	      }
-	    }
-	    if ($Y_AXIS =~ /azimuth/i) {
-	      if ($prevy < 100 && $y > 260) {
-		my $len2 = @second;
-		if ($len2 > 0) {
-		  $ploty = $y - 360;
-		  $plotyn = $prevy + 360;
-		  $plotNow = 1;
-		}
-	      } elsif ($y < 100 && $prevy > 260) {
-		my $len2 = @second;     
-		if ($len2 > 0) {
-		  $ploty = $y + 360;
-		  $plotyn = $prevy - 360;
-		  $plotNow = 1;
-		}
-	      }
-	    } elsif ($X_AXIS =~ /azimuth/i) {
-	      if ($prevx < 100 && $x > 260) {
-		my $len2 = @second;     
-		if ($len2 > 0) {
-		  $plotx = $x - 360;
-		  $plotxn = $prevx + 360;
-		  $plotNow = 1;
-		}
-	      } elsif ($x < 100 && $prevx > 260) {
-		my $len2 = @second;     
-		if ($len2 > 0) {
-		  $plotx = $x + 360;
-		  $plotxn = $prevx - 360;
-		  $plotNow = 1;
-		}
-	      }
-	    } 
-
-
-	    if ($plotNow) {
-	      $plotNow = 0;
-	      push (@second, $plotx);
-	      push (@second, $ploty);
-	      $plotter->drawSmoothLine (@second, 'l'.$source->name());
-	      @second = ();
-	      push (@second, $plotxn);
-	      push (@second, $plotyn);
-	    } elsif ($i == $len - 1) {
-	      push (@second, $x);
-	      push (@second, $y);
-	    }
-
-	    $prevx = $x;
-	    $prevy = $y;
-	  }
-	  @points = @second;
+          my @second = ();
+          my $prevx = $points[0];
+          my $prevy = $points[1];
+          my $plotNow = 0;
+          for (my $i = 3; $i < $len; $i+=2) {
+            my $x = $points[$i-1];
+            my $y = $points[$i];
+            my $plotx = $x;
+            my $ploty = $y;
+            my $plotxn = $x;
+            my $plotyn = $y;
+            push (@second, $prevx);
+            push (@second, $prevy);
+            if ($Y_AXIS =~ /parallactic angle/i) {
+              if ($prevy < -80 && $y > 80) {
+                my $len2 = @second;
+                if ($len2 > 0) {
+                  $ploty = $y - 360;
+                  $plotyn = $prevy + 360;
+                  $plotNow = 1;
+                }
+              } elsif ($y < -80 && $prevy > 80) {
+                my $len2 = @second;
+                if ($len2 > 0) {
+                  $ploty = $y + 360;
+                  $plotyn = $prevy - 360;
+                  $plotNow = 1;
+                }
+              }
+            } elsif ($X_AXIS =~ /parallactic angle/i) {
+              if ($prevx < -80 && $x > 80) {
+                my $len2 = @second;
+                if ($len2 > 0) {
+                  $plotx = $x - 360;
+                  $plotxn = $prevx + 360;
+                  $plotNow = 1;
+                }
+              } elsif ($x < -80 && $prevx > 80) {
+                my $len2 = @second;
+                if ($len2 > 0) {
+                  $plotx = $x + 360;
+                  $plotxn = $prevx - 360;
+                  $plotNow = 1;
+                }
+              }
+            }
+            if ($Y_AXIS =~ /azimuth/i) {
+              if ($prevy < 100 && $y > 260) {
+                my $len2 = @second;
+                if ($len2 > 0) {
+                  $ploty = $y - 360;
+                  $plotyn = $prevy + 360;
+                  $plotNow = 1;
+                }
+              } elsif ($y < 100 && $prevy > 260) {
+                my $len2 = @second;
+                if ($len2 > 0) {
+                  $ploty = $y + 360;
+                  $plotyn = $prevy - 360;
+                  $plotNow = 1;
+                }
+              }
+            } elsif ($X_AXIS =~ /azimuth/i) {
+              if ($prevx < 100 && $x > 260) {
+                my $len2 = @second;
+                if ($len2 > 0) {
+                  $plotx = $x - 360;
+                  $plotxn = $prevx + 360;
+                  $plotNow = 1;
+                }
+              } elsif ($x < 100 && $prevx > 260) {
+                my $len2 = @second;
+                if ($len2 > 0) {
+                  $plotx = $x + 360;
+                  $plotxn = $prevx - 360;
+                  $plotNow = 1;
+                }
+              }
+            }
 
 
-	}
-	my $len2 = @points;     
-	$plotter->drawSmoothLine (@points, 'l'.$source->name()) if ($len2 > 0);
+            if ($plotNow) {
+              $plotNow = 0;
+              push (@second, $plotx);
+              push (@second, $ploty);
+              $plotter->drawSmoothLine (@second, 'l'.$source->name());
+              @second = ();
+              push (@second, $plotxn);
+              push (@second, $plotyn);
+            } elsif ($i == $len - 1) {
+              push (@second, $x);
+              push (@second, $y);
+            }
 
-	my @bold   = (-background => "#bbbbbb", -foreground => 'black', qw/-relief raised -borderwidth 1/);
-	my @normal = (-background => undef, -foreground => $source->color(), qw/-relief flat/);
-	$plotter->bindTag( 'l'.$source->name(), '<Any-Enter>' =>
-		sub {
-		  my $s = $source;
-		  if ($s->active()) {
-		    $EditWin->{'Text'}->tag('configure', 'd'.$s->index(), @bold) if $EDIT_OPEN;
-		    $plotter->configureTag ('l'.$s->name(), -width => 3);
-		  }
-		});
-	$plotter->bindTag( 'l'.$source->name(), '<Any-Leave>' =>
-		sub {
-		  my $s = $source;
-		  if ($s->active()) {
-		    $EditWin->{'Text'}->tag('configure', 'd'.$s->index(), @normal) if $EDIT_OPEN;
-		    $plotter->configureTag ('l'.$s->name(), -width => 1);
-		  }
-		});
+            $prevx = $x;
+            $prevy = $y;
+          }
+          @points = @second;
+
+
+        }
+        my $len2 = @points;
+        $plotter->drawSmoothLine (@points, 'l'.$source->name()) if ($len2 > 0);
+
+        my @bold   = (-background => "#bbbbbb", -foreground => 'black', qw/-relief raised -borderwidth 1/);
+        my @normal = (-background => undef, -foreground => $source->color(), qw/-relief flat/);
+        $plotter->bindTag( 'l'.$source->name(), '<Any-Enter>' =>
+                sub {
+                  my $s = $source;
+                  if ($s->active()) {
+                    $EditWin->{'Text'}->tag('configure', 'd'.$s->index(), @bold) if $EDIT_OPEN;
+                    $plotter->configureTag ('l'.$s->name(), -width => 3);
+                  }
+                });
+        $plotter->bindTag( 'l'.$source->name(), '<Any-Leave>' =>
+                sub {
+                  my $s = $source;
+                  if ($s->active()) {
+                    $EditWin->{'Text'}->tag('configure', 'd'.$s->index(), @normal) if $EDIT_OPEN;
+                    $plotter->configureTag ('l'.$s->name(), -width => 1);
+                  }
+                });
       }
       $plotter->penWidth(1);
 
       #calculate where the time dots go.
       calcTime($source);
 
-      if ($plotter->existTag('foblack')) {	
-	if ($plotter->existTag('timeDot'.$source->name())){
-	  $plotter->raiseAbove('timeDot'.$source->name(),'l'.$source->name());
-	  $plotter->raiseAbove('foblack', 'timeDot'.$source->name());
-	} elsif  ($plotter->existTag('l'.$source->name())){
-	  $plotter->raiseAbove('foblack', 'l'.$source->name());
-	}
-	$plotter->raiseAbove('t'.$source->name(), 'foblack') if $plotter->existTag('t'.$source->name());
-	$plotter->raiseAbove('lwhite', 'foblack');
-	$plotter->raiseAbove('twhite', 'foblack');
+      if ($plotter->existTag('foblack')) {
+        if ($plotter->existTag('timeDot'.$source->name())){
+          $plotter->raiseAbove('timeDot'.$source->name(),'l'.$source->name());
+          $plotter->raiseAbove('foblack', 'timeDot'.$source->name());
+        } elsif  ($plotter->existTag('l'.$source->name())){
+          $plotter->raiseAbove('foblack', 'l'.$source->name());
+        }
+        $plotter->raiseAbove('t'.$source->name(), 'foblack') if $plotter->existTag('t'.$source->name());
+        $plotter->raiseAbove('lwhite', 'foblack');
+        $plotter->raiseAbove('twhite', 'foblack');
       } else {
-	$plotter->raiseAbove('lwhite', 'l'.$source->name()) if $plotter->existTag('l'.$source->name());
-	$plotter->raiseAbove('twhite', 'l'.$source->name()) if $plotter->existTag('l'.$source->name());
+        $plotter->raiseAbove('lwhite', 'l'.$source->name()) if $plotter->existTag('l'.$source->name());
+        $plotter->raiseAbove('twhite', 'l'.$source->name()) if $plotter->existTag('l'.$source->name());
       }
     }
     if ($Top != undef) {
@@ -2356,15 +2147,15 @@ sub plot {
     }
     $plotter->penWidth(1);
   }
-  
-  print "Exit plot\n" if $locateBug;  
+
+  print "Exit plot\n" if $locateBug;
 }
 
 
 ###########################################################
-#  converts air mass to radians
+#  converts air mass to degrees
 sub am_to_deg {
-	(180/pi)*asin(1/$_[0]);
+        (180/pi)*asin(1/$_[0]);
 }
 
 ############################################################
@@ -2382,7 +2173,7 @@ sub getColor {
 #  draws a dot at the current time on each source.
 #
 sub calcTime {
-  $TIMER->cancel if defined $TIMER; 
+  $TIMER->cancel if defined $TIMER;
   my $so = shift;
   my $timeBug = 0;
   my ($ss, $mm, $hh, $md, $mo, $yr, $wd, $yd, $isdst) = gmtime(time);
@@ -2422,36 +2213,36 @@ sub calcTime {
       print "Date = $d and time = $t before calcpoint\n" if $timeBug;
       my ($lst, $ele, $az, $pa, $elex, $eley, $azx, $azy) = $source->calcPoint($d, $t, $telObject);
       if ($lst < $minX) {
-	$lst += 2*pi;
+        $lst += 2*pi;
       } elsif ($lst > $maxX) {
-	$lst -= 2*pi;
+        $lst -= 2*pi;
       }
       my ($x, $y);
-      
+
       if ($X_AXIS =~ /time/i) {
-	$x = $lst;
+        $x = $lst;
       } elsif (($X_AXIS =~ /elevation/i) || ($X_AXIS =~ /air mass/i)) {
-	$x = $ele;
+        $x = $ele;
       } elsif ($X_AXIS =~ /azimuth/i) {
-	$x = $az;
+        $x = $az;
       } elsif ($X_AXIS =~ /parallactic angle/i) {
-	$x = $pa;
+        $x = $pa;
       }
       if ($Y_AXIS =~ /time/i) {
-	$y = $lst;
+        $y = $lst;
       } elsif (($Y_AXIS =~ /elevation/i)  || ($Y_AXIS =~ /air mass/i)) {
-	$y = $ele;
+        $y = $ele;
       } elsif ($Y_AXIS =~ /azimuth/i) {
-	$y = $az;
+        $y = $az;
       } elsif ($Y_AXIS =~ /parallactic angle/i) {
-	$y = $pa;
+        $y = $pa;
       }
-      
+
       if ((($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /elevation/i)) || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /elevation/i)) || (($Y_AXIS =~ /azimuth/i) &&
-	 ($X_AXIS =~ /air mass/i)) || (($Y_AXIS =~ /air mass/i) &&
-	 ($X_AXIS =~ /azimuth/i))) {
-	$x = $ele;
-	$y = $az;
+         ($X_AXIS =~ /air mass/i)) || (($Y_AXIS =~ /air mass/i) &&
+         ($X_AXIS =~ /azimuth/i))) {
+        $x = $ele;
+        $y = $az;
       }
 
       $source->timeDotX($x);
@@ -2465,123 +2256,126 @@ sub calcTime {
 
       # draw the time dot
       if ($ele > 0) {
-	$plotter->drawColor($source->color());
+        $plotter->drawColor($source->color());
         if ((($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /elevation/i)) || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /elevation/i)) || (($Y_AXIS =~ /azimuth/i) &&
-	 ($X_AXIS =~ /air mass/i)) || (($Y_AXIS =~ /air mass/i) &&
-	 ($X_AXIS =~ /azimuth/i))) {
-	  my $r = 90 - $source->timeDotX();
-	  if ($r < 90) {
-	    my $theta = (90 - $source->timeDotY()) * pi / 180;
-	    my $x2 = 90 + $r * cos $theta;
-	    my $y2 = 90 + $r * sin $theta;
-	    $plotter->drawFillOval($x2 - 2, $y2 - 2, $x2 + 2, $y2+2, 'timeDot'.$source->name());
-	    $plotter->bindTag( 'timeDot'.$source->name(), '<Any-Enter>' => sub {});
-	    $plotter->bindTag('ltimeDot'.$source->name(), '<Any-Leave>' => sub {});
-	  }
-	} else {	      
-	  my ($sX, $sY) = $plotter->toW($dotSizeX, $dotSizeY);
-	  $sX -= $plotter->toWx(0);
-	  $sY -= $plotter->toWy(0);
-	  my $x2 = $source->timeDotX();
-	  my $y2 = $source->timeDotY();
-	  if ($x2 ne '' && $y2 ne '') {
-	    $plotter->drawFillOval($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2+$sY, 'timeDot'.$source->name());
-	    $plotter->bindTag( 'timeDot'.$source->name(), '<Any-Enter>' =>
+         ($X_AXIS =~ /air mass/i)) || (($Y_AXIS =~ /air mass/i) &&
+         ($X_AXIS =~ /azimuth/i))) {
+          my $r = 90 - $source->timeDotX();
+          if ($r < 90) {
+            my $theta = (90 - $source->timeDotY()) * pi / 180;
+            my $x2 = 90 + $r * cos $theta;
+            my $y2 = 90 + $r * sin $theta;
+            $plotter->drawFillOval($x2 - 2, $y2 - 2, $x2 + 2, $y2+2, 'timeDot'.$source->name());
+            $plotter->bindTag( 'timeDot'.$source->name(), '<Any-Enter>' => sub {});
+            $plotter->bindTag('ltimeDot'.$source->name(), '<Any-Leave>' => sub {});
+          }
+        }
+        else {
+          my ($sX, $sY) = $plotter->toW($dotSizeX, $dotSizeY);
+          $sX -= $plotter->toWx(0);
+          $sY -= $plotter->toWy(0);
+          my $x2 = $source->timeDotX();
+          my $y2 = $source->timeDotY();
+          if ($x2 ne '' && $y2 ne '') {
+            $plotter->drawFillOval($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2+$sY, 'timeDot'.$source->name());
+            $plotter->bindTag( 'timeDot'.$source->name(), '<Any-Enter>' =>
               sub {
-		$plotter->drawColor($source->color());
-		$plotter->drawFillOval($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2+$sY, 'ltimeDot'.$source->name());
+                $plotter->drawColor($source->color());
+                $plotter->drawFillOval($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2+$sY, 'ltimeDot'.$source->name());
                 # draw AZ-EL pointers
-	        $plotter->drawColor('red');
-	        $plotter->fontColor('red');
-		$plotter->penWidth(2);
-	        $plotter->drawLine ($x2 - $elex, $y2 - $eley, $x2, $y2, 'ltimeDot'.$source->name());
-	        $plotter->drawLine ($x2 - $azx, $y2 - $azy, $x2, $y2, 'ltimeDot'.$source->name());
-		$plotter->penWidth(1);
-		my ($xoff, $yoff) = $plotter->toW(7,7);
-		$xoff -= $plotter->toWx(0);
-		$yoff -= $plotter->toWy(0);
-	        $plotter->drawText ($x2 - $elex-$xoff, $y2 - $eley-$yoff, 'El', 'ltimeDot'. $source->name());
+                $plotter->drawColor('red');
+                $plotter->fontColor('red');
+                $plotter->penWidth(2);
+                $plotter->drawLine ($x2 - $elex, $y2 - $eley, $x2, $y2, 'ltimeDot'.$source->name());
+                $plotter->drawLine ($x2 - $azx, $y2 - $azy, $x2, $y2, 'ltimeDot'.$source->name());
+                $plotter->penWidth(1);
+                my ($xoff, $yoff) = $plotter->toW(7,7);
+                $xoff -= $plotter->toWx(0);
+                $yoff -= $plotter->toWy(0);
+                $plotter->drawText ($x2 - $elex-$xoff, $y2 - $eley-$yoff, 'El', 'ltimeDot'. $source->name());
                 # and RA-Dec box
                 my $bx = 1.5*sqrt($azx*$azx+$elex*$elex);
                 my $by = 1.5*sqrt($azy*$azy+$eley*$eley);
-	        $plotter->drawLine ($x2 - $bx, $y2 - $by, $x2 - $bx, $y2 + $by, 'ltimeDot'.$source->name());
-	        $plotter->drawLine ($x2 - $bx, $y2 + $by, $x2 + $bx, $y2 + $by, 'ltimeDot'.$source->name());
-	        $plotter->drawLine ($x2 + $bx, $y2 + $by, $x2 + $bx, $y2 - $by, 'ltimeDot'.$source->name());
-	        $plotter->drawLine ($x2 + $bx, $y2 - $by, $x2 - $bx, $y2 - $by, 'ltimeDot'.$source->name());
-	        $plotter->drawText ($x2, $y2 - 1.2*$by, 'R.A.', 'ltimeDot'. $source->name());
-	        $plotter->drawText ($x2 - 1.12*$bx, $y2+0.2*$by, 'D', 'ltimeDot'. $source->name());
-	        $plotter->drawText ($x2 - 1.1*$bx, $y2, 'e', 'ltimeDot'. $source->name());
-	        $plotter->drawText ($x2 - 1.1*$bx, $y2-0.2*$by, 'c', 'ltimeDot'. $source->name());
-	        $plotter->fontColor($source->color());
+                $plotter->drawLine ($x2 - $bx, $y2 - $by, $x2 - $bx, $y2 + $by, 'ltimeDot'.$source->name());
+                $plotter->drawLine ($x2 - $bx, $y2 + $by, $x2 + $bx, $y2 + $by, 'ltimeDot'.$source->name());
+                $plotter->drawLine ($x2 + $bx, $y2 + $by, $x2 + $bx, $y2 - $by, 'ltimeDot'.$source->name());
+                $plotter->drawLine ($x2 + $bx, $y2 - $by, $x2 - $bx, $y2 - $by, 'ltimeDot'.$source->name());
+                $plotter->drawText ($x2, $y2 - 1.2*$by, 'R.A.', 'ltimeDot'. $source->name());
+                $plotter->drawText ($x2 - 1.12*$bx, $y2+0.2*$by, 'D', 'ltimeDot'. $source->name());
+                $plotter->drawText ($x2 - 1.1*$bx, $y2, 'e', 'ltimeDot'. $source->name());
+                $plotter->drawText ($x2 - 1.1*$bx, $y2-0.2*$by, 'c', 'ltimeDot'. $source->name());
+                $plotter->fontColor($source->color());
               });
-	    $plotter->bindTag('ltimeDot'.$source->name(), '<Any-Leave>' => 
+            $plotter->bindTag('ltimeDot'.$source->name(), '<Any-Leave>' => 
               sub {
-	        $plotter->delete ('ltimeDot'.$source->name());
-	      });
-	    $source->AzElOffsets($elex, $eley, $azx, $azy);
-	  }
-	}
+                $plotter->delete ('ltimeDot'.$source->name());
+              });
+            $source->AzElOffsets($elex, $eley, $azx, $azy);
+          }
+        }
       }
-    } else { 
+    }
+    else {
       # draw the time dot
       if ($source->elevation() > 0) {
-	$plotter->drawColor($source->color());
+        $plotter->drawColor($source->color());
         if ((($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /elevation/i)) || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /elevation/i)) || (($Y_AXIS =~ /azimuth/i) &&
-	 ($X_AXIS =~ /air mass/i)) || (($Y_AXIS =~ /air mass/i) &&
-	 ($X_AXIS =~ /azimuth/i))) {
-	  my $r = 90 - $source->timeDotX();
-	  if ($r < 90) {
-	    my $theta = (90 - $source->timeDotY()) * pi / 180;
-	    my $x2 = 90 + $r * cos $theta;
-	    my $y2 = 90 + $r * sin $theta;
-	    $plotter->drawFillOval($x2 - 2, $y2 - 2, $x2 + 2, $y2+2, 'timeDot'.$source->name());
-	    $plotter->bindTag( 'timeDot'.$source->name(), '<Any-Enter>' => sub {});
-	    $plotter->bindTag('ltimeDot'.$source->name(), '<Any-Leave>' => sub {});
-	  }
-	} else {	      
-	  my ($sX, $sY) = $plotter->toW($dotSizeX, $dotSizeY);
-	  $sX -= $plotter->toWx(0);
-	  $sY -= $plotter->toWy(0);
-	  my $x2 = $source->timeDotX();
-	  my $y2 = $source->timeDotY();
-	  if ($x2 ne '' && $y2 ne '') {
-	    my ($elex, $eley, $azx, $azy) = $source->AzElOffsets();
-	    $plotter->drawColor($source->color());
-	    $plotter->drawFillOval($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2+$sY, 'timeDot'.$source->name());
-	    $plotter->bindTag( 'timeDot'.$source->name(), '<Any-Enter>' =>
-	      sub {
-		$plotter->drawColor($source->color());
-		$plotter->drawFillOval($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2+$sY, 'ltimeDot'.$source->name());
-	        $plotter->drawColor('red');
-	        $plotter->fontColor('red');
-		$plotter->penWidth(2);
+         ($X_AXIS =~ /air mass/i)) || (($Y_AXIS =~ /air mass/i) &&
+         ($X_AXIS =~ /azimuth/i))) {
+          my $r = 90 - $source->timeDotX();
+          if ($r < 90) {
+            my $theta = (90 - $source->timeDotY()) * pi / 180;
+            my $x2 = 90 + $r * cos $theta;
+            my $y2 = 90 + $r * sin $theta;
+            $plotter->drawFillOval($x2 - 2, $y2 - 2, $x2 + 2, $y2+2, 'timeDot'.$source->name());
+            $plotter->bindTag( 'timeDot'.$source->name(), '<Any-Enter>' => sub {});
+            $plotter->bindTag('ltimeDot'.$source->name(), '<Any-Leave>' => sub {});
+          }
+        }
+        else {
+          my ($sX, $sY) = $plotter->toW($dotSizeX, $dotSizeY);
+          $sX -= $plotter->toWx(0);
+          $sY -= $plotter->toWy(0);
+          my $x2 = $source->timeDotX();
+          my $y2 = $source->timeDotY();
+          if ($x2 ne '' && $y2 ne '') {
+            my ($elex, $eley, $azx, $azy) = $source->AzElOffsets();
+            $plotter->drawColor($source->color());
+            $plotter->drawFillOval($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2+$sY, 'timeDot'.$source->name());
+            $plotter->bindTag( 'timeDot'.$source->name(), '<Any-Enter>' =>
+              sub {
+                $plotter->drawColor($source->color());
+                $plotter->drawFillOval($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2+$sY, 'ltimeDot'.$source->name());
+                $plotter->drawColor('red');
+                $plotter->fontColor('red');
+                $plotter->penWidth(2);
                 # draw AZ-EL pointers
-	        $plotter->drawLine ($x2 - $elex, $y2 - $eley, $x2, $y2, 'ltimeDot'.$source->name());
-	        $plotter->drawLine ($x2 - $azx, $y2 - $azy, $x2, $y2, 'ltimeDot'.$source->name());
-		$plotter->penWidth(1);
-		my ($xoff, $yoff) = $plotter->toW(7,7);
-		$xoff -= $plotter->toWx(0);
-		$yoff -= $plotter->toWy(0);
-	        $plotter->drawText ($x2 - $elex-$xoff, $y2 - $eley-$yoff, 'El', 'ltimeDot'. $source->name());
+                $plotter->drawLine ($x2 - $elex, $y2 - $eley, $x2, $y2, 'ltimeDot'.$source->name());
+                $plotter->drawLine ($x2 - $azx, $y2 - $azy, $x2, $y2, 'ltimeDot'.$source->name());
+                $plotter->penWidth(1);
+                my ($xoff, $yoff) = $plotter->toW(7,7);
+                $xoff -= $plotter->toWx(0);
+                $yoff -= $plotter->toWy(0);
+                $plotter->drawText ($x2 - $elex-$xoff, $y2 - $eley-$yoff, 'El', 'ltimeDot'. $source->name());
                 # and RA-Dec box
                 my $bx = 1.5*sqrt($azx*$azx+$elex*$elex);
                 my $by = 1.5*sqrt($azy*$azy+$eley*$eley);
-	        $plotter->drawLine ($x2 - $bx, $y2 - $by, $x2 - $bx, $y2 + $by, 'ltimeDot'.$source->name());
-	        $plotter->drawLine ($x2 - $bx, $y2 + $by, $x2 + $bx, $y2 + $by, 'ltimeDot'.$source->name());
-	        $plotter->drawLine ($x2 + $bx, $y2 + $by, $x2 + $bx, $y2 - $by, 'ltimeDot'.$source->name());
-	        $plotter->drawLine ($x2 + $bx, $y2 - $by, $x2 - $bx, $y2 - $by, 'ltimeDot'.$source->name());
-	        $plotter->drawText ($x2, $y2 - 1.2*$by, 'R.A.', 'ltimeDot'. $source->name());
-	        $plotter->drawText ($x2 - 1.12*$bx, $y2+0.2*$by, 'D', 'ltimeDot'. $source->name());
-	        $plotter->drawText ($x2 - 1.1*$bx, $y2, 'e', 'ltimeDot'. $source->name());
-	        $plotter->drawText ($x2 - 1.1*$bx, $y2-0.2*$by, 'c', 'ltimeDot'. $source->name());
-	        $plotter->fontColor($source->color());
+                $plotter->drawLine ($x2 - $bx, $y2 - $by, $x2 - $bx, $y2 + $by, 'ltimeDot'.$source->name());
+                $plotter->drawLine ($x2 - $bx, $y2 + $by, $x2 + $bx, $y2 + $by, 'ltimeDot'.$source->name());
+                $plotter->drawLine ($x2 + $bx, $y2 + $by, $x2 + $bx, $y2 - $by, 'ltimeDot'.$source->name());
+                $plotter->drawLine ($x2 + $bx, $y2 - $by, $x2 - $bx, $y2 - $by, 'ltimeDot'.$source->name());
+                $plotter->drawText ($x2, $y2 - 1.2*$by, 'R.A.', 'ltimeDot'. $source->name());
+                $plotter->drawText ($x2 - 1.12*$bx, $y2+0.2*$by, 'D', 'ltimeDot'. $source->name());
+                $plotter->drawText ($x2 - 1.1*$bx, $y2, 'e', 'ltimeDot'. $source->name());
+                $plotter->drawText ($x2 - 1.1*$bx, $y2-0.2*$by, 'c', 'ltimeDot'. $source->name());
+                $plotter->fontColor($source->color());
               });
-	    $plotter->bindTag('ltimeDot'.$source->name(), '<Any-Leave>' => 
-	      sub {
-	        $plotter->delete ('ltimeDot'.$source->name());
-	      });
-	  }
-	}
+            $plotter->bindTag('ltimeDot'.$source->name(), '<Any-Leave>' =>
+              sub {
+                $plotter->delete ('ltimeDot'.$source->name());
+              });
+          }
+        }
       }
     }
   }
@@ -2597,7 +2391,7 @@ sub tagOnOff {
   my $turnOn = shift;
   my $color = shift;
   my $color2 = shift;
-  
+
   if (!$turnOn) {
     $plotter->configureTag('l'.$tag, -fill=>'black');
     $plotter->configureTag('fo'.$tag, -fill=>'black', outline=>'black');
@@ -2639,7 +2433,7 @@ sub tagOnOff {
 sub error {
   my $MW = shift;
   my $errWin = $MW->Toplevel(-borderwidth=>10);
-  $errWin->title('Observation Log Error!');  
+  $errWin->title('Observation Log Error!');
   $errWin->resizable(0,0);
   $errWin->Button(
      -text         => 'Ok',
@@ -2648,7 +2442,7 @@ sub error {
   })->pack(-side=>'bottom');
   my $message = shift;
   $errWin->Label (
-    -text => "\nError!\n\n   ".$message."   \n", 
+    -text => "\nError!\n\n   ".$message."   \n",
     -relief=>'sunken'
   )->pack(-side=>'bottom', -pady => 10);
   $errWin->title(shift) if @_;
@@ -2678,10 +2472,24 @@ sub inswt {
 
     $w->insert('insert', $text);
     foreach my $tag ($w->tag('names', $start)) {
-	$w->tag('remove', $tag, $start, 'insert');
+        $w->tag('remove', $tag, $start, 'insert');
     }
     foreach my $i (@args) {
-	$w->tag('add', $i, $start, 'insert');
+        $w->tag('add', $i, $start, 'insert');
     }
 
-} # end inswt
+}
+
+__END__
+
+=head1 AUTHORS
+
+Casey Best (University of Victoria)
+Pam Shimek (University of Victoria)
+
+
+=head1 COPYRIGHT
+Copyright (C) 1998, 1999 Particle Physics and Astronomy Research
+Council. All Rights Reserved.
+
+=cut
