@@ -30,8 +30,7 @@ use Date::Manip;
 use ObsDesk::Defaults;
 use ObsDesk::Source;
 use Tk::SrcCatalog;
-use Astro::SLA;
-use Astro::Instrument::SCUBA::Array;
+use Astro::PAL;
 use Astro::Telescope;
 use Math::Trig;
 
@@ -1568,8 +1567,8 @@ sub plot {
       while ($lst > 2 * pi) {
         $lst -= 2*pi;
       }
-      &slaDr2tf(2, $lst, $si, \@parts);
-      my ($lh, $lm, $ls, @rest) = @parts;
+      my ($si, @hms) = palDr2tf(2, $lst);
+      my ($lh, $lm, $ls, undef) = @hms;
       $lm += 1 if $ls >= 30;
       if ($lm >= 60) {
         $lm -= 60;
@@ -1658,8 +1657,8 @@ sub plot {
       while ($lst > 2 * pi) {
         $lst -= 2*pi;
       }
-      &slaDr2tf(2, $lst, $si, \@parts);
-      my ($lh, $lm, $ls, @rest) = @parts;
+      my ($si, @hms) = palDr2tf(2, $lst);
+      my ($lh, $lm, $ls, undef) = @hms;
       $lm += 1 if $ls >= 30;
       if ($lm >= 60) {
         $lm -= 60;
@@ -1855,7 +1854,6 @@ sub plot {
     $plotter->drawColor('purple');
     $plotter->drawLine ($minX, $minY, $maxX, $maxY);
   } else {
-    my $array = new Astro::Instrument::SCUBA::Array;
     my ($y, $mo, $d) = split (/\//, $DATE, 3);
     my @points = ();
     my $Top;
