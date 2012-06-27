@@ -1348,7 +1348,7 @@ sub _XYcallback {
 
   # Need to translate widget coordinates to canvas coordinates and
   # then to World coordinates
-  my ($$xref, $$yref) = $self->toW( $canv->canvasx($x), $canv->canvasy($y) );
+  ($$xref, $$yref) = $self->toW( $canv->canvasx($x), $canv->canvasy($y) );
 
   print "Coordinates: $$xref, $$yref ",
     $canv->canvasx($x)," ",$canv->canvasy($y),"\n";
