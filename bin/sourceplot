@@ -25,10 +25,10 @@ use Tk;
 use Tk::Balloon;
 #use Tk::ProgressBar;
 use Tk::FileSelect;
-use Plotter::Tk;
+use App::SourcePlot::Plotter::Tk;
 use Date::Manip;
-use ObsDesk::Defaults;
-use ObsDesk::Source;
+use App::SourcePlot::Defaults;
+use App::SourcePlot::Source;
 use Tk::SrcCatalog;
 use Astro::PAL;
 use Astro::Telescope;
@@ -75,7 +75,7 @@ my %defaults = (
                 );
 
 # setting up default values for Source Plot Options
-my $defaults = new ObsDesk::Defaults();
+my $defaults = new App::SourcePlot::Defaults();
 $defaults->file('.splotcfg');
 $defaults->r_defaults(\%defaults);
 my $TEL = $defaults->values('TEL');
@@ -137,7 +137,7 @@ my $canFrame = $MW->Frame(
 );
 
 # Create a canvas and calculate the world to pixel ratio
-my $plotter = new Plotter::Tk($xplot, $yplot, 1, 1, $canFrame);
+my $plotter = new App::SourcePlot::Plotter::Tk($xplot, $yplot, 1, 1, $canFrame);
 $plotter->setBackground('black');
 $plotter->worldCenter($xborder, $yplot-$yborder);
 $plotter->usingWorld(1);
@@ -705,7 +705,7 @@ sub changeOpt {
 sub addPlanetSource {
   my $name = shift;
   my $number = shift;
-  my $source = new ObsDesk::Source($name);
+  my $source = new App::SourcePlot::Source($name);
   $source->type('planet');
   $source->planetnum($number);
   if (!isWithin ($source, @SOURCE_LIST)) {
@@ -1061,7 +1061,7 @@ sub editSource {
   my $newBut = $manipF->Button( -text=>'New',
                     -width        => 4,
                     -command=> sub{
-                        my $source = new ObsDesk::Source();
+                        my $source = new App::SourcePlot::Source();
                         &getSource ($source);
                         my $res = &waitForResponse();
                         if ($res && !isWithin ($source, @SOURCE_LIST)) {

@@ -1,8 +1,8 @@
-package Plotter::Tk;
+package App::SourcePlot::Plotter::Tk;
 
 =head1 NAME
 
-Plotter::Tk - creates a Tk canvas with easy-to-use method names.
+App::SourcePlot::Plotter::Tk - creates a Tk canvas with easy-to-use method names.
 
 =head1 DESCRIPTION
 
@@ -41,10 +41,10 @@ Create a new instance of Plotter::Tk object.  A new canvas will be
 created with the specified coordinates.  This method will create a new
 window for use by the canvas if one is not passed in.
 
-  $plotter = new Plotter::Tk();
-  $plotter = new Plotter::Tk($width, $height);
-  $plotter = new Plotter::Tk($width, $height, $numWindowsX, $numWindowsY);
-  $plotter = new Plotter::Tk($width, $height, $numWindowsX, $numWindowsY, $MainWindow);
+  $plotter = new App::SourcePlot::Plotter::Tk();
+  $plotter = new App::SourcePlot::Plotter::Tk($width, $height);
+  $plotter = new App::SourcePlot::Plotter::Tk($width, $height, $numWindowsX, $numWindowsY);
+  $plotter = new App::SourcePlot::Plotter::Tk($width, $height, $numWindowsX, $numWindowsY, $MainWindow);
 
 =cut
 
@@ -1190,31 +1190,6 @@ sub origPhot {
   return $self->{ORIG_PHOT};
 }
 
-
-#=item getFits
-#
-#Retrieves an image from the dss.  Must specify the RA and Dec of the
-#source.
-#
-#  $plotter->getFits($ra, $dec);
-#
-#=cut
-#
-#sub getFits {
-#  my $self = shift;
-#  my $ra = shift;
-#  my $dec = shift;
-#  my $cent_crd = shift;
-#  my $noObs = shift;
-#
-#  my $tool = new Plotter::Tool::Dss($ra, $dec, $cent_crd);
-#
-#  my ($x, $y) = $self->photoWorldSize();
-#  $tool->getFile($x/60, $y/60);
-#
-#}
-
-
 =item setImage
 
 Sets the image stored in the file specified by photFile into memory.
@@ -1439,11 +1414,6 @@ sub error {
 }
 
 =back
-
-=head1 SEE ALSO
-
-  Plotter::GAIA
-  Plotter::Tool::Dss
 
 =head1 AUTHOR
 

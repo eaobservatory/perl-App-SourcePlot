@@ -1,4 +1,4 @@
-package ObsDesk::Defaults;
+package App::SourcePlot::Defaults;
  
 =head1 NAME
 
@@ -45,7 +45,7 @@ A new Defaults object will be created.
 
 =cut
 
-struct('ObsDesk::Defaults', {file =>'$', values => '%'} );
+struct('App::SourcePlot::Defaults', {file =>'$', values => '%'} );
 
 =item r_defaults
 

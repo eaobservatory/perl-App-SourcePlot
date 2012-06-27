@@ -1,13 +1,13 @@
-package ObsDesk::Source;
+package App::SourcePlot::Source;
 
 =head1 NAME
 
-ObsDesk::Source - creates a observation source
+App::SourcePlot::Source - creates a observation source
 
 =head1 SYNOPSIS
 
- use ObsDesk::Source;
- $src = new Obsdesk::Source;
+ use App::SourcePlot::Source;
+ $src = new App::SourcePlot::Source;
 
 =head1 DESCRIPTION
 
@@ -52,10 +52,10 @@ Create a new Source object.
 A new source object will be created.  You can specify nothing, just the 
 name, or the RA, DEC and Epoc.
 
-  $obs = new ObsDesk::Source();
-  $obs = new ObsDesk::Source($name);
-  $obs = new ObsDesk::Source($name, $RA, $DEC, $Epoc);
-  $obs = new ObsDesk::Source('', $RA, $DEC, $Epoc);
+  $obs = new App::SourcePlot::Source();
+  $obs = new App::SourcePlot::Source($name);
+  $obs = new App::SourcePlot::Source($name, $RA, $DEC, $Epoc);
+  $obs = new App::SourcePlot::Source('', $RA, $DEC, $Epoc);
 
 =cut
 
