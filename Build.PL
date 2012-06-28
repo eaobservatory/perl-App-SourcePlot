@@ -57,6 +57,7 @@ my $build = Module::Build->new
    script_files => [ qw|
                          bin/sourceplot
                        |],
+   share_dir => 'share',
   );
 
 $build->create_build_script;
