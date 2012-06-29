@@ -2,18 +2,15 @@
 
 =head1 NAME
 
-sourceplot
+sourceplot - display a plot of astronomical sources on adjustable axes
 
-=head1 PURPOSE
-
-To plot an observation on a graph, allowing both the x and y
-axes to be adjusted to many attributes of the observation
+=head1 SYNOPSIS
 
 Source Plot was created to help observers decide which sources to observe
 at particular times to optimise the observing time at the telescope.
 The main purpose of this program is to plot the movement of a source
 throughout the night.  The movement can be plotted by the source's
-elevation, azimuth, parallactic angle, or by its time.
+elevation, azimuth, parallactic angle, or by time.
 
 =head1 DESCRIPTION
 
@@ -23,8 +20,8 @@ Elevation, Parallactic Angle, and Azimuth as the different axes.
 The sources can either be taken from a catalog or manually inserted.
 The first thing most observers will want to double click on is a source
 in the Catalog Window, which will plot that source.  Currently the only
-moving sources that can be plotted are planets, which can be added via
-the 'Planets' button in the Edit Window.
+moving sources that can be plotted are planets, the Sun and the Moon,
+which can be added via the 'Planets' button in the Edit Window.
 
 =head2 Plotting Window
 
@@ -37,8 +34,9 @@ source in the Edit Window.  The large dot along the plotted source is
 the position of the source at the current time, called from here on a
 'location dot'.  These dots are updated automatically as time passes.
 Moving the mouse over a location dot will display the elevation and
-azimuth for the source in respect to an RA-Dec graph, where Dec in
-the y-axis.  This feature does not work in the Az-El graph.  The small
+azimuth for the source in respect to an RA-Dec graph, where Dec is
+the y-axis.  This feature does not work in the
+L<Azimuth-Elevation graph|/"Elevation vs Azimuth Mode">.  The small
 dots along the plotted lines are 15 minutes apart, showing the precise
 time the source will be at a given location.
 
@@ -140,11 +138,14 @@ the 'Edit' button in the Plot Window.
 
 =head2 Catalog Window
 
-Through the Catalog Window, the observer is able to add sources from
-a catalog file to be plotted.  The default catalog, the JCMT Standard
-Pointing Catalog, is brought up when the program starts.  There are
+The Catalog Window is provided by L<Tk::AstroCatalog> (part of the
+L<Astro::Catalog> package).
+Through it, the observer is able to add sources from
+a catalog file to be plotted.  The JCMT unified source catalog, which
+is included with this program, is initally shown in the Catalog Window.
+There are
 several features that are not obvious.  To select sources in the Catalog
-window, click the mouse button once over top of it.  The source will turn
+Window, click the mouse button once over top of it.  The source will turn
 red to indicate it has been selected.  Several sources can be selected
 in this way, creating a list of selected sources to do actions on.
 To deselect a source, click on it a second time.  Double clicking on a
@@ -158,14 +159,16 @@ buttons on the Catalog Window:
 
 =item B<Catalogs>
 
-The 'Catalogs' button will allow the observer to load the default catalog
+The 'Catalogs' button will allow the observer to load a default catalog
 or to load a catalog from file.  If the file is chosen, a window will
 appear in which to find the desired path and file.  The path and file
 can be entered manually in the 'Catalog file:' field.  The default
-catalog can be changed by setting the C<SPLOT_CAT> environmental variable
-by typing C<setenv SPLOT_CAT /path/catalog>.  Although Source Plot has
-been programmed to accept different variations of catalogs, it is based
-on the standard catalog format specified for SCUBA observations.
+catalog, to be loaded when the 'Default Catalog' menu entry is selected,
+can be changed by setting the C<ASTRO_CATALOG_JCMT> environmental
+variable
+by typing C<setenv ASTRO_CATALOG_JCMT /path/catalog>.  Although Source Plot has
+been programmed to accept different variations of catalogs, the Catalog
+Window loads catalogs in the JCMT pointing catalog format.
 
 =item B<Rescan>
 
@@ -210,10 +213,13 @@ replacing this line with the desired command.  For example, to print to
 a specific printer, just add '-d printer' after 'lp'.  When everything
 is ready, press 'Print'.
 
-=head2 Elevation vs Azimuth Graph
+=head2 Elevation vs Azimuth Mode
 
 The Elevation vs Azimuth Graph was created to better show the distance
-between sources in the sky.  The elevation is indicated by the circular
+between sources in the sky.  The plot will be shown in this mode if
+the selected axes are azimuth and either elevation or air mass.
+
+The elevation is indicated by the circular
 lines, with the white outside circle 0 degrees and the middle of the graph
 90 degrees.  The azimuth rotates around the circle, 0 degrees at the top
 and 180 degrees at the bottom.  Like the other graphs, the large dots
@@ -221,6 +227,18 @@ on the lines represent the position of the source at the current time.
 The small dots are 15 minute intervals apart.  The times written on the
 graph around the 30 degree mark for each source is the time, in HST,
 that the source will be passing through that point.
+
+=head1 FILES
+
+=over 4
+
+=item C<~/.splotcfg>
+
+Stores the settings from the L<Options Window|/Options> when
+'Save Setting' is selected.  This file is read to configure
+sourceplot when it starts up.
+
+=back
 
 =cut
 
@@ -2786,6 +2804,12 @@ __END__
 =back
 
 =end __PRIVATE_METHODS__
+
+=head1 SEE ALSO
+
+L<Astro::Coords>
+L<Astro::Catalog>
+L<Tk::AstroCatalog>
 
 =head1 AUTHORS
 
