@@ -45,6 +45,7 @@ my $build = Module::Build->new
                 'Tk'                  => '804.0',
                 'Astro::PAL'          => '1.00',
                 'Astro::Coords'       => 0.12,
+                'Astro::Coords::Planet' => 0.05,
                 'Astro::Telescope'    => 0.71,
                 'Date::Manip'         => 5.0,
                },

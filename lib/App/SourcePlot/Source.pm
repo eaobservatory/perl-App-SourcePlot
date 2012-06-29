@@ -14,31 +14,24 @@ App::SourcePlot::Source - creates a observation source
 This class will create Source objects that will hold essential
 information for any single source.
 
+It is essentially a wrapper around an Astro::Coords object to add
+the additional information used to display a source in this
+application.
+
 =cut
 
 use 5.004;
 use Carp;
 use strict;
-no strict 'subs';
-use vars qw/$VERSION/;
 
-use Math::Trig;
-use Astro::SLA;
-use Date::Manip;
-use Astro::Instrument::SCUBA::Array;
+use Astro::Coords;
+use Math::Trig qw/pi/;
+use DateTime;
+use DateTime::Format::Strptime;
 
-$VERSION = '1.00';
+our $VERSION = '1.01';
 
 my $locateBug = 0;
-
-=head1 EXTERNAL MODULES
-
-  Math::Trig
-  Astro::SLA
-  Date::Manip
-  Astro::Instrument::SCUBA::Array
-
-=cut
 
 =head1 PUBLIC METHODS
 
@@ -49,13 +42,14 @@ These are the methods avaliable in this class:
 =item new
 
 Create a new Source object.
-A new source object will be created.  You can specify nothing, just the 
-name, or the RA, DEC and Epoc.
 
-  $obs = new App::SourcePlot::Source();
-  $obs = new App::SourcePlot::Source($name);
+  $obs = new App::SourcePlot::Source($planet);
   $obs = new App::SourcePlot::Source($name, $RA, $DEC, $Epoc);
-  $obs = new App::SourcePlot::Source('', $RA, $DEC, $Epoc);
+
+Or using an Astro::Coords object.
+
+  $coords = new Astro::Coords(...);
+  $obs = new App::SourcePlot::Source($coords);
 
 =cut
 
@@ -65,29 +59,80 @@ sub new {
   my $proto = shift;
   my $class = ref($proto) || $proto;
 
-  my $Source = {};  # Anon hash
+  my $self = {};  # Anon hash
 
-  bless($Source, $class);
-  print "New observation Source object has been blessed: $Source\n" if $locateBug;
+  bless($self, $class);
+  print "New observation Source object has been blessed: $self\n" if $locateBug;
 
-  $Source->name( shift ) if (@_);
+  $self->configure(@_);
 
-  if (@_) {
-    print "Passed in paramaters are being entered\n" if $locateBug;
-    $Source->ra( shift );
-    $Source->dec( shift);
-    $Source->epoc( shift );
-    print "Preparing to calculate the J2000 coords\n" if $locateBug;
-  } else {
-    print "No Passed in paramaters.\n" if $locateBug;
-    $Source->epoc( 'RJ' );
-  }
-  $Source->type('normal');
-  $Source->active(1);
+  $self->active(1);
 
   print "Object created\n" if $locateBug;
 
-  return $Source;
+  return $self;
+}
+
+
+sub configure {
+  my $self = shift;
+
+  # Special case: empty source object.
+  unless (@_) {
+    $self->coords(new Astro::Coords());
+    return;
+  }
+
+  my $name = shift;
+
+  if (UNIVERSAL::isa($name, 'Astro::Coords')) {
+    $self->coords($name);
+  }
+  elsif (@_) {
+    print "Passed in paramaters are being entered\n" if $locateBug;
+    my ($ra, $dec, $epoc, undef) = @_;
+
+    if ($epoc eq 'RJ') {
+      $self->coords(new Astro::Coords(
+        name => $name,
+        ra => $ra,
+        dec => $dec,
+        type => 'J2000'
+      ));
+    }
+    elsif ($epoc eq 'RB') {
+      $self->coords(new Astro::Coords(
+        name => $name,
+        ra => $ra,
+        dec => $dec,
+        type => 'B1950'
+      ));
+    }
+    elsif ($epoc eq 'GA') {
+      $self->coords(new Astro::Coords(
+        name => $name,
+        long => $ra,
+        lat => $dec,
+        type => 'galactic'
+      ));
+    }
+    elsif ($epoc eq 'AZ') {
+      $self->coords(new Astro::Coords(
+        name => $name,
+        az => $ra,
+        el => $dec
+      ));
+    }
+    else {
+      die "App::SourcePlot::Source unknown epoc " . $epoc .
+           " for source " . $name;
+    }
+  }
+  else {
+    $self->coords(new Astro::Coords(
+      planet => $name
+    ));
+  }
 }
 
 =item destroy
@@ -118,45 +163,22 @@ returns and sets the name of the source
 
 sub name {
   my $self = shift;
-  $self->{NAME} = shift if @_;
-  return $self->{NAME} if defined $self->{NAME};
-  return '';
+  return $self->coords()->name(@_);
 }
 
-=item type
+=item coords
 
-returns and sets the type of source it is.
-ie.  planet
-
-  $type = $obs->type();
-  $obs->type('planet');
+Set or return the corresponding Astro::Coords object.
 
 =cut
 
-sub type {
-  my $self = shift;
-  $self->{TYPE} = shift if @_;
-  return $self->{TYPE} if defined $self->{TYPE};
-  return '';
-}
-
-=item planetnum
-
-returns and sets the planet number if the source is a planet
-planet numbers are from 0 to 8 in this order:
-
-Sun, Mercury, Venus, Moon, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto 
-
-  $planetnum = $obs->planetnum();
-  $obs->planetnum(5);
-
-=cut
-
-sub planetnum {
-  my $self = shift;
-  $self->{PLANETNUM} = shift if @_;
-  return $self->{PLANETNUM} if defined $self->{PLANETNUM};
-  return '';
+sub coords {
+  my ($self, $coords, undef) = @_;
+  if (defined $coords) {
+    die unless UNIVERSAL::isa($coords, 'Astro::Coords');
+    $self->{'COORDS'} = $coords;
+  }
+  return $self->{'COORDS'};
 }
 
 =item active
@@ -225,78 +247,59 @@ sub index {
 
 =item ra
 
-returns and sets the ra of the source
+returns the ra of the source
 
   $ra = $obs->ra();
-  $obs->ra($ra);
 
 =cut
 
 sub ra {
   my $self = shift;
   if (@_) {
-    my $sra = shift;
-    $sra =~ s/^\s+//;
-    $sra =~ s/\s+$//;
-    $sra =~ s/\s+/:/g;
-    $self->{RA} = $sra;
-    $self->{RA2000} = undef;
-    $self->{DEC2000} = undef;
+    die 'App::SourcePlot::Source cannot change ra';
   }
-  return $self->{RA} if defined $self->{RA};
-  return '';
+  my $native_method = $self->coords()->native();
+  my ($ra, undef) = $self->coords()->$native_method();
+  return $ra->in_format('sexagesimal');
 }
 
 =item dec
 
-returns and sets the dec of the source
+returns the dec of the source
 
   $dec = $obs->dec();
-  $obs->dec($dec);
 
 =cut
 
 sub dec {
   my $self = shift;
   if (@_) {
-    my $sdec = shift;
-    $sdec =~ s/^\s+//;
-    $sdec =~ s/\s+$//;
-    $sdec =~ s/\+\s*//g;
-    $sdec =~ s/\-\s*/\-/;
-    $sdec =~ s/\s+/:/g;
-    $self->{DEC} = $sdec;
-    $self->{RA2000} = undef;
-    $self->{DEC2000} = undef;
+    die 'App::SourcePlot::Source cannot change dec';
   }
-  return $self->{DEC} if defined $self->{DEC};
-  return '';
+  my $native_method = $self->coords()->native();
+  my (undef, $dec) = $self->coords()->$native_method();
+  return $dec->in_format('sexagesimal');
 }
 
 =item ra2000
 
-returns and sets the ra of the source in J2000
-Stored in radians
+returns the ra of the source in J2000 in radians
 
   $ra2000 = $obs->ra2000();
-  $obs->ra2000($raIn2000);
 
 =cut
 
 sub ra2000 {
   my $self = shift;
   if (@_) {
-    $self->{RA2000} = shift;
+    die 'App::SourcePlot::Source cannot change ra2000';
   }
-  print "Inside ra2000".$self->{RA2000}.".\n" if $locateBug;
-  $self->calc2000() unless (defined $self->{RA2000});
-  return $self->{RA2000};
+  return $self->coords()->ra(format => 'r');
 }
 
 =item dec2000
 
-returns and sets the dec of the source in J2000
-Stored in radians
+returns dec of the source in J2000 in radians
 
   $dec2000 = $obs->dec2000();
 
@@ -304,45 +307,46 @@ Stored in radians
 
 sub dec2000 {
   my $self = shift;
-  $self->{DEC2000} = shift if @_;
-  $self->calc2000() if (!defined $self->{DEC2000});
-  return $self->{DEC2000};
+  if (@_) {
+    die 'App::SourcePlot::Source cannot change dec';
+  }
+  return $self->coords()->dec(format => 'r');
 }
 
 =item epoc
 
-returns and sets the epoch of the source
+returns the epoch of the source
 
   $epoc = $obs->epoc();
-  $obs->epoc('RB');
 
 =cut
 
 sub epoc {
   my $self = shift;
-  if (@_) {
-    $self->{EPOC} = shift;
-    $self->{RA2000} = undef;
-    $self->{DEC2000} = undef;
-  }
-  return $self->{EPOC};
+  my $native_method = $self->coords()->native;
+
+  return 'RJ' if $native_method eq 'radec';
+  return 'RB' if $native_method eq 'radec1950';
+  return 'GA' if $native_method eq 'glonglat';
+  return 'AZ' if $native_method eq 'azel';
+  return '??';
 }
 
 =item elevation
 
-returns and sets the current elevation of the source at the ut time
-Set and returns in degrees
+returns the current elevation of the source at the ut time
+in degrees
 
   $ele = $obs->elevation();
-  $obs->elevation(30);
 
 =cut
 
 sub elevation {
   my $self = shift;
-  $self->{ELEVATION} = shift if @_;
-  return $self->{ELEVATION} if defined $self->{ELEVATION};
-  return '';
+  if (@_) {
+    die 'App::SourcePlot::Source cannot set elevation';
+  }
+  return $self->coords()->el(format => 'd');
 }
 
 =item NameX
@@ -543,11 +547,16 @@ returns the line to display - presentation use
 sub dispLine {
   my $self = shift;
   my $line;
-  if ($self->type() eq 'normal') {
-    $line = sprintf " %-4d  %-16s  %-12s  %-13s  %-4s", ($self->index()+1), $self->name(), $self->ra(), $self->dec(), $self->epoc();
-  } elsif ($self->type() eq 'planet'){
-    $line = sprintf " %-4d  %-16s  %-12s  %-13s  %-4s", ($self->index()+1), $self->name(), 'Planet';
-  } 
+  unless (UNIVERSAL::isa($self->coords(), 'Astro::Coords::Planet')) {
+    $line = sprintf(' %-4d  %-16s  %-12s  %-13s  %-4s',
+                   ($self->index() + 1), $self->name(),
+                   $self->ra(), $self->dec(), $self->epoc());
+  }
+  else {
+    $line = sprintf(' %-4d  %-16s  Planet',
+                    ($self->index() + 1),
+                    ucfirst($self->name()));
+  }
   return $line;
 }
 
@@ -561,74 +570,8 @@ returns a copy of this object
 
 sub copy {
   my $self = shift;
-  my $source = $self->new($self->name, $self->ra, $self->dec, $self->epoc);
+  my $source = $self->new($self->coords());
   return $source;
-}
-
-
-
-
-############################################################
-#  This methods make calculations on the data
-#
-=item calc2000
-
-Sets the RA2000 and DEC2000 fields...ie. in J2000 epoc
-Returns 1 for success and 0 for a failure.
-
-  $obs->calc2000();
-
-=cut
-
-sub calc2000 {
-  print "Entering into calc2000\n" if $locateBug;
-
-  my $self = shift;
-  my ($h, $m, $s) = split(/:/, $self->ra());
-  my $ra = ($h + $m/60 + $s/3600)*pi/12.0;
-  my ($d, $mi, $se) = split(/:/, $self->dec());
-  my $dec = ($d + $mi/60 + $se/3600)*pi/180.0;
-  my ($ra_2000, $dec_2000);
-  my ($debug) = 0;
-  my ($mjd);
-
-  if ($self->epoc() =~ /^RB|RJ|GA|EQ$/i) {
-    if ($self->epoc() =~ /^RB/i) {
-      print "Coord-type: RB\n" if ($debug);
-      slaFk45z($ra, $dec, 1950.0, $ra_2000, $dec_2000);
-    } elsif ($self->epoc() =~ /^RJ/i) {
-      $ra_2000 = $ra;
-      $dec_2000 = $dec;
-      print "Coord-type: RJ\n" if ($debug);
-    } elsif ($self->epoc() =~ /^GA/i) {
-      print "Coord-type: GA\n" if ($debug);
-      slaGaleq($ra, $dec, $ra_2000, $dec_2000);
-    } elsif ($self->epoc() =~ /^EQ/i) {
-      print "Coord-type: EQ\n" if ($debug);
-      slaEcleq($ra, $dec, $mjd, $ra_2000, $dec_2000);
-    }
-    $self->ra2000($ra_2000);
-    $self->dec2000($dec_2000);
-    return 1;
-  }
-  return 0;
-}
-
-=item calcApp
-
-returns the apparent Ra and Dec at the passed in LST in radians
-
-  ($ra, $dec) = $obs->calcApp(2.3333);
-
-=cut
-
-sub calcApp {
-  my $self = shift;
-  my $mjd = shift;
-  my ($ra_app, $dec_app);
-  slaMap ($self->ra2000(), $self->dec2000(), 0.0, 0.0, 0.0, 0.0,
-	  2000.0, $mjd, $ra_app, $dec_app);
-  return ($ra_app, $dec_app);
 }
 
 =item calcPoints
@@ -637,7 +580,7 @@ Calculations the Elevation, Azimeth, etc. points
 $MW is the main window widget.  Required for 
 progress bar
 
-  $obs->calcPoints($date, $Time, $NumPoints, $MW, $tel);
+  $obs->calcPoints($date, $time, $num_points, $MW, $tel);
 
 =cut
 
@@ -650,65 +593,37 @@ sub calcPoints {
   my $tel = shift;
   my $timeBug = 0;
 
-  my $array = new Astro::Instrument::SCUBA::Array;
-  $array->tel($tel);
-  my ($y, $mo, $d) = split (/\//, $DATE, 3);
+  my $coords = $self->coords();
+  $coords->telescope($tel);
+  my $dt_save = $coords->datetime();
+
+  $DATE =~ s/\/$//;
+
+  my $strp = new DateTime::Format::Strptime(
+                 pattern => '%Y/%m/%d %H:%M:%S',
+                 time_zone => 'UTC',
+                 on_error => 'croak');
+
+  my $dt = $strp->parse_datetime($DATE . ' ' .  $TIME);
+
+  my $dt_running = $dt->clone();
 
   my $tlen = @{$self->{TIME_ELE_POINTS}} if defined $self->{TIME_ELE_POINTS};
   if (defined $tlen && $tlen > 0) {
     return;
   }
 
-  my $offset = -2;
-  my $date;
-  if ($offset < 0) {
-    $date = DateCalc(ParseDate("$mo\/$d\/$y $TIME"), "$offset hours");
-  } else {
-    $date = DateCalc(ParseDate("$mo\/$d\/$y $TIME"), "+ $offset hours");
-  }
-  my ($yy2, $mn2, $dd2) = split (/ /, UnixDate($date, '%Y %m %d'));
-  my ($hh2, $mm2, $ss2) = split (/ /, UnixDate($date, '%H %M %S'));
-  $mn2 = '0'.$mn2 if length($mn2) < 2;
-  $dd2 = '0'.$dd2 if length($dd2) < 2;
-  $mm2 = '0'.$mm2 if length($mm2) < 2;
-  $ss2 = '0'.$ss2 if length($ss2) < 2;
-  my ($lst, $mjd) = ut2lst($yy2,$mn2,$dd2,$hh2,$mm2,$ss2,$array->tel()->long_by_rad());
-  $offset ++;
-  if ($offset < 0) {
-    $date = DateCalc(ParseDate("$mo\/$d\/$y $TIME"), "$offset hours");
-  } else {
-    $date = DateCalc(ParseDate("$mo\/$d\/$y $TIME"), "+ $offset hours");
-  }
-  ($yy2, $mn2, $dd2) = split (/ /, UnixDate($date, '%Y %m %d'));
-  ($hh2, $mm2, $ss2) = split (/ /, UnixDate($date, '%H %M %S'));
-  $mn2 = '0'.$mn2 if length($mn2) < 2;
-  $dd2 = '0'.$dd2 if length($dd2) < 2;
-  $mm2 = '0'.$mm2 if length($mm2) < 2;
-  $ss2 = '0'.$ss2 if length($ss2) < 2;
-  my ($lst2, $mjd2) = ut2lst($yy2,$mn2,$dd2,$hh2,$mm2,$ss2,$array->tel()->long_by_rad());
-  if ($lst2 < $lst) {
-    $lst2 += 2*pi;
-  }
-  my $lstdiff = $lst2 - $lst;
-  for (my $h = 0; $h < $numPoints; $h++) {
-    my ($ra, $dec);
-    $MW->update;
-    if ($self->type() =~ /planet/i) {
-      my $dia;
-      my $long =  $array->tel()->long_by_rad();
-      my $lat =  $array->tel()->lat_by_rad();
-      my $num = $self->planetnum();
-      &slaRdplan( $mjd, $num, $long, $lat, $ra, $dec, $dia);
-    } else {
-      ($ra, $dec) = $self->calcApp( $mjd );
-    }
-    $array->lst($lst);
-    $array->ra_centre_by_rad($ra);
-    $array->dec_centre_by_rad($dec);
+  $dt_running->subtract(hours => 2);
+  my $lst_prev = undef;
 
-    my $ele = $array->elevation_by_deg();
-    my $az = $array->azimuth_by_deg();
-    my $pa = $array->par_angle_by_deg();
+  for (my $h = 0; $h < $numPoints; $h ++) {
+    $MW->update;
+    my ($lst, $ele, $az, $pa, undef) = $self->_calcPoint($dt_running);
+
+    if (defined $lst_prev and $lst < $lst_prev) {
+      $lst += 2 * pi;
+    }
+    $lst_prev = $lst;
 
     push (@{$self->{TIME_ELE_POINTS}}, $lst);
     push (@{$self->{TIME_ELE_POINTS}}, $ele);
@@ -721,7 +636,7 @@ sub calcPoints {
 
     push (@{$self->{ELE_TIME_POINTS}}, $ele);
     push (@{$self->{ELE_TIME_POINTS}}, $lst);
-    
+
     push (@{$self->{ELE_AZ_POINTS}}, $ele);
     push (@{$self->{ELE_AZ_POINTS}}, $az);
 
@@ -746,8 +661,10 @@ sub calcPoints {
     push (@{$self->{PA_AZ_POINTS}}, $pa);
     push (@{$self->{PA_AZ_POINTS}}, $az);
 
-    $lst += $lstdiff * (24 / ($numPoints - 1));
-  }  
+    $dt_running->add(seconds => 24 * 3600 / ($numPoints - 1));
+  }
+
+  $coords->datetime($dt_save);
 }
 
 =item calcPoint
@@ -755,7 +672,7 @@ sub calcPoints {
 Returns the time in decimal, elevation, azimuth, and parallactic angle
 for a given source at a particular time and date.
 
-  ($ele, $az, $pa) = $obs->calcPoint("1998/07/14", "13:05:44", $tel);
+  ($lst, $ele, $az, $pa) = $obs->calcPoint($date, $time, $tel);
 
 =cut
 
@@ -764,44 +681,54 @@ sub calcPoint {
   my $DATE = shift;
   my $TIME = shift;
   my $tel = shift;
-  my ($ra, $dec);
-  my $array = new Astro::Instrument::SCUBA::Array;
-  $array->tel($tel);
-  my ($y, $mo, $d) = split (/\//, $DATE, 3);
-  my $offset = 10;
-  my $date;
-  my $timeBug = 0;
 
-  print "date = $DATE and time = $TIME before manips\n" if $timeBug;
-  $date = DateCalc(ParseDate("$mo\/$d\/$y $TIME"), "+ $offset hours");
-  my ($yy2, $mn2, $dd2) = split (/ /, UnixDate($date, '%Y %m %d'));
-  my ($hh2, $mm2, $ss2) = split (/ /, UnixDate($date, '%H %M %S'));
-  $mn2 = '0'.$mn2 if length($mn2) < 2;
-  $dd2 = '0'.$dd2 if length($dd2) < 2;
-  $ss2 = '0'.$ss2 if length($ss2) < 2;
-  $mm2 = '0'.$mm2 if length($mm2) < 2;
-  print "date = $yy2\/$mn2\/$dd2 and time = $hh2:$mm2:$ss2\n" if $timeBug;
-  my ($lst, $mjd) = ut2lst($yy2,$mn2,$dd2,$hh2,$mm2,$ss2,$array->tel()->long_by_rad());
+  $DATE =~ s/\/$//;
 
-  if ($self->type() =~ /planet/i) {
-    my $dia;
-    my $long =  $array->tel()->long_by_rad();
-    my $lat =  $array->tel()->lat_by_rad();
-    my $num = $self->planetnum();
-    &slaRdplan( $mjd, $num, $long, $lat, $ra, $dec, $dia);
-  } else {
-    ($ra, $dec) = $self->calcApp( $mjd );
-  }
+  my $strp = new DateTime::Format::Strptime(
+                 pattern => '%Y/%m/%d %H:%M:%S',
+                 time_zone => 'UTC',
+                 on_error => 'croak');
 
-  $array->lst($lst);
-  $array->ra_centre_by_rad($ra);
-  $array->dec_centre_by_rad($dec);
+  my $dt = $strp->parse_datetime($DATE . ' ' .  $TIME);
 
-  my ($elex, $eley) = $array->AzToRa(0, 30);
-  my ($azx, $azy) = $array->AzToRa(30, 0);
+  $dt->add(hours => 10);
 
-  return ($lst, $array->elevation_by_deg(),$array->azimuth_by_deg(), $array->par_angle_by_deg(), $elex, $eley, $azx, $azy);
+  return $self->_calcPoint($dt, $tel);
 }
+
+sub _calcPoint {
+  my $self = shift;
+  my $dt = shift;
+  my $tel = shift;
+
+  my $coords = $self->coords();
+  $coords->datetime($dt) if defined $dt;
+  $coords->telescope($tel) if defined $tel;
+
+  my $pa = $coords->pa(format => 'r');
+  my ($elex, $eley) = _axis_direction($pa, 0, 30);
+  my ($azx, $azy) = _axis_direction($pa, 30, 0);
+
+  return ($coords->_lst()->radians(),
+          $coords->el(format => 'd'),
+          $coords->az(format => 'd'),
+          $coords->pa(format => 'd'),
+          $elex, $eley, $azx, $azy);
+}
+
+# Based on the AzToRa function from the old
+# Astro::Instrument::SCUBA::Array module
+# by Casey Best (University of Victoria).
+sub _axis_direction {
+  my $pa = shift;
+  my $daz = shift;
+  my $del = shift;
+
+  my $x = -$daz * cos($pa) + $del * sin($pa);
+  my $y = $daz * sin($pa) + $del * cos($pa);
+  return ($x, $y);
+}
+
 
 =item erasePoints
 

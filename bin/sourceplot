@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-splot
+sourceplot
 
 =head1 PURPOSE
 
@@ -11,7 +11,7 @@ axes to be adjusted to many attributes of the observation
 
 =cut
 
-package App::sourceplot;
+package App::SourcePlot;
 
 require 5.004;
 
@@ -33,6 +33,7 @@ use Tk::SrcCatalog;
 use Astro::PAL;
 use Astro::Telescope;
 use Math::Trig;
+use Astro::Coords::Planet;
 
 my $MW = new MainWindow();
 $MW->positionfrom('user');
@@ -50,10 +51,7 @@ my $TODAY;
 my $TIME;
 my @SOURCE_LIST = ();
 my $CATALOG = 'default';
-my $defaultCatalog = "/local/progs/etc/poi.dat";
-$defaultCatalog = $ENV{SPLOT_CAT} if (exists $ENV{SPLOT_CAT});
-my @planets = qw/Sun Mercury Venus Moon Mars Jupiter
-                 Saturn Uranus Neptune Pluto/;
+my @planets = map {ucfirst($_)} Astro::Coords::Planet::planets();
 
 my $CATALOG_OPEN;
 my $EDIT_OPEN;
@@ -706,8 +704,6 @@ sub addPlanetSource {
   my $name = shift;
   my $number = shift;
   my $source = new App::SourcePlot::Source($name);
-  $source->type('planet');
-  $source->planetnum($number);
   if (!isWithin ($source, @SOURCE_LIST)) {
     $source->color(getColor());
     push (@SOURCE_LIST, $source);
@@ -769,10 +765,10 @@ sub getSource {
   $buttonF->Button(
                    -text         => 'Ok',
                    -command      => sub{
-                     $source->name($nameEnt->get);
-                     $source->ra($raEnt->get);
-                     $source->dec($decEnt->get);
-                     $source->epoc($epocEnt);
+                     $source->configure($nameEnt->get(),
+                                        $raEnt->get(),
+                                        $decEnt->get(),
+                                        $epocEnt);
                      destroy $Top;
                      $RESPONSE = 1;
                    }
@@ -2245,7 +2241,6 @@ sub calcTime {
 
       $source->timeDotX($x);
       $source->timeDotY($y);
-      $source->elevation($ele);
 
       $elex = $plotter->toWx($elex) - $plotter->toWx(0);
       $eley = $plotter->toWy($eley) - $plotter->toWy(0);
@@ -2487,6 +2482,7 @@ Pam Shimek (University of Victoria)
 
 
 =head1 COPYRIGHT
+
 Copyright (C) 1998, 1999 Particle Physics and Astronomy Research
 Council. All Rights Reserved.
 
