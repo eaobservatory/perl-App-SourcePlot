@@ -23,14 +23,14 @@ my $locateBug = 0;
 
 use Tk;
 use Tk::Balloon;
-#use Tk::ProgressBar;
 use Tk::FileSelect;
 use App::SourcePlot::Plotter::Tk;
 use DateTime;
 use DateTime::Format::Strptime;
 use App::SourcePlot::Defaults;
 use App::SourcePlot::Source;
-use Tk::SrcCatalog;
+use File::ShareDir qw/dist_file/;
+use Tk::AstroCatalog;
 use Astro::PAL;
 use Astro::Telescope;
 use Math::Trig;
@@ -51,7 +51,6 @@ $MW->update;
 my $TODAY;
 my $TIME;
 my @SOURCE_LIST = ();
-my $CATALOG = 'default';
 my @planets = map {ucfirst($_)} Astro::Coords::Planet::planets();
 
 my $CATALOG_OPEN;
@@ -273,9 +272,7 @@ $cBut = $buttonFrame->Button(
    -width        => 8,
    -command      => sub {
      if (!$CATALOG_OPEN) {
-       my $catalog = new Tk::SrcCatalog($MW, -addCmd => \&addCommand, -onDestroy => \&reset, -upDate => \&update_status);
-       $CATALOG_OPEN = 1;
-       $cBut->configure(-state=> 'disabled');
+       open_catalog();
      }
    }
 )->pack(-side=>'left');
@@ -290,10 +287,8 @@ print "made it to just before the windows come up\n" if $locateBug;
 $MW->update;
 
 $eBut->configure(-state=>'disabled');
-$cBut->configure(-state=>'disabled');
 &editSource ();
-my $catalog = new Tk::SrcCatalog($MW, -addCmd => \&addCommand, -onDestroy => \&reset, -upDate => \&update_status);
-$CATALOG_OPEN = 1;
+open_catalog();
 $EDIT_OPEN = 1;
 
 plot();
@@ -303,6 +298,17 @@ print "made it to just before the main loop\n" if $locateBug;
 
 MainLoop;
 
+sub open_catalog {
+  my $astrocat = new Astro::Catalog(Format => 'JCMT',
+                       File => dist_file('App-SourcePlot', 'jcmt.cat'),
+                       ReadOpt => {incplanets => 0});
+  my $catalog = new Tk::AstroCatalog($MW, -addCmd => \&addCommand,
+                   -onDestroy => \&reset, -upDate => \&update_status,
+                   -catalog => $astrocat);
+  $catalog->fillWithSourceList('full');
+  $CATALOG_OPEN = 1;
+  $cBut->configure(-state=> 'disabled');
+}
 
 sub reset
 {
@@ -319,8 +325,10 @@ sub addCommand
                 $LAST_COMMAND = 'Add';
                 @UNDO_LIST = ();
                 $undoBut->configure(-state => 'normal') if $EDIT_OPEN;
-                foreach $source (@$selected)
+                foreach my $coords (@$selected)
                 {
+                        $source = new App::SourcePlot::Source($coords);
+
                         if(!isWithin($source, @SOURCE_LIST))
                         {
                                 my $s = $source->copy();
@@ -353,7 +361,7 @@ sub isWithin {
   my @array = @_;
   my $len = @array;
   foreach (@array) {
-    if ($element->name() eq $_->name() && $element->ra() eq $_->ra() && $element->dec() eq $_->dec() && $element->epoc() eq $_->epoc()) {
+    if ($element->coords()->summary() eq $_->coords()->summary()) {
       return 1;
     }
   }
@@ -368,14 +376,13 @@ sub remove {
   my $flag = 0;
 
   for (my $index = 0; $index < $len; $index++) {
-    if ($element->name() eq $$array[$index]->name() && $element->ra() eq $$array[$index]->ra() && $element->dec() eq $$array[$index]->dec() && $element->epoc() eq $$array[$index]->epoc()) {
+    if ($element->coords()->summary() eq $$array[$index]->coords()->summary()) {
       $flag = -1;
     } else {
       $temp[$index+$flag] = $$array[$index];
     }
   }
   @$array = @temp;
-
 }
 
 sub update_status {
