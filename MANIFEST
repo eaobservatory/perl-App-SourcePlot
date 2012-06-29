@@ -6,3 +6,4 @@ lib/App/SourcePlot/Source.pm
 MANIFEST
 META.yml
 META.json
+t/calcpoint.t
