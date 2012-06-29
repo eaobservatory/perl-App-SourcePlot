@@ -298,6 +298,22 @@ print "made it to just before the main loop\n" if $locateBug;
 
 MainLoop;
 
+=begin __PRIVATE_METHODS__
+
+=head1 METHODS
+
+=over 4
+
+=item B<open_catalog>
+
+Creates an Astro::Catalog object by reading the JCMT catalog which is
+distributed with this module.  This catalog is then passed to the
+constructor of Tk::AstroCatalog to open a catalog window.
+
+Also sets the C<$CATALOG_OPEN> variable and disables the catalog button.
+
+=cut
+
 sub open_catalog {
   my $astrocat = new Astro::Catalog(Format => 'JCMT',
                        File => dist_file('App-SourcePlot', 'jcmt.cat'),
@@ -310,11 +326,29 @@ sub open_catalog {
   $cBut->configure(-state=> 'disabled');
 }
 
+=item B<reset>
+
+Resets status relating to the catalog window.
+
+Clears the C<$CATALOG_OPEN> variable and enables the catalog button.
+
+=cut
+
 sub reset
 {
         $CATALOG_OPEN = 0;
         $cBut->configure(-state=>'normal');
 }
+
+=item B<addCommand>
+
+This is the subroutine which is provided to C<Tk::AstroCatalog> to be called
+when a source should be added to the display.
+
+It recieves an C<Astro::Coords> object and uses it to construct an enclosing
+C<App::SourcePlot::Source> object.
+
+=cut
 
 sub addCommand
 {
@@ -344,8 +378,11 @@ sub addCommand
         }
 }
 
+=item B<waitForResponse>
 
+Waits until the C<$RESPONSE> variable has been changed.
 
+=cut
 
 sub waitForResponse {
   $RESPONSE = 'NOTHING';
@@ -355,6 +392,16 @@ sub waitForResponse {
   return 0 if $RESPONSE == -1;
   return $RESPONSE;
 }
+
+=item B<isWithin>
+
+Checks whether a source is already part of a list. The source is compared
+to sources from the list by invoking the C<summary> method on their
+C<Astro::Coords> objects.
+
+    next if isWithin($source, @list);
+
+=cut
 
 sub isWithin {
   my $element = shift;
@@ -367,6 +414,15 @@ sub isWithin {
   }
   return 0;
 }
+
+=item B<remove>
+
+Removes entries from the list which match the given source.  The comparison
+is performed in the same way as C<isWithin>.
+
+    remove($source, \@list)
+
+=cut
 
 sub remove {
   my $element = shift;
@@ -385,13 +441,22 @@ sub remove {
   @$array = @temp;
 }
 
+=item B<update_status>
+
+Invokes the update method of the main window.
+
+=cut
+
 sub update_status {
     $MW->update;
 }
 
+=item B<changeDate>
 
-############################################################
-# changes the date to a new date
+Changes the date to a new date.
+
+=cut
+
 sub changeDate {
 
   $dateBut->configure(-state => 'disabled');
@@ -489,6 +554,11 @@ sub changeDate {
   $MW->update;
 }
 
+=item B<changeOpt>
+
+Displays a window allowing the options to be changed.
+
+=cut
 
 sub changeOpt {
   my $name;
@@ -704,11 +774,15 @@ sub changeOpt {
   $MW->update;
 }
 
+=item B<addPlanetSource>
 
-############################################################
-#
-#  addplanetsource adds a planet source into the plotting list
-#
+Adds a planet source into the plotting list.  The planet number
+is currently unused.
+
+    addPlanetSource($name, $number);
+
+=cut
+
 sub addPlanetSource {
   my $name = shift;
   my $number = shift;
@@ -719,13 +793,15 @@ sub addPlanetSource {
   }
 }
 
-############################################################
-#
-#  getSource prompts the user to enter source coords and name
-#  Can specify previous source object to edit.
-#
-#  Returns a Source object
-#
+=item B<getSource>
+
+Prompts the user to enter source coords and name.
+Can specify previous source object to edit.
+
+Returns a Source object.
+
+=cut
+
 sub getSource {
   my $source = shift;
   my @Epocs = ('RJ', 'RB');
@@ -793,10 +869,13 @@ sub getSource {
   $Top->grab;
 }
 
-############################################################
-#  searchFor searches for sources that match the information
-#  passed in the form of a partially filled source object
-#
+=item B<searchFor>
+
+Searches for sources that match the information
+passed in the form of a partially filled source object.
+
+=cut
+
 sub searchFor {
   my $info = shift;
   my @Sources = @_;
@@ -889,11 +968,12 @@ sub searchFor {
   return @rSources;
 }
 
+=item B<editSource>
 
-############################################################
-#
-#  EditSource edits the existing source list
-#
+Edits the existing source list.
+
+=cut
+
 sub editSource {
   my (@selected) = ();
   my $udeb = 0;   #debugger
@@ -1124,10 +1204,12 @@ sub editSource {
   $MW->update;
 }
 
-############################################################
-#
-#  fills a Text box with the list of current sources
-#
+=item B<fillWithSourceList>
+
+Fills a Text box with the list of current sources.
+
+=cut
+
 sub fillWithSourceList {
   my(@bold, @normal);
   my $Window = shift;
@@ -1296,9 +1378,12 @@ sub fillWithSourceList {
 
 }
 
-############################################################
-#  plots the graphs, including axis
-#
+=item B<plot>
+
+Plots the graphs, including axis.
+
+=cut
+
 sub plot {
   print "Entered plot\n" if $locateBug;
   my ($xworldRatio, $yworldRatio);
@@ -2138,16 +2223,22 @@ sub plot {
   print "Exit plot\n" if $locateBug;
 }
 
+=item B<am_to_deg>
 
-###########################################################
-#  converts air mass to degrees
+Converts air mass to degrees.
+
+=cut
+
 sub am_to_deg {
         (180/pi)*asin(1/$_[0]);
 }
 
-############################################################
-#  returns a color
-#
+=item B<getColor>
+
+Returns a color.
+
+=cut
+
 sub getColor {
   my $color = $COLOR_LIST[$COLOR_INDEX];
   my $len = @COLOR_LIST;
@@ -2156,9 +2247,12 @@ sub getColor {
   return $color;
 }
 
-############################################################
-#  draws a dot at the current time on each source.
-#
+=item B<calcTime>
+
+Draws a dot at the current time on each source.
+
+=cut
+
 sub calcTime {
   $TIMER->cancel if defined $TIMER;
   my $so = shift;
@@ -2370,9 +2464,12 @@ sub calcTime {
   $TIMER = $MW->after($TimeLap, \&calcTime );
 }
 
-############################################################
-#  Configures all object with the tag name off or on
-#
+=item B<tagOnOff>
+
+Configures all object with the tag name off or on.
+
+=cut
+
 sub tagOnOff {
   my $tag = shift;
   my $turnOn = shift;
@@ -2414,9 +2511,12 @@ sub tagOnOff {
   }
 }
 
-############################################################
-#  Displays an error message in Tk
-#
+=item B<error>
+
+Displays an error message in Tk.
+
+=cut
+
 sub error {
   my $MW = shift;
   my $errWin = $MW->Toplevel(-borderwidth=>10);
@@ -2437,21 +2537,22 @@ sub error {
   $errWin->grab;
 }
 
-####################################################################
-#
-# Insert_With_Tags
-#
-# The procedure below inserts text into a given text widget and applies
-# one or more tags to that text.
-#
-# Parameters:
-#        $w  -  Window in which to insert
-#        $text  -  Text to insert (it's inserted at the "insert" mark)
-#        $args  -  One or more tags to apply to text.  If this is empty 
-#                  then all tags are removed from the text.
-#
-# Returns:  Nothing
-#
+=item B<inswt>
+
+The "Insert With Tags" procedure inserts text into a given text widget
+and applies one or more tags to that text.
+
+Parameters:
+
+    $w     -  Window in which to insert
+    $text  -  Text to insert (it's inserted at the "insert" mark)
+    $args  -  One or more tags to apply to text.  If this is empty 
+              then all tags are removed from the text.
+
+Returns:  Nothing
+
+=cut
+
 sub inswt {
 
     my($w, $text, @args) = @_;
@@ -2469,11 +2570,17 @@ sub inswt {
 
 __END__
 
+=back
+
+=end __PRIVATE_METHODS__
+
 =head1 AUTHORS
 
-Casey Best (University of Victoria)
-Pam Shimek (University of Victoria)
-
+Casey Best (University of Victoria),
+Pam Shimek (University of Victoria),
+Tim Jenness (Joint Astronomy Centre),
+Remo Tilanus (Joint Astronomy Centre),
+Graham Bell (Joint Astronomy Centre).
 
 =head1 COPYRIGHT
 
