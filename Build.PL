@@ -34,7 +34,7 @@ my $build = Module::Build->new
               'Graham Bell <g.bell@jach.hawaii.edu>',
               'Tim Jenness <tjenness@cpan.org>',
              ],
-   dist_version => '1.00',
+   dist_version => '1.17',
    meta_merge => {
                resources =>  {
                               repository => "git://github.com/timj/perl-App-SourcePlot.git",
@@ -47,7 +47,7 @@ my $build = Module::Build->new
                 'Astro::Coords'       => 0.12,
                 'Astro::Coords::Planet' => 0.05,
                 'Astro::Telescope'    => 0.71,
-                'Date::Manip'         => 5.0,
+                'DateTime'            => 0,
                },
    configure_requires => {
                           "Module::Build" => 0.30,

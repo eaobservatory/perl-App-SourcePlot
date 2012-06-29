@@ -26,7 +26,8 @@ use Tk::Balloon;
 #use Tk::ProgressBar;
 use Tk::FileSelect;
 use App::SourcePlot::Plotter::Tk;
-use Date::Manip;
+use DateTime;
+use DateTime::Format::Strptime;
 use App::SourcePlot::Defaults;
 use App::SourcePlot::Source;
 use Tk::SrcCatalog;
@@ -409,8 +410,11 @@ sub changeDate {
                     -text => "Month:"
                    )->grid(-column=>0, -row=>1, -padx =>5, -pady=>5);
 
-  my ($yy, $mm, $dd) = split (/\//, $DATE);
-  my $monthEnt = UnixDate ($mm.'/'.$dd.'/'.$yy, '%B');
+  my $strp = new DateTime::Format::Strptime(pattern => '%Y/%m/%d',
+                                  time_zone => 'UTC', on_error => 'croak');
+  my $dt = $strp->parse_datetime($DATE);
+  my $monthEnt = $months[$dt->month() - 1];
+
   my $mb = $topFrame->Menubutton( -text=>$monthEnt, -relief => 'raised', -width => 10);
   foreach $name (@months) {
     $mb->command(-label =>$name, -command=> sub{
@@ -427,23 +431,21 @@ sub changeDate {
   my $yearEnt = $topFrame->Entry(-relief=>'sunken',
                                  -width=>10)->grid(-column=>1, -row=>2, -padx =>10, -pady=>5);
   $yearEnt->bind('<KeyPress-Return>' =>sub {
-                     my $mo = UnixDate ("$monthEnt ".$dayEnt->get." ".$yearEnt->get, '%m');
-                     my $day = $dayEnt->get;
-                     $day = 1 if ($day < 1);
-                     $day = 31 if ($day >31);
-                     while (length $day < 2) {$day = "0$day";}
-                     $DATE = $yearEnt->get."\/$mo\/$day";
+                     my $strp = new DateTime::Format::Strptime(
+                       pattern => '%Y %B %d', on_error => 'croak');
+                     my $dt = $strp->parse_datetime($monthEnt . ' ' .
+                        $dayEnt->get() . ' ' . $yearEnt->get());
+                     $DATE = $dt->strftime('%Y/%m/%d');
                      destroy $Top;
                 });
 
   # create the update subroutine
-  my $complete = sub{
-    my $mo = UnixDate ("$monthEnt ".$dayEnt->get." ".$yearEnt->get, '%m');
-    my $day = $dayEnt->get;
-    $day = 1 if ($day < 1);
-    $day = 31 if ($day >31);
-    while (length $day < 2) {$day = "0$day";}
-    $DATE = $yearEnt->get."\/$mo\/$day";
+  my $complete = sub {
+    my $strp = new DateTime::Format::Strptime(
+                pattern => '%Y %B %d', on_error => 'croak');
+    my $dt = $strp->parse_datetime($monthEnt . ' ' .
+                $dayEnt->get() . ' ' . $yearEnt->get());
+    $DATE = $dt->strftime('%Y/%m/%d');
     foreach my $source (@SOURCE_LIST) {
       $source->erasePoints();
     }
@@ -474,8 +476,8 @@ sub changeDate {
                   )->pack(-side=>'right');
   $canBut->bind('<KeyPress-Return>' =>sub {destroy $Top; $dateBut->configure(-state => 'normal');});
 
-  $dayEnt->insert(0,$dd);
-  $yearEnt->insert(0,$yy);
+  $dayEnt->insert(0, $dt->day());
+  $yearEnt->insert(0, $dt->year());
 
   $MW->update;
 }
@@ -1314,37 +1316,30 @@ sub plot {
   # calc the world coords
   print "    Calculating the world coordinate system\n" if $locateBug;
   if ($X_AXIS =~ /time/i) {
-    my ($y, $mo, $d) = split (/\//, $DATE, 3);
-    my $offset = -2;
-    my $date;
-    if ($offset < 0) {
-      $date = DateCalc(ParseDate("$mo\/$d\/$y $TIME"), "$offset hours");
-    } else {
-      $date = DateCalc(ParseDate("$mo\/$d\/$y $TIME"), "+ $offset hours");
-    }
-    my ($yy2, $mn2, $dd2) = split (/ /, UnixDate($date, '%Y %m %d'));
-    my ($hh2, $mm2, $ss2) = split (/ /, UnixDate($date, '%H %M %S'));
-    $mn2 = '0'.$mn2 if length($mn2) < 2;
-    $dd2 = '0'.$dd2 if length($dd2) < 2;
-    $mm2 = '0'.$mm2 if length($mm2) < 2;
-    $ss2 = '0'.$ss2 if length($ss2) < 2;
-    my ($lst, $mjd) = ut2lst($yy2,$mn2,$dd2,$hh2,$mm2,$ss2,$telObject->long_by_rad());
-    $offset ++;
-    if ($offset < 0) {
-      $date = DateCalc(ParseDate("$mo\/$d\/$y $TIME"), "$offset hours");
-    } else {
-      $date = DateCalc(ParseDate("$mo\/$d\/$y $TIME"), "+ $offset hours");
-    }
-    ($yy2, $mn2, $dd2) = split (/ /, UnixDate($date, '%Y %m %d'));
-    ($hh2, $mm2, $ss2) = split (/ /, UnixDate($date, '%H %M %S'));
-    $mn2 = '0'.$mn2 if length($mn2) < 2;
-    $dd2 = '0'.$dd2 if length($dd2) < 2;
-    $mm2 = '0'.$mm2 if length($mm2) < 2;
-    $ss2 = '0'.$ss2 if length($ss2) < 2;
-    my ($lst2, $mjd2) = ut2lst($yy2,$mn2,$dd2,$hh2,$mm2,$ss2,$telObject->long_by_rad());
+    my $strp = new DateTime::Format::Strptime(
+                 pattern => '%Y/%m/%d %H:%M:%S',
+                 on_error => 'croak');
+
+    my $DATESTR = $DATE;
+    $DATESTR =~ s/\/$//;
+    my $dt = $strp->parse_datetime($DATESTR . ' ' . $TIME);
+
+    $dt->subtract(hours => 2);
+
+    my ($lst, $mjd) = ut2lst($dt->year(), $dt->month(), $dt->day(),
+                             $dt->hour(), $dt->minute(), $dt->second(),
+                             $telObject->long_by_rad());
+
+    $dt->add(hours => 1);
+
+    my ($lst2, $mjd2) = ut2lst($dt->year(), $dt->month(), $dt->day(),
+                               $dt->hour(), $dt->minute(), $dt->second(),
+                               $telObject->long_by_rad());
+
     if ($lst2 < $lst) {
       $lst2 += 2*pi;
     }
+
     $lstDiffX = $lst2 - $lst;
     $xworldRatio = (24*$lstDiffX)/($xplot - $xborder*2 - $XSpaceForTime);
     $minX = $lst;
@@ -1376,37 +1371,28 @@ sub plot {
     $maxX = 0;
   }
   if ($Y_AXIS =~ /time/i) {
-    my ($y, $mo, $d) = split (/\//, $DATE, 3);
-    my $offset = -2;
-    my $date;
-    if ($offset < 0) {
-      $date = DateCalc(ParseDate("$mo\/$d\/$y $TIME"), "$offset hours");
-    } else {
-      $date = DateCalc(ParseDate("$mo\/$d\/$y $TIME"), "+ $offset hours");
-    }
-    my ($yy2, $mn2, $dd2) = split (/ /, UnixDate($date, '%Y %m %d'));
-    my ($hh2, $mm2, $ss2) = split (/ /, UnixDate($date, '%H %M %S'));
-    $mn2 = '0'.$mn2 if length($mn2) < 2;
-    $dd2 = '0'.$dd2 if length($dd2) < 2;
-    $mm2 = '0'.$mm2 if length($mm2) < 2;
-    $ss2 = '0'.$ss2 if length($ss2) < 2;
-    my ($lst, $mjd) = ut2lst($yy2,$mn2,$dd2,$hh2,$mm2,$ss2,$telObject->long_by_rad());
-    $offset ++;
-    if ($offset < 0) {
-      $date = DateCalc(ParseDate("$mo\/$d\/$y $TIME"), "$offset hours");
-    } else {
-      $date = DateCalc(ParseDate("$mo\/$d\/$y $TIME"), "+ $offset hours");
-    }
-    ($yy2, $mn2, $dd2) = split (/ /, UnixDate($date, '%Y %m %d'));
-    ($hh2, $mm2, $ss2) = split (/ /, UnixDate($date, '%H %M %S'));
-    $mn2 = '0'.$mn2 if length($mn2) < 2;
-    $dd2 = '0'.$dd2 if length($dd2) < 2;
-    $mm2 = '0'.$mm2 if length($mm2) < 2;
-    $ss2 = '0'.$ss2 if length($ss2) < 2;
-    my ($lst2, $mjd2) = ut2lst($yy2,$mn2,$dd2,$hh2,$mm2,$ss2,$telObject->long_by_rad());
+    my $strp = new DateTime::Format::Strptime(
+                 pattern => '%Y/%m/%d %H:%M:%S',
+                 on_error => 'croak');
+
+    my $dt = $strp->parse_datetime($DATE . ' ' . $TIME);
+
+    $dt->subtract(hours => 2);
+
+    my ($lst, $mjd) = ut2lst($dt->year(), $dt->month(), $dt->day(),
+                             $dt->hour(), $dt->minute(), $dt->section(),
+                             $telObject->long_by_rad());
+
+    $dt->add(hours => 1);
+
+    my ($lst2, $mjd2) = ut2lst($dt->year(), $dt->month(), $dt->day(),
+                               $dt->hour(), $dt->minute(), $dt->section(),
+                               $telObject->long_by_rad());
+
     if ($lst2 < $lst) {
       $lst2 += 2*pi;
     }
+
     $lstDiffY = $lst2 - $lst;
     $yworldRatio = (-24*$lstDiffY)/($yplot - $yborder*2 - $YSpaceForTime);
     $maxY = $lst + 24 * $lstDiffY;
@@ -2184,16 +2170,17 @@ sub calcTime {
   print "The gm time is $hh:$mm:$ss and date is $yr\/$mo\/$md\n" if $timeBug;
 
   #calculate the local time
-  my $date = DateCalc(ParseDate("$mo\/$md\/$yr $hh:$mm:$ss"), "- 10 hours");
-  my ($yy2, $mn2, $dd2) = split (/ /, UnixDate($date, '%Y %m %d'));
-  my ($hh2, $mm2, $ss2) = split (/ /, UnixDate($date, '%H %M %S'));
-  $dd2 = '0'.$dd2 if length($dd2) < 2;
-  $mn2 = '0'.$mn2 if length($mn2) < 2;
-  $mm2 = '0'.$mm2 if length($mm2) < 2;
-  $ss2 = '0'.$ss2 if length($ss2) < 2;
-  my $t = "$hh2:$mm2:$ss2";
-  my $d = "$yy2\/$mn2\/$dd2";
-  my $time = $hh2+$mm2/60+$ss2/3600;
+  my $strp = new DateTime::Format::Strptime(
+                 pattern => '%Y/%m/%d %H:%M:%S',
+                 on_error => 'croak');
+
+  my $dt = $strp->parse_datetime("$yr\/$mo\/$md $hh:$mm:$ss");
+
+  $dt->subtract(hours => 10);
+
+  my $t = $dt->strftime('%H:%M:%S');
+  my $d = $dt->strftime('%Y/%m/%d');
+  #my $time = $hh2+$mm2/60+$ss2/3600;
 
   $plotter->drawColor ('white');
   foreach my $source (@SOURCE_LIST) {
