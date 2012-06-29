@@ -6,6 +6,10 @@ sourceplot - display a plot of astronomical sources on adjustable axes
 
 =head1 SYNOPSIS
 
+    sourceplot
+
+=head1 PURPOSE
+
 Source Plot was created to help observers decide which sources to observe
 at particular times to optimise the observing time at the telescope.
 The main purpose of this program is to plot the movement of a source
@@ -266,6 +270,12 @@ use Astro::PAL;
 use Astro::Telescope;
 use Math::Trig;
 use Astro::Coords::Planet;
+use Pod::Usage;
+use Getopt::Long;
+
+my $option_help;
+GetOptions('help|man' => \$option_help) or pod2usage(-verbose => 0);
+pod2usage(-verbose => 2) if $option_help;
 
 my $MW = new MainWindow();
 $MW->positionfrom('user');
