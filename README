@@ -1,0 +1,42 @@
+App::SourcePlot
+===============
+
+Source Plot was created to help observers decide which sources to observe
+at particular times to optimize the observing time at the telescope.
+The main purpose of this program is to plot the movement of a source
+throughout the night.  The movement can be plotted by the source's
+elevation, azimuth, parallactic angle, or by time.
+
+Requirements
+------------
+
+  Tk
+  Astro::Coords
+  Astro::Catalog
+  Astro::Telescope
+  Astro::PAL
+  DateTime
+
+Building
+--------
+
+  perl Build.PL
+  ./Build
+  ./Build test
+  ./Build install
+
+Changes
+-------
+
+ v1.00 - Initial version.
+
+ v1.03 - Load settings from the .splotcfg file.
+
+ v1.08 - Draw RA-Dec box with Az-El vectors.
+
+ v1.11 - Y2K compliant.
+
+ v1.15 - Updated Tk parameter names for Perl 5.8 and Tk 804.
+
+ v1.17 - Updated to use Astro::Coords and Astro::Catalog.
+
