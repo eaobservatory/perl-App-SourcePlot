@@ -755,7 +755,7 @@ sub changeDate {
   # create the update subroutine
   my $complete = sub {
     my $strp = new DateTime::Format::Strptime(
-                pattern => '%Y %B %d', on_error => 'croak');
+                pattern => '%B %d %Y', on_error => 'croak');
     my $dt = $strp->parse_datetime($monthEnt . ' ' .
                 $dayEnt->get() . ' ' . $yearEnt->get());
     $DATE = $dt->strftime('%Y/%m/%d');
