@@ -778,16 +778,23 @@ sub changeDate {
   $buttonF = $F->Frame->pack(-side => 'right', -padx => 5, -pady => 10);
   my $okBut = $buttonF->Button(
                    -text         => 'Accept',
-                   -command      => sub {&$complete; destroy $Top; $dateBut->configure(-state => 'normal');}
+                   -command      => sub {&$complete; destroy $Top;}
                   )->pack(-side=>'right');
-  $okBut->bind('<KeyPress-Return>' => sub {&$complete; destroy $Top; $dateBut->configure(-state => 'normal');});
+  $okBut->bind('<KeyPress-Return>' => sub {&$complete; destroy $Top;});
 
   # create the cancel button
   my $canBut = $buttonF->Button(
                    -text         => 'Cancel',
-                   -command      => sub{destroy $Top; $dateBut->configure(-state => 'normal');}
+                   -command      => sub{destroy $Top;}
                   )->pack(-side=>'right');
-  $canBut->bind('<KeyPress-Return>' =>sub {destroy $Top; $dateBut->configure(-state => 'normal');});
+  $canBut->bind('<KeyPress-Return>' =>sub {destroy $Top;});
+
+  # Closing the window should reset $dateBut.
+  $Top->bind('<Destroy>', sub {
+    my $widget = shift;
+    return unless $widget == $Top;
+    $dateBut->configure(-state => 'normal');
+  });
 
   $dayEnt->insert(0, $dt->day());
   $yearEnt->insert(0, $dt->year());
@@ -970,7 +977,6 @@ sub changeOpt {
   $buttonF->Button(
                    -text         => 'Accept',
                    -command      => sub{
-                     $optBut->configure(-state => 'normal');
                      $X_AXIS = $xEnt;
                      $Y_AXIS = $yEnt;
                      if ($TEL ne $telEnt || $TIME ne $timeEnt) {
@@ -993,10 +999,16 @@ sub changeOpt {
   $buttonF->Button(
                    -text         => 'Cancel',
                    -command      => sub{
-                     $optBut->configure(-state => 'normal');
                      destroy $Top;
                    }
                   )->pack(-side=>'right');
+
+  # Closing the window should reset $optBut.
+  $Top->bind('<Destroy>', sub {
+    my $widget = shift;
+    return unless $widget == $Top;
+    $optBut->configure(-state => 'normal');
+  });
 
   $buttonF->Button(
                    -text         => 'Save Setting',
@@ -1260,13 +1272,19 @@ sub editSource {
                    -text         => 'Done',
                    -width        => 4,
                    -command      => sub{
-                     $eBut->configure(-state=>'normal');
-                     $EDIT_OPEN = 0;
                      destroy $Top;
                    }
                   )->pack(-side=>'right');
   $balloon->attach($doneBut,
                  -balloonmsg => "Press to close the Edit Window");
+
+  # Closing the window should reset $eBut.
+  $Top->bind('<Destroy>', sub {
+    my $widget = shift;
+    return unless $widget == $Top;
+    $eBut->configure(-state=>'normal');
+    $EDIT_OPEN = 0;
+  });
 
   # create the On / Off button
   my $OOBut = $buttonF->Button( -text=>'ON/Off',
