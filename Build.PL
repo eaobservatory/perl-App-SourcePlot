@@ -33,17 +33,22 @@ my $build = Module::Build->new
    dist_author => [
               'Graham Bell <g.bell@jach.hawaii.edu>',
               'Tim Jenness <tjenness@cpan.org>',
+              'Remo Tilanus <r.tilanus@jach.hawaii.edu>',
+              'Pam Shimek <pshimek@uvic.ca>',
+              'Casey Best <cbest@uvic.ca>',
              ],
    dist_version => '1.17',
    meta_merge => {
                resources =>  {
-                              repository => "git://github.com/timj/perl-App-SourcePlot.git",
-                              homepage => "http://github.com/timj/perl-App-SourcePlot/tree/master",
+                              repository => "git://github.com/grahambell/perl-App-SourcePlot.git",
+                              homepage => "http://github.com/grahambell/perl-App-SourcePlot/tree/master",
                              },
                 },
    requires => {
                 'Tk'                  => '804.0',
+                'Tk::AstroCatalog'    => 0.12,
                 'Astro::PAL'          => '1.00',
+                'Astro::Catalog'      => 2.01,
                 'Astro::Coords'       => 0.12,
                 'Astro::Coords::Planet' => 0.05,
                 'Astro::Telescope'    => 0.71,

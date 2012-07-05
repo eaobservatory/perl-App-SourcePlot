@@ -16,6 +16,7 @@ Requirements
   Astro::Telescope
   Astro::PAL
   DateTime
+  File::ShareDir
 
 Building
 --------
