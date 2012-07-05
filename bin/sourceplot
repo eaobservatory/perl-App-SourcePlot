@@ -1364,12 +1364,12 @@ sub editSource {
                        }
                      } elsif ($LAST_COMMAND eq 'Change') {
                        print "Last command was changed\n" if $udeb;
-                       my $chan = pop (@UNDO_LIST);
+                       my $source = pop (@UNDO_LIST);
                        my $orig = pop (@UNDO_LIST);
-                       remove ($chan, \@SOURCE_LIST);
-                       print "Removin ".$chan->name."\n" if $udeb;
-                       push (@SOURCE_LIST, $orig);
-                       print "Placing ".$orig->name." back\n" if $udeb;
+                       print "Reconfiguring ".$source->name."\n" if $udeb;
+                       $source->configure($orig);
+                       print "Clearing ".$source->name."\n" if $udeb;
+                       $source->erasePoints();
                      }
                      $LAST_COMMAND = '';
                      @UNDO_LIST = ();
@@ -1568,8 +1568,7 @@ sub fillWithSourceList {
         $T->tag('bind', $dtag, '<Double-1>' => sub {
                   my $source = $sources[substr($dtag,1,99)];
                   $LAST_COMMAND = 'Change';
-                  @UNDO_LIST = ();
-                  push (@UNDO_LIST, $source->copy);
+                  @UNDO_LIST = ($source->coords());
                   &getSource ($source);
                   my $res = &waitForResponse();
                   if( $res ) {
