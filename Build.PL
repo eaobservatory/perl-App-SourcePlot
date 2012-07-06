@@ -53,6 +53,7 @@ my $build = Module::Build->new
                 'Astro::Coords::Planet' => 0.05,
                 'Astro::Telescope'    => 0.71,
                 'DateTime'            => 0,
+                'File::ShareDir'      => 1.03,
                },
    configure_requires => {
                           "Module::Build" => 0.30,
