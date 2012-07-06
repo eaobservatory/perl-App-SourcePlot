@@ -6,7 +6,7 @@ sourceplot - display a plot of astronomical sources on adjustable axes
 
 =head1 SYNOPSIS
 
-    sourceplot
+    sourceplot [--help | --version]
 
 =head1 PURPOSE
 
@@ -269,9 +269,16 @@ use Astro::Coords::Planet 0.05;
 use Pod::Usage;
 use Getopt::Long;
 
-my $option_help;
-GetOptions('help|man' => \$option_help) or pod2usage(-verbose => 0);
+my ($option_help, $option_version);
+GetOptions('help|man' => \$option_help,
+           'version' => \$option_version)
+  or pod2usage(-verbose => 0);
 pod2usage(-verbose => 2) if $option_help;
+
+if ($option_version) {
+  print 'SourcePlot version ' . $VERSION . "\n";
+  exit(0);
+}
 
 my $MW = new MainWindow();
 $MW->positionfrom('user');
