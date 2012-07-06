@@ -265,7 +265,7 @@ use Tk::AstroCatalog;
 use Astro::PAL;
 use Astro::Telescope;
 use Math::Trig;
-use Astro::Coords::Planet;
+use Astro::Coords::Planet 0.05;
 use Pod::Usage;
 use Getopt::Long;
 
