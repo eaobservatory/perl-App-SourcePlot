@@ -3,6 +3,7 @@
 use strict;
 
 use Test::More tests => 8000;
+use Test::Number::Delta within => 0.0001;
 
 use App::SourcePlot::Source;
 use Astro::Telescope;
@@ -21,13 +22,8 @@ foreach (<DATA>) {
   my @out = $s->calcPoint($date, $time, $jcmt);
 
   for (my $i = 0; $i < 8; $i ++) {
-    is_nearly($out[$i], $ref[$i], $col[$i] . '_' . $n);
+    delta_ok($out[$i], $ref[$i], $col[$i] . '_' . $n);
   }
-}
-
-sub is_nearly {
-  my ($a, $b, $name) = @_;
-  ok(abs($a - $b) < 0.0001, $name . ' (got ' . $a . ' expected ' . $b . ')');
 }
 
 # The following test data was created from App::SourcePlot::Source before

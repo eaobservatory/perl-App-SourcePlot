@@ -3,6 +3,7 @@
 use strict;
 
 use Test::More tests => 1 + 20 * 97 * 4;
+use Test::Number::Delta within => 0.01;
 
 use Astro::Telescope;
 my $jcmt = new Astro::Telescope('JCMT');
@@ -43,16 +44,11 @@ while (1) {
   }
 
   for (my $i = 0; $i < $num_points; $i ++) {
-    is_nearly($time_el_calc[2 * $i],     $time_el_ref[2 * $i],     "Test $n point $i LST");
-    is_nearly($time_el_calc[2 * $i + 1], $time_el_ref[2 * $i + 1], "Test $n point $i EL");
-    is_nearly(  $az_pa_calc[2 * $i],       $az_pa_ref[2 * $i],     "Test $n point $i AZ");
-    is_nearly(  $az_pa_calc[2 * $i + 1],   $az_pa_ref[2 * $i + 1], "Test $n point $i PA");
+    delta_ok($time_el_calc[2 * $i],     $time_el_ref[2 * $i],     "Test $n point $i LST");
+    delta_ok($time_el_calc[2 * $i + 1], $time_el_ref[2 * $i + 1], "Test $n point $i EL");
+    delta_ok(  $az_pa_calc[2 * $i],       $az_pa_ref[2 * $i],     "Test $n point $i AZ");
+    delta_ok(  $az_pa_calc[2 * $i + 1],   $az_pa_ref[2 * $i + 1], "Test $n point $i PA");
   }
-}
-
-sub is_nearly {
-  my ($a, $b, $name) = @_;
-  ok(abs($a - $b) < 0.01, $name . ' (got ' . $a . ' expected ' . $b . ')');
 }
 
 # Dummy class to give to calcPoints as a "Main Window".
