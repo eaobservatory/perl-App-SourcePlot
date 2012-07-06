@@ -46,11 +46,9 @@ my $build = Module::Build->new
                 },
    requires => {
                 'Tk'                  => '804.0',
-                'Tk::AstroCatalog'    => 0.12,
                 'Astro::PAL'          => '1.00',
-                'Astro::Catalog'      => 2.01,
-                'Astro::Coords'       => 0.12,
-                'Astro::Coords::Planet' => 0.05,
+                'Astro::Catalog'      => 4.23,
+                'Astro::Coords'       => 0.15,
                 'Astro::Telescope'    => 0.71,
                 'DateTime'            => 0,
                 'File::ShareDir'      => 1.03,
