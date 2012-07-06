@@ -7,4 +7,6 @@ README
 MANIFEST
 META.yml
 META.json
+share/jcmt.cat
 t/calcpoint.t
+t/calcpoints.t
