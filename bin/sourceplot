@@ -246,10 +246,6 @@ sourceplot when it starts up.
 
 =cut
 
-package App::SourcePlot;
-
-require 5.004;
-
 use strict;
 #use warnings;
 
