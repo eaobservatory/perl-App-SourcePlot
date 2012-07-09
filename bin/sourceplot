@@ -280,18 +280,9 @@ if ($option_version) {
   exit(0);
 }
 
-my $MW = new MainWindow();
-$MW->positionfrom('user');
-$MW->geometry('+0+90');
-$MW->title('Source Plot');
-$MW->resizable(0, 0);
-$MW->iconname('Source Plot');
-$MW->update;
-
-
-
 #global variables that will be used....
 
+my $MW;
 my $TODAY;
 my $TIME;
 my @SOURCE_LIST = ();
@@ -316,56 +307,24 @@ my %defaults = (
                 TIME => '1:30:00'
                 );
 
-# setting up default values for Source Plot Options
-my $defaults = new App::SourcePlot::Defaults();
-$defaults->file('.splotcfg');
-$defaults->r_defaults(\%defaults);
-my $TEL = $defaults->values('TEL');
-my $X_AXIS = $defaults->values('XAXIS');
-my $Y_AXIS = $defaults->values('YAXIS');
-my $TIME = $defaults->values('TIME');
-chomp($X_AXIS);
-chomp($Y_AXIS);
-chomp($TIME);
-chomp($TEL);
-my $telObject = new Astro::Telescope($TEL);
-
+my $plotter;
+my $TEL;
+my $X_AXIS;
+my $Y_AXIS;
+my $DATE;
+my $telObject;
 my ($minX,$minY);
 my ($maxX,$maxY);
 
 my $NUM_POINTS = 97;
-
 my $BUSY = 0;
 
 my $TIMER;
-
-##### global windows
+my @COLOR_LIST = qw/#ffaaaa #00ff00 #ff55ff #ffff00 #00ffff #ff00ff #ffffff #ff5555 #55ff55 #55ffff #ffff55/;
+my $COLOR_INDEX = 0;
 
 my $EditWin = {};
 my $CatWin = {};
-$EditWin->{'Changeable'} = 1;
-$CatWin->{'Changeable'} = 0;
-
-my $RESPONSE;
-
-my @COLOR_LIST = qw/#ffaaaa #00ff00 #ff55ff #ffff00 #00ffff #ff00ff
-                    #ffffff #ff5555 #55ff55 #55ffff #ffff55/;
-my $COLOR_INDEX = 0;
-my $H_LIGHT = undef;
-my $H_WIDTH = 3;
-
-#create the balloon used for help
-my $balloon = $MW->Balloon();
-
-# set the date to the current date
-my ($ss, $mm, $hh, $md, $mo, $yr, $wd, $yd, $isdst) = gmtime(time);
-$mo++;   # this catches the month up to the current date
-$mo = '0'.$mo if length($mo) < 2;
-$md = '0'.$md if length($md) < 2;
-$yr += 1900;
-my $DATE = "$yr\/$mo\/$md\/";
-$TODAY = $DATE;
-$TIME = "1:30:00";
 
 #setup dimensions
 my $xplot = 590;
@@ -373,174 +332,229 @@ my $xborder = 50;
 my $yplot = 550;
 my $yborder = 30;
 
-my $canFrame = $MW->Frame(
-                   -takefocus => 1,
-                   -width => $xplot,
-);
+my $RESPONSE;
+my $H_LIGHT = undef;
+my $H_WIDTH = 3;
 
-# Create a canvas and calculate the world to pixel ratio
-my $plotter = new App::SourcePlot::Plotter::Tk($xplot, $yplot, 1, 1, $canFrame);
-$plotter->setBackground('black');
-$plotter->worldCenter($xborder, $yplot-$yborder);
-$plotter->usingWorld(1);
+my $optBut;
+my $dateBut;
+my $eBut;
+my $defaults;
+my $balloon;
 
-# Set up the X Y coordinate feedback
-#my ($XPOS, $YPOS);
-#$plotter->monitorXY( \$XPOS, \$YPOS );
+main();
 
-my $buttonFrame = $MW->Frame(
-                   -takefocus => 1,
-                   -width =>$xplot
-);
+sub main {
+  # setting up default values for Source Plot Options
+  $defaults = new App::SourcePlot::Defaults();
+  $defaults->file('.splotcfg');
+  $defaults->r_defaults(\%defaults);
+  $TEL = $defaults->values('TEL');
+  $X_AXIS = $defaults->values('XAXIS');
+  $Y_AXIS = $defaults->values('YAXIS');
+  $TIME = $defaults->values('TIME');
+  chomp($X_AXIS);
+  chomp($Y_AXIS);
+  chomp($TIME);
+  chomp($TEL);
+  $telObject = new Astro::Telescope($TEL);
 
-my $exitBut = $buttonFrame->Button(
-   -text         => 'Exit',
-   -width        => 8,
-   -command      => sub{destroy $MW;}
-)->pack(-side=>'right');
-$balloon->attach($exitBut,
-                 -balloonmsg => "Press to Exit program");
 
-my $printBut = $buttonFrame->Button(
-   -text         => 'Print',
-   -width        => 8,
-   -command      => sub{
-     my $choice = 'printer';
+  ##### global windows
 
-     my $Top = $MW->Toplevel();
-     $Top->title('Source Plot Printer Options');
-     $Top->resizable(0,0);
-     my $radf = $Top->Frame()->pack(-padx=>10, -pady=>10, -side=>'top');
-     my $tf = $Top->Frame(-relief=>'groove', -borderwidth =>2)->pack(-padx=>10, -side=>'top');
+  $MW = new MainWindow();
+  $MW->positionfrom('user');
+  $MW->geometry('+0+90');
+  $MW->title('Source Plot');
+  $MW->resizable(0, 0);
+  $MW->iconname('Source Plot');
+  $MW->update;
 
-     # create the radio button for the file option
-     my $radbut = $radf->Radiobutton( -text => "To File",
-        -value => 'file',
-        -variable => \$choice );
-     $radbut->grid(-column=>0, -row=>0, -padx => 10);
+  $EditWin->{'Changeable'} = 1;
+  $CatWin->{'Changeable'} = 0;
 
-     # create the print radio button
-     my $radbut2 = $radf->Radiobutton( -text => "To Printer",
-        -value => 'printer',
-        -variable => \$choice );
-     $radbut2->grid(-column=>1, -row=>0, -padx => 10);
+  #create the balloon used for help
+  $balloon = $MW->Balloon();
 
-     # create the file entry
-     $tf->Label (
-         -text => "Filename",
-         -justify => 'right'
-       )->grid(-sticky => 'e', -column=>2, -row=>0);
-     my $fileEnt = $tf->Entry(-relief=>'sunken',
-       -width=>20)->grid(-column=>3, -row=>0, -padx =>10, -pady=>5);
+  # set the date to the current date
+  my ($ss, $mm, $hh, $md, $mo, $yr, $wd, $yd, $isdst) = gmtime(time);
+  $mo++;   # this catches the month up to the current date
+  $mo = '0'.$mo if length($mo) < 2;
+  $md = '0'.$md if length($md) < 2;
+  $yr += 1900;
+  $DATE = "$yr\/$mo\/$md\/";
+  $TODAY = $DATE;
+  $TIME = "1:30:00";
 
-     # create the printer options box
-     $tf->Label (
-         -text => "Printer Command",
-         -justify => 'right'
-       )->grid(-column=>2, -row=>1, -sticky=>'e');
-     my $printerEnt = 'lp';
-     $tf->Entry(-relief=>'sunken',
-                -textvariable=>\$printerEnt,
-       -width=>20)->grid(-column=>3, -row=>1, -padx =>10, -pady=>5);
+  my $canFrame = $MW->Frame(
+                     -takefocus => 1,
+                     -width => $xplot,
+  );
 
-     # create the print button
-     my $bf = $Top->Frame()->pack(-side=>'bottom', -pady=>10, -padx=>10);
-     $bf->Button(
-       -text         => 'Print',
-       -width        => 8,
-       -command      => sub {
-         tagOnOff('white', 1, 'dark green');
-         tagOnOff('black', 1, 'white');
-         foreach my $source (@SOURCE_LIST) {
-           tagOnOff($source->name(), 1, 'dark green');
+  # Create a canvas and calculate the world to pixel ratio
+  $plotter = new App::SourcePlot::Plotter::Tk($xplot, $yplot, 1, 1, $canFrame);
+  $plotter->setBackground('black');
+  $plotter->worldCenter($xborder, $yplot-$yborder);
+  $plotter->usingWorld(1);
+
+  # Set up the X Y coordinate feedback
+  #my ($XPOS, $YPOS);
+  #$plotter->monitorXY( \$XPOS, \$YPOS );
+
+  my $buttonFrame = $MW->Frame(
+                     -takefocus => 1,
+                     -width =>$xplot
+  );
+
+  my $exitBut = $buttonFrame->Button(
+     -text         => 'Exit',
+     -width        => 8,
+     -command      => sub{destroy $MW;}
+  )->pack(-side=>'right');
+  $balloon->attach($exitBut,
+                   -balloonmsg => "Press to Exit program");
+
+  my $printBut = $buttonFrame->Button(
+     -text         => 'Print',
+     -width        => 8,
+     -command      => sub{
+       my $choice = 'printer';
+
+       my $Top = $MW->Toplevel();
+       $Top->title('Source Plot Printer Options');
+       $Top->resizable(0,0);
+       my $radf = $Top->Frame()->pack(-padx=>10, -pady=>10, -side=>'top');
+       my $tf = $Top->Frame(-relief=>'groove', -borderwidth =>2)->pack(-padx=>10, -side=>'top');
+
+       # create the radio button for the file option
+       my $radbut = $radf->Radiobutton( -text => "To File",
+          -value => 'file',
+          -variable => \$choice );
+       $radbut->grid(-column=>0, -row=>0, -padx => 10);
+
+       # create the print radio button
+       my $radbut2 = $radf->Radiobutton( -text => "To Printer",
+          -value => 'printer',
+          -variable => \$choice );
+       $radbut2->grid(-column=>1, -row=>0, -padx => 10);
+
+       # create the file entry
+       $tf->Label (
+           -text => "Filename",
+           -justify => 'right'
+         )->grid(-sticky => 'e', -column=>2, -row=>0);
+       my $fileEnt = $tf->Entry(-relief=>'sunken',
+         -width=>20)->grid(-column=>3, -row=>0, -padx =>10, -pady=>5);
+
+       # create the printer options box
+       $tf->Label (
+           -text => "Printer Command",
+           -justify => 'right'
+         )->grid(-column=>2, -row=>1, -sticky=>'e');
+       my $printerEnt = 'lp';
+       $tf->Entry(-relief=>'sunken',
+                  -textvariable=>\$printerEnt,
+         -width=>20)->grid(-column=>3, -row=>1, -padx =>10, -pady=>5);
+
+       # create the print button
+       my $bf = $Top->Frame()->pack(-side=>'bottom', -pady=>10, -padx=>10);
+       $bf->Button(
+         -text         => 'Print',
+         -width        => 8,
+         -command      => sub {
+           tagOnOff('white', 1, 'dark green');
+           tagOnOff('black', 1, 'white');
+           foreach my $source (@SOURCE_LIST) {
+             tagOnOff($source->name(), 1, 'dark green');
+           }
+           if ($choice eq 'printer') {
+             $plotter->printCanvas($choice, $printerEnt, $MW);
+           } else {
+             $plotter->printCanvas($choice, $fileEnt->get, $MW);
+           }
+           tagOnOff('white', 1, 'white');
+           tagOnOff('black', 1, 'black');
+           foreach my $source (@SOURCE_LIST) {
+             tagOnOff($source->name(), 1, $source->color());
+           }
+           destroy $Top;
          }
-         if ($choice eq 'printer') {
-           $plotter->printCanvas($choice, $printerEnt, $MW);
-         } else {
-           $plotter->printCanvas($choice, $fileEnt->get, $MW);
-         }
-         tagOnOff('white', 1, 'white');
-         tagOnOff('black', 1, 'black');
-         foreach my $source (@SOURCE_LIST) {
-           tagOnOff($source->name(), 1, $source->color());
-         }
-         destroy $Top;
+       )->pack(-side=>'right', -padx => 10);
+
+       my $optBut = $bf->Button(
+         -text         => 'Cancel',
+         -width        => 8,
+         -command      => sub {destroy $Top;}
+       )->pack(-side=>'right', -padx =>10);
+
+       $Top->update;
+       $Top->grab;
+     })->pack(-side=>'right');
+  $balloon->attach($printBut,
+                   -balloonmsg => "Press to print the graph");
+
+  $optBut = $buttonFrame->Button(
+     -text         => 'Options',
+     -width        => 8,
+     -command      => \&changeOpt
+  )->pack(-side=>'left');
+  $balloon->attach($optBut,
+                   -balloonmsg => "Press to change the x and y axes");
+
+  $dateBut = $buttonFrame->Button(
+     -text         => 'UT Date',
+     -width        => 8,
+     -command      => \&changeDate
+  )->pack(-side=>'left');
+  $balloon->attach($dateBut,
+                   -balloonmsg => "Press to change the UT date");
+
+  print "made it to just before the menu button, planet\n" if $locateBug;
+
+  $eBut = $buttonFrame->Button(
+     -text         => 'Edit',
+     -width        => 8,
+     -command      => sub {
+       if (!$EDIT_OPEN) {
+         $EDIT_OPEN = 1;
+         &editSource ();
        }
-     )->pack(-side=>'right', -padx => 10);
-
-     my $optBut = $bf->Button(
-       -text         => 'Cancel',
-       -width        => 8,
-       -command      => sub {destroy $Top;}
-     )->pack(-side=>'right', -padx =>10);
-
-     $Top->update;
-     $Top->grab;
-   })->pack(-side=>'right');
-$balloon->attach($printBut,
-                 -balloonmsg => "Press to print the graph");
-
-my $optBut = $buttonFrame->Button(
-   -text         => 'Options',
-   -width        => 8,
-   -command      => \&changeOpt
-)->pack(-side=>'left');
-$balloon->attach($optBut,
-                 -balloonmsg => "Press to change the x and y axes");
-
-my $dateBut = $buttonFrame->Button(
-   -text         => 'UT Date',
-   -width        => 8,
-   -command      => \&changeDate
-)->pack(-side=>'left');
-$balloon->attach($dateBut,
-                 -balloonmsg => "Press to change the UT date");
-
-print "made it to just before the menu button, planet\n" if $locateBug;
-
-my $eBut = $buttonFrame->Button(
-   -text         => 'Edit',
-   -width        => 8,
-   -command      => sub {
-     if (!$EDIT_OPEN) {
-       $EDIT_OPEN = 1;
-       &editSource ();
      }
-   }
-)->pack(-side=>'left');
-$balloon->attach($eBut,
-                 -balloonmsg => "Press to open the Edit Window");
+  )->pack(-side=>'left');
+  $balloon->attach($eBut,
+                   -balloonmsg => "Press to open the Edit Window");
 
-$cBut = $buttonFrame->Button(
-   -text         => 'Catalog',
-   -width        => 8,
-   -command      => sub {
-     if (!$CATALOG_OPEN) {
-       open_catalog();
+  $cBut = $buttonFrame->Button(
+     -text         => 'Catalog',
+     -width        => 8,
+     -command      => sub {
+       if (!$CATALOG_OPEN) {
+         open_catalog();
+       }
      }
-   }
-)->pack(-side=>'left');
-$balloon->attach($cBut,
-                 -balloonmsg => "Press to open the Catalog Window");
+  )->pack(-side=>'left');
+  $balloon->attach($cBut,
+                   -balloonmsg => "Press to open the Catalog Window");
 
-$canFrame->grid(qw/-sticky nsew/);
-$buttonFrame->grid(qw/-sticky nsew/);
+  $canFrame->grid(qw/-sticky nsew/);
+  $buttonFrame->grid(qw/-sticky nsew/);
 
-print "made it to just before the windows come up\n" if $locateBug;
+  print "made it to just before the windows come up\n" if $locateBug;
 
-$MW->update;
+  $MW->update;
 
-$eBut->configure(-state=>'disabled');
-&editSource ();
-open_catalog();
-$EDIT_OPEN = 1;
+  $eBut->configure(-state=>'disabled');
+  &editSource ();
+  open_catalog();
+  $EDIT_OPEN = 1;
 
-plot();
-calcTime();
+  plot();
+  calcTime();
 
-print "made it to just before the main loop\n" if $locateBug;
+  print "made it to just before the main loop\n" if $locateBug;
 
-MainLoop;
+  MainLoop;
+}
 
 =begin __PRIVATE_METHODS__
 
