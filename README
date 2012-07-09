@@ -69,3 +69,4 @@ Changes
 
  v1.17 - Updated to use Astro::Coords and Astro::Catalog.
 
+ v1.18 - Moved application code to an App/SourcePlot.pm module.
