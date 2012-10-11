@@ -107,7 +107,7 @@
 * 2009 Dec 09 - CAW change the holo source position
 * 2010 Feb 09 - Adjusted coordinates for  W3(OH)
 * 2012 Jan 12 - Add SCUBA-2 calibrators
-*
+* 2012 Oct 10 - Update CENA coords to match SMA
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 * SCUBA-2 CALIBRATORS
 * SOURCE        RA            DEC          EQUI  VEL    FLUX  RANGE  FRAME DEF   Comments
@@ -258,7 +258,7 @@ BLLAC           22 02 43.291 + 42 16 39.98 RJ    n/a     4.4   n/a   LSR  RADIO 
 *
 0954+556        09 54 14.355 + 55 37 16.35 RB    n/a     0.2   n/a   LSR  RADIO [c] 2.6 - 0.2 Jy (2005 Jan)
 1219+285        12 19 01.12  + 28 30 36.45 RB    n/a     0.3   n/a   LSR  RADIO [c] 0.2 - 0.4 Jy (2001 Jul)
-CENA            13 22 31.8   - 42 45 30.0  RB    n/a     9.9   n/a   LSR  RADIO [c] 7.3 - 9.9 Jy (2003 May-Jul)
+CENA            13 25 27.616 - 43 01 08.80 RB    n/a     9.9   n/a   LSR  RADIO [c] 7.3 - 9.9 Jy (2003 May-Jul)
 1716+686        17 16 27.84  + 68 39 48.3  RB    n/a     0.3   n/a   LSR  RADIO [c] 0.3 -     Jy (2004 Oct)
 CygA            19 57 44.6   + 40 35 45.9  RB    n/a     0.7   n/a   LSR  RADIO [c] 
 *
