@@ -109,6 +109,7 @@
 * 2012 Jan 12 - Add SCUBA-2 calibrators
 * 2012 Oct 10 - Update CENA coords to match SMA
 * 2012 Oct 10 - Add SMA fluxes to comments if over 1 Jy or SMA data taken in 2012.
+* 2013 May 18 - J2056-472 added as a southern pointing source. Coords from SMA as slightly different from optical ICRS.
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 * SCUBA-2 CALIBRATORS
 * SOURCE        RA            DEC          EQUI  VEL    FLUX  RANGE  FRAME DEF   Comments
@@ -200,7 +201,7 @@ OJ287           08 54 48.875 + 20 06 30.64 RJ    n/a     4.0   n/a   LSR  RADIO 
 1156+295        11 59 31.834 + 29 14 43.83 RJ    n/a     0.3   n/a   LSR  RADIO [c] [S1] 0.2 - 0.4 Jy (2004 Mar)
 1213-172        12 15 46.752 - 17 31 45.40 RJ    n/a     0.2   n/a   LSR  RADIO [c] [S1] 0.2 - 0.3 Jy (2001 Jul) 
 3C273           12 29 06.700 + 02 03 08.60 RJ    n/a     2.1   n/a   LSR  RADIO [c] [S1] 3.3 Jy (SMA Jul 2011)
-VirgoA          12 30 49.423 + 12 23 28.04 RJ    n/a     1.9   n/a   LSR  RADIO [c] [S1] 1.1 (SMA Jan 2012)
+VirgoA          12 30 49.423 + 12 23 28.04 RJ    n/a     1.9   n/a   LSR  RADIO [c] [S1] 1.1 (SMA Jan 2012) Irregular shape
 3C279           12 56 11.167 - 05 47 21.52 RJ    n/a    13.5   n/a   LSR  RADIO [c] [S1] 13.9 Jy (SMA May 2012)
 1308+326        13 10 28.664 + 32 20 43.78 RJ    n/a     0.5   n/a   LSR  RADIO [c] [S1] 1.3 - 0.4 Jy (2005 Jan)
 1313-333        13 16 07.986 - 33 38 59.17 RJ    n/a     0.5   n/a   LSR  RADIO [c] [S1] 0.5 -     Jy (2004 Feb) 
@@ -341,7 +342,7 @@ CygA            19 57 44.6   + 40 35 45.9  RB    n/a     0.7   n/a   LSR  RADIO 
 1511-100        15 13 44.893 - 10 12 00.26 RJ    n/a     0.2   n/a   LSR  RADIO [c] [S1] 0.51 Jy (SMA Jan 2012)
 1519-273        15 22 37.676 - 27 30 10.79 RJ    n/a     0.3   n/a   LSR  RADIO [c] [S1] 
 1600+335        16 02 07.263 + 33 26 53.07 RJ    n/a     0.1   n/a   LSR  RADIO [c] [S1] 
-1637+574        16 38 13.456 + 57 20 23.98 RJ    n/a     0.9   n/a   LSR  RADIO [c] [S1] 0.8 - 1.0 Jy (2004 Jan)
+1637+574        16 38 13.456 + 57 20 23.98 RJ    n/a     0.9   n/a   LSR  RADIO [c] [S1] 0.46 Jy (SMA May 2010)
 1638+398        16 40 29.633 + 39 46 46.03 RJ    n/a     0.1   n/a   LSR  RADIO [c] [S1] 
 1642+690        16 42 07.849 + 68 56 39.76 RJ    n/a     0.6   n/a   LSR  RADIO [c] [S1] 0.6 -     Jy (2004 Jan)
 1655+077        16 58 09.011 + 07 41 27.54 RJ    n/a     0.4   n/a   LSR  RADIO [c] [S1] 0.3 - 0.4 Jy (2001 Jul)
@@ -393,9 +394,10 @@ CygA            19 57 44.6   + 40 35 45.9  RB    n/a     0.7   n/a   LSR  RADIO 
 *SOURCE         RA            DEC          EQUI  VEL    FLUX  RANGE  FRAME DEF   Comments
 *                                          NOX    -    0.85mm   -                observed range at 850um
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-0102+584  	01 02 45.76  + 58 24 11.14 RJ    n/a     1.2   n/a   LSR  RADIO [c] [S1] 1.2 -     Jy (2009 Sept)
-2025+337  	20 25 10.84  + 33 43 00.21 RJ    n/a     1.5   n/a   LSR  RADIO [c] [S1] 1.5 -     Jy (2009 Sept)
-0510+180  	05 10 02.37  + 18 00 41.58 RJ    n/a     1.0   n/a   LSR  RADIO [c] [S1] 1.0 -     Jy (2009 Feb)
+0102+584        01 02 45.76  + 58 24 11.14 RJ    n/a     1.2   n/a   LSR  RADIO [c] [S1] 1.2 -     Jy (2009 Sept)
+2025+337        20 25 10.84  + 33 43 00.21 RJ    n/a     1.5   n/a   LSR  RADIO [c] [S1] 1.5 -     Jy (2009 Sept)
+0510+180        05 10 02.37  + 18 00 41.58 RJ    n/a     1.0   n/a   LSR  RADIO [c] [S1] 1.0 -     Jy (2009 Feb)
+J2056-472       20 56 16.40  - 47 14 47.80 RJ    n/a     0.6   n/a   LSR  RADIO [c] [S2] 0.4 (JCMT 2013) - 0.9 (SMA 2012)
 *
 * - -- -- -- -- -- --  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 *  CONTINUUM SOURCES : Compact HII regions, ABG and PMS - stars
