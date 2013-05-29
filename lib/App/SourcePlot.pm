@@ -153,7 +153,6 @@ sub run_sourceplot_gui {
   $yr += 1900;
   $DATE = "$yr\/$mo\/$md\/";
   $TODAY = $DATE;
-  $TIME = "1:30:00";
 
   my $canFrame = $MW->Frame(
                      -takefocus => 1,
