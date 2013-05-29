@@ -1505,18 +1505,20 @@ sub plot {
                  pattern => '%Y/%m/%d %H:%M:%S',
                  on_error => 'croak');
 
-    my $dt = $strp->parse_datetime($DATE . ' ' . $TIME);
+    my $DATESTR = $DATE;
+    $DATESTR =~ s/\/$//;
+    my $dt = $strp->parse_datetime($DATESTR . ' ' . $TIME);
 
     $dt->subtract(hours => 2);
 
     my ($lst, $mjd) = ut2lst($dt->year(), $dt->month(), $dt->day(),
-                             $dt->hour(), $dt->minute(), $dt->section(),
+                             $dt->hour(), $dt->minute(), $dt->second(),
                              $telObject->long_by_rad());
 
     $dt->add(hours => 1);
 
     my ($lst2, $mjd2) = ut2lst($dt->year(), $dt->month(), $dt->day(),
-                               $dt->hour(), $dt->minute(), $dt->section(),
+                               $dt->hour(), $dt->minute(), $dt->second(),
                                $telObject->long_by_rad());
 
     if ($lst2 < $lst) {
