@@ -857,19 +857,19 @@ sub getSource {
                    )->grid(-column=>0, -row=>1);
   my $raEnt = $topFrame->Entry(-relief=>'sunken',
                                 -width=>15)->grid(-column=>1, -row=>1, -padx =>10, -pady=>3);
-  $raEnt->insert(0,$source->ra());
+  $raEnt->insert(0,$source->ra()) unless $source->is_blank();
 
   $topFrame->Label (
                     -text => "Dec:"
                    )->grid(-column=>0, -row=>2);
   my $decEnt = $topFrame->Entry(-relief=>'sunken',
                                 -width=>15)->grid(-column=>1, -row=>2, -padx =>10, -pady=>3);
-  $decEnt->insert(0,$source->dec());
+  $decEnt->insert(0,$source->dec()) unless $source->is_blank();
 
   $topFrame->Label (
                     -text => "Epoc:"
                    )->grid(-column=>0, -row=>3, -padx =>5, -pady=>5);
-  my $epocEnt = $source->epoc();
+  my $epocEnt = $source->is_blank() ? $Epocs[0] : $source->epoc();
   my $epocB = $topFrame->Menubutton( -text=>$epocEnt, -relief => 'raised', -width => 15);
   foreach $name (@Epocs) {
     $epocB->command(-label =>$name, -command=> sub{

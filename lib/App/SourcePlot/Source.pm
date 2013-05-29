@@ -349,6 +349,21 @@ sub elevation {
   return $self->coords()->el(format => 'd');
 }
 
+=item is_blank
+
+Returns true if the source information is "blank".  This is the
+default state for an object constructed with no arguments,
+and is represented by the Astro::Coords default type -- a
+Calibration object.
+
+=cut
+
+sub is_blank {
+    my $self = shift;
+
+    return $self->coords()->type() eq 'CAL';
+}
+
 =item NameX
 
 returns and sets the current x position of name label
