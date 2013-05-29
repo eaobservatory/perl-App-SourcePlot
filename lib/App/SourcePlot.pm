@@ -24,15 +24,17 @@ use strict;
 
 our $VERSION = '1.18';
 
+use Config::IniFiles;
 use Tk;
 use Tk::Balloon;
 use Tk::FileSelect;
 use App::SourcePlot::Plotter::Tk;
 use DateTime;
 use DateTime::Format::Strptime;
-use App::SourcePlot::Defaults;
 use App::SourcePlot::Source;
+use File::HomeDir;
 use File::ShareDir qw/dist_file/;
+use File::Spec;
 use Tk::AstroCatalog;
 use Astro::PAL;
 use Astro::Telescope;
@@ -100,7 +102,7 @@ my $H_WIDTH = 3;
 my $optBut;
 my $dateBut;
 my $eBut;
-my $defaults;
+my $defaults = undef;
 my $balloon;
 
 =head1 METHODS
@@ -115,17 +117,24 @@ Initializes the Source Plot GUI application and enters the Tk main loop.
 
 sub run_sourceplot_gui {
   # setting up default values for Source Plot Options
-  $defaults = new App::SourcePlot::Defaults();
-  $defaults->file('.splotcfg');
-  $defaults->r_defaults(\%defaults);
-  $TEL = $defaults->values('TEL');
-  $X_AXIS = $defaults->values('XAXIS');
-  $Y_AXIS = $defaults->values('YAXIS');
-  $TIME = $defaults->values('TIME');
-  chomp($X_AXIS);
-  chomp($Y_AXIS);
-  chomp($TIME);
-  chomp($TEL);
+  my $defaults_file = File::Spec->catfile(File::HomeDir->my_home(),
+                                          '.splotcfg');
+  if (-e $defaults_file) {
+      # Set the "fallback" section to allow reading of defaults
+      # files from previous versions of SourcePlot.
+      $defaults = new Config::IniFiles(-file => $defaults_file,
+                                       -fallback => 'Options');
+  }
+  unless (defined $defaults) {
+      print STDERR $_, "\n" foreach @Config::IniFiles::errors;
+
+      $defaults = new Config::IniFiles();
+      $defaults->SetFileName($defaults_file);
+  }
+  $TEL    = $defaults->val('Options', 'TEL',   $defaults{'TEL'});
+  $X_AXIS = $defaults->val('Options', 'XAXIS', $defaults{'XAXIS'});
+  $Y_AXIS = $defaults->val('Options', 'YAXIS', $defaults{'YAXIS'});
+  $TIME   = $defaults->val('Options', 'TIME',  $defaults{'TIME'});
   $telObject = new Astro::Telescope($TEL);
 
 
@@ -796,11 +805,11 @@ sub changeOpt {
                         $Y_AXIS = $yEnt;
                         $TEL = $telEnt;
                         $TIME = $timeEnt;
-                        $defaults->values('TEL', $TEL);
-                        $defaults->values('XAXIS', $X_AXIS);
-                        $defaults->values('YAXIS', $Y_AXIS);
-                        $defaults->values('TIME', $TIME);
-                        $defaults->w_defaults();
+                        $defaults->newval('Options', 'TEL',   $TEL);
+                        $defaults->newval('Options', 'XAXIS', $X_AXIS);
+                        $defaults->newval('Options', 'YAXIS', $Y_AXIS);
+                        $defaults->newval('Options', 'TIME',  $TIME);
+                        $defaults->RewriteConfig();
                    }
                   )->pack(-side=>'right');
   $MW->update;

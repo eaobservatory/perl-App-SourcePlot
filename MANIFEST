@@ -1,7 +1,6 @@
 bin/sourceplot
 Build.PL
 lib/App/SourcePlot.pm
-lib/App/SourcePlot/Defaults.pm
 lib/App/SourcePlot/Plotter/Tk.pm
 lib/App/SourcePlot/Source.pm
 README
