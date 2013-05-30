@@ -135,20 +135,6 @@ sub configure {
   }
 }
 
-=item destroy
-
-Destroys an object of this type.  Cleans up the variables and
-windows within.
-
-  destroy $obs;
-
-=cut
-
-sub DESTROY {
-  my $self = shift;
-  $self->{MW}->destroy if defined $self->{MW};
-}
-
 ############################################################
 #  Common data manipulation functions
 #
