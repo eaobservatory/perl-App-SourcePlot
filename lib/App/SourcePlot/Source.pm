@@ -29,7 +29,7 @@ use Math::Trig qw/pi/;
 use DateTime;
 use DateTime::Format::Strptime;
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 my $locateBug = 0;
 
@@ -792,7 +792,7 @@ Casey Best
 
 =head1 COPYRIGHT
 
-Copyright (C) 2012 Science and Technology Facilities Council.
+Copyright (C) 2012, 2013 Science and Technology Facilities Council.
 Copyright (C) 1998, 1999 Particle Physics and Astronomy Research
 Council. All Rights Reserved.
 

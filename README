@@ -15,8 +15,11 @@ Requirements
   Astro::Catalog
   Astro::Telescope
   Astro::PAL
+  Config::IniFiles
   DateTime
+  File::HomeDir
   File::ShareDir
+  File::Spec
 
 Building
 --------
@@ -31,13 +34,13 @@ Authors
 
 This application was originally written by Casey Best <cbest@uvic.ca> and
 Pam Shimek <pshimek@uvic.ca>.   It also includes patches by Remo Tilanus
-<r.tilanus@jach.hawaii.edu> and Tim Jenness <tjenness@cpan.org>.  For this
-version it was updated to use the Astro::Coords and Astro::Catalog
+<r.tilanus@jach.hawaii.edu> and Tim Jenness <tjenness@cpan.org>.  For
+version 1.17 it was updated to use the Astro::Coords and Astro::Catalog
 modules by Graham Bell <g.bell@jach.hawaii.edu>.
 
 It is currently supported by Graham Bell <g.bell@jach.hawaii.edu>.
 
-Copyright (C) 2012 Science and Technology Facilities Council.
+Copyright (C) 2012, 2013 Science and Technology Facilities Council.
 Copyright (C) 1998, 1999 Particle Physics and Astronomy Research
 Council. All Rights Reserved.
 
@@ -70,3 +73,10 @@ Changes
  v1.17 - Updated to use Astro::Coords and Astro::Catalog.
 
  v1.18 - Moved application code to an App/SourcePlot.pm module.
+
+ v1.19 - Updated the included JCMT pointing catalog.
+       - New source window opens with blank fields.
+       - Bug fix for time as the y-axis.
+       - Used Config::IniFiles to handle the configuration file.
+       - Removed obsolete code.
+       - Added Galactic and Az/El coordinate choices.

@@ -3,10 +3,8 @@
 use strict;
 use warnings;
 use Module::Build;
-use File::Spec;
-use Config;
 
-# Copyright (C) 2012 Science and Technology Facilities Council.
+# Copyright (C) 2012, 2013 Science and Technology Facilities Council.
 # All Rights Reserved.
 
 # This program is free software; you can redistribute it and/or modify
@@ -24,12 +22,11 @@ use Config;
 # Foundation, Inc., 59 Temple Place,Suite 330, Boston, MA 02111-1307,
 # USA
 
-# Set it up.
 my $build = Module::Build->new
   (
    module_name => 'App::SourcePlot',
    dist_abstract => "A simple astronomical source plotter",
-   license  => 'gpl',
+   license  => 'gpl3',
    dist_author => [
               'Graham Bell <g.bell@jach.hawaii.edu>',
               'Tim Jenness <tjenness@cpan.org>',
@@ -37,7 +34,7 @@ my $build = Module::Build->new
               'Pam Shimek <pshimek@uvic.ca>',
               'Casey Best <cbest@uvic.ca>',
              ],
-   dist_version => '1.18',
+   dist_version => '1.19',
    meta_merge => {
                resources =>  {
                               repository => "git://github.com/grahambell/perl-App-SourcePlot.git",
@@ -52,8 +49,11 @@ my $build = Module::Build->new
                 'Astro::Coords'       => 0.13,
                 'Astro::Coords::Planet' => 0.05,
                 'Astro::Telescope'    => 0.71,
+                'Config::IniFiles'    => 2.62,
                 'DateTime'            => 0,
+                'File::HomeDir'       => 0,
                 'File::ShareDir'      => 1.03,
+                'File::Spec'          => 0,
                },
    configure_requires => {
                           "Module::Build" => 0.30,

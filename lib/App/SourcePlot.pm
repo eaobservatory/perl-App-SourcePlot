@@ -22,7 +22,7 @@ display a plot of astronomical sources on adjustable axes.
 use strict;
 #use warnings;
 
-our $VERSION = '1.18';
+our $VERSION = '1.19';
 
 use Config::IniFiles;
 use Tk;
@@ -2539,7 +2539,7 @@ Graham Bell (Joint Astronomy Centre).
 
 =head1 COPYRIGHT
 
-Copyright (C) 2012 Science and Technology Facilities Council.
+Copyright (C) 2012, 2013 Science and Technology Facilities Council.
 Copyright (C) 1998, 1999 Particle Physics and Astronomy Research
 Council. All Rights Reserved.
 
