@@ -845,7 +845,7 @@ Returns a Source object.
 
 sub getSource {
   my $source = shift;
-  my @Epocs = ('RJ', 'RB');
+  my @Epocs = qw/RJ RB GA AZ/;
   my $name;
 
   my $Top = $MW->Toplevel;
