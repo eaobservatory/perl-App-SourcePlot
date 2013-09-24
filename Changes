@@ -1,0 +1,20 @@
+Revision history for Perl module App::SourcePlot
+
+1.20 2013-09-24
+    - Assume hours for RJ/RB RA coordinates without colons
+
+1.19 2013-05-29
+    - Updated the included JCMT pointing catalog.
+    - New source window opens with blank fields.
+    - Bug fix for time as the y-axis.
+    - Used Config::IniFiles to handle the configuration file.
+    - Removed obsolete code.
+    - Added Galactic and Az/El coordinate choices.
+
+1.18 2012-07-09
+    - Moved application code to an App/SourcePlot.pm module
+
+1.17 2012-07-06
+    - Updated to use Astro::Coords and Astro::Catalog
+    - First release by Graham Bell
+
