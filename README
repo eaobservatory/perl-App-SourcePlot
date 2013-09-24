@@ -80,3 +80,5 @@ Changes
        - Used Config::IniFiles to handle the configuration file.
        - Removed obsolete code.
        - Added Galactic and Az/El coordinate choices.
+
+ v1.20 - Assume hours for RJ/RB RA coordinates without colons.
