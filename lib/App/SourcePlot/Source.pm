@@ -100,7 +100,7 @@ sub configure {
     if ($epoc eq 'RJ') {
       $self->coords(new Astro::Coords(
         name => $name,
-        ra => $ra,
+        ra => ($unit eq 'degrees') ? ($ra * 15) : $ra,
         dec => $dec,
         type => 'J2000',
         units => $unit,
@@ -109,7 +109,7 @@ sub configure {
     elsif ($epoc eq 'RB') {
       $self->coords(new Astro::Coords(
         name => $name,
-        ra => $ra,
+        ra => ($unit eq 'degrees') ? ($ra * 15) : $ra,
         dec => $dec,
         type => 'B1950',
         units => $unit,
