@@ -56,29 +56,3 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-Changes
--------
-
- v1.00 - Initial version.
-
- v1.03 - Load settings from the .splotcfg file.
-
- v1.08 - Draw RA-Dec box with Az-El vectors.
-
- v1.11 - Y2K compliant.
-
- v1.15 - Updated Tk parameter names for Perl 5.8 and Tk 804.
-
- v1.17 - Updated to use Astro::Coords and Astro::Catalog.
-
- v1.18 - Moved application code to an App/SourcePlot.pm module.
-
- v1.19 - Updated the included JCMT pointing catalog.
-       - New source window opens with blank fields.
-       - Bug fix for time as the y-axis.
-       - Used Config::IniFiles to handle the configuration file.
-       - Removed obsolete code.
-       - Added Galactic and Az/El coordinate choices.
-
- v1.20 - Assume hours for RJ/RB RA coordinates without colons.
