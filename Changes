@@ -1,5 +1,8 @@
 Revision history for Perl application App::SourcePlot
 
+1.21 2013-11-29
+    - Increase number of grid lines for elevation.
+
 1.20 2013-09-24
     - Assume hours for RJ/RB RA coordinates without colons.
 
