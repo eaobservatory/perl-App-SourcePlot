@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Module::Build;
 
-# Copyright (C) 2012, 2013 Science and Technology Facilities Council.
+# Copyright (C) 2012-2014 Science and Technology Facilities Council.
 # All Rights Reserved.
 
 # This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ my $build = Module::Build->new
               'Pam Shimek <pshimek@uvic.ca>',
               'Casey Best <cbest@uvic.ca>',
              ],
-   dist_version => '1.21',
+   dist_version => '1.22',
    meta_merge => {
                resources =>  {
                               repository => "git://github.com/jac-h/perl-App-SourcePlot.git",
