@@ -636,6 +636,16 @@ sub calcPoints {
 
     if (defined $lst_prev and $lst < $lst_prev) {
       $lst += 2 * pi;
+
+      # Allow a second wrap around in case LST is just under 2 pi at the
+      # start (eg on March 5th at JCMT with (default) 1:30:00 center time.
+      # This is necessary because we generate points over a full day,
+      # and then convert to LST so there is always one wrap-around, with
+      # a potential for a second for certain date / location /center time
+      # configurations!
+      if ($lst < $lst_prev) {
+          $lst += 2 * pi;
+      }
     }
     $lst_prev = $lst;
 
@@ -792,7 +802,7 @@ Casey Best
 
 =head1 COPYRIGHT
 
-Copyright (C) 2012, 2013 Science and Technology Facilities Council.
+Copyright (C) 2012-2014 Science and Technology Facilities Council.
 Copyright (C) 1998, 1999 Particle Physics and Astronomy Research
 Council. All Rights Reserved.
 
