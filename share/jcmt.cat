@@ -114,6 +114,8 @@
 *             - SLyr, STCam, UCyg, VXSgr, V636Mon, V1366Aql, WCMa, WYCas, XCnc, YHya, YTau, 01142+6303,
 *             - 03313+6058, 19454+2920, 215544+6204, 23321+6545, because too weak or too much unrelated
 *             - emission (VXSgr)
+*             - Added KUAnd, SCas, HL278, GL341, Betelgeuse, GL971, YLyn, RSCnc, IWHya, IRC-10236, RCrt, HD102608,
+*             - SWVir, RHya, OH338.1+6.4, 16594-4656, GL6815S, GL5379, RVAqr, TCep, EPAqr, GL3099
 *             - Results from M13BN01 and M14AN01
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -643,6 +645,34 @@ TXPsc           23 46 23.494 + 03 29 12.27 RJ  +   13.0  1.0   20.0  LSR  RADIO 
 * and 1 source observed at CO:3-2 by S.Ramstedt (m07ai05)
 *
 RCyg            19 36 49.381 + 50 11 59.46 RJ  -   17.0  1.0   24.0  LSR  RADIO [l] AH 0.64 9.6 ; 1.0 15.0
+*
+*
+* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+*
+* Loup et al. sources observed for M13BN01 and M14AN01 which are strong enough to be added:
+*
+KUAnd           00 06 52.740 + 43 05 02.18 RJ  -   21.0  1.0   42.0  LSR  RADIO [l] AH 0.84 22.7 ; 1.0 28.6
+SCas            01 19 41.99  + 72 36 40.8  RJ  -   29.0  1.2   44.0  LSR  RADIO [l] AH 0.70 21.2 ; 1.2 35.3
+GL278           01 58 44.329 + 45 26 06.90 RJ  -    2.0  2.1   22.0  LSR  RADIO [l] AH 1.6 13.9 ; 2.1 17.2
+GL341           02 33 00.34  + 58 02 06.2  RJ  +    8.0  1.3   31.0  LSR  RADIO [l] AH 0.76 14.7 ; 1.3 25.8
+Betelgeuse      05 55 10.305 + 07 24 25.43 RJ  +    4.0  1.5   31.0  LSR  RADIO [l] AH 0.55 12.3 ; 1.5 33.2
+GL971           06 36 54.24  + 03 25 28.7  RJ  +    2.0  1.2   38.0  LSR  RADIO [l] AH 0.78 13.9 ; 1.2 21.4
+YLyn            07 28 11.618 + 45 59 26.24 RJ  +    0.0  1.0   18.0  LSR  RADIO [l] H 0.56 6.9 ; 1.0 13.2
+RSCnc           09 10 38.798 + 30 57 47.30 RJ  +    7.0  3.4   17.0  LSR  RADIO [l] AH 2.3 15.4 ; 3.4 21.2
+IWHya           09 45 15.24  - 22 01 45.3  RJ  +   40.0  0.8   29.0  LSR  RADIO [l] AH 0.69 12.6 ; 0.82 16.3
+IRC-10236       10 17 00.58  - 14 39 30.1  RJ  +    2.0  2.5   20.0  LSR  RADIO [l] AH 1.9 25.5 ; 2.5 32.2
+RCrt            11 00 33.853 - 18 19 29.58 RJ  +   11.0  1.4   25.0  LSR  RADIO [l] AH 0.81 14.9 ; 1.4 25.8
+HD102608        11 48 39.223 - 35 59 12.91 RJ  -    4.0  0.8   17.0  LSR  RADIO [l] H 0.47 4.8 ; 0.82 10.4
+SWVir           13 14 04.384 - 02 48 25.14 RJ  -   12.0  1.0   18.0  LSR  RADIO [l] AH 1.5 18.7 ; 0.96 11.3
+RHya            13 29 42.782 - 23 16 52.77 RJ  -   10.0  2.5   19.0  LSR  RADIO [l] AH 0.91 8.2 ; 2.5 28.6
+OH338.1+6.4     16 14 03.154 - 42 13 03.81 RJ  -   82.0  1.2   30.0  LSR  RADIO [l] AH 1.5 29.4 ; 1.2 24.1
+16594-4656      17 03 10.08 -  47 00 27.7  RJ  -   26.0  2.4   35.0  LSR  RADIO [l] ?H tbd ; 2.4 51.3
+GL6815S         17 18 19.85  - 32 27 21.6  RJ  +   13.0  1.1   48.0  LSR  RADIO [l] ?H tbd ; 1.1 23.2
+GL5379          17 44 24.01  - 31 55 35.5  RJ  -   23.0  1.9   52.0  LSR  RADIO [l] ?H tbd ; 1.9 58.6
+RVAqr           21 05 51.74  - 00 12 42.0  RJ  +    1.0  1.1   30.0  LSR  RADIO [l] ?H tbd ; 1.1 26.5
+TCep            21 09 31.781 + 68 29 27.20 RJ  -    3.0  1.5   11.0  LSR  RADIO [l] ?H tbd ; 1.5 9.8
+EPAqr           21 46 31.848 - 02 12 45.93 RJ  -   35.0  4.1   26.0  LSR  RADIO [l] ?H tbd ; 4.1 23.3
+GL3099          23 28 17.107 + 10 54 37.35 RJ  +   46.0  1.5   21.0  LSR  RADIO [l] AH 1.4 18.2 ; 1.5 19.3
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 *           MISCELLANEOUS SOURCES
