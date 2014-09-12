@@ -113,7 +113,7 @@
 * 2013 May 18 - J2056-472 added as a southern pointing source. Coords from SMA as slightly different from optical ICRS.
 * 2014 Sep 09 - Removed GL2143, GL2316, GL5102, IRC+60041, OH17.2-2, OH104.9, OH44.8, OH63.3-10.2, RSct, RYMon,
 *             - SLyr, STCam, UCyg, VXSgr, V636Mon, V1366Aql, WCMa, WYCas, XCnc, YHya, YTau, 01142+6303,
-*             - 03313+6058, 19454+2920, 215544+6204, 23321+6545, because too weak or too much unrelated
+*             - 03313+6058, 19454+2920, 21554+6204, 23321+6545, because too weak or too much unrelated
 *             - emission (VXSgr)
 *             - Added KUAnd, SCas, HL278, GL341, Betelgeuse, GL971, YLyn, RSCnc, IWHya, IRC-10236, RCrt, HD102608,
 *             - SWVir, RHya, OH338.1+6.4, 16594-4656, GL6815S, GL5379, RVAqr, TCep, EPAqr, GL3099
