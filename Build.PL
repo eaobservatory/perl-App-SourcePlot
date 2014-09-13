@@ -34,7 +34,7 @@ my $build = Module::Build->new
               'Pam Shimek <pshimek@uvic.ca>',
               'Casey Best <cbest@uvic.ca>',
              ],
-   dist_version => '1.22',
+   dist_version => '1.23',
    meta_merge => {
                resources =>  {
                               repository => "git://github.com/jac-h/perl-App-SourcePlot.git",

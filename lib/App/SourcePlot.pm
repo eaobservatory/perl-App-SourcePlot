@@ -22,7 +22,7 @@ display a plot of astronomical sources on adjustable axes.
 use strict;
 #use warnings;
 
-our $VERSION = '1.22';
+our $VERSION = '1.23';
 
 use Config::IniFiles;
 use Tk;
