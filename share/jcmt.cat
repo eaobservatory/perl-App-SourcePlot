@@ -122,6 +122,7 @@
 * 2015 Oct 21 - New RxA data for GL5379
 * 2015 Oct 27 - new flux for 0528+134
 * 2015 Nov 19 - new fluxes for blazars observed with SCUBA-2 between 20150301 and 20151116
+* 2015 Nov 20 - corrected positions for 5 'desperate' continuum sources (CenA position was wrong since unknown)
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 * SCUBA-2 CALIBRATORS
@@ -271,12 +272,13 @@ BLLAC           22 02 43.291 + 42 16 39.98 RJ    n/a     2.62   n/a   LSR  RADIO
 * due to inaccuracies in their positions, but they are repeated here in
 * case of desperation - 3c111 and CenA in particular are too strong to
 * discard completely.
+* On 20151120 updated to accurate RJ positions from NED database. 
 *
-0954+556        09 54 14.355 + 55 37 16.35 RB    n/a     0.23   n/a   LSR  RADIO [c] [S2] 20151027
-1219+285        12 19 01.12  + 28 30 36.45 RB    n/a     0.3    n/a   LSR  RADIO [c] [S1] 0.2 - 0.4 Jy (2001 Jul)
-CENA            13 25 27.616 - 43 01 08.80 RB    n/a     9.9    n/a   LSR  RADIO [c] [S1] 6.78 Jy (SMA Jul 2010)
-1716+686        17 16 27.84  + 68 39 48.3  RB    n/a     0.3    n/a   LSR  RADIO [c] [S1] 0.3 -     Jy (2004 Oct)
-CygA            19 57 44.6   + 40 35 45.9  RB    n/a     0.62   n/a   LSR  RADIO [c] [S2] 20151029
+0954+556        09 57 38.184 + 55 22 57.77 RJ    n/a     0.23   n/a   LSR  RADIO [c] [S2] 20151027
+1219+285        12 21 31.691 + 28 13 58.50 RJ    n/a     0.3    n/a   LSR  RADIO [c] [S1] 0.2 - 0.4 Jy (2001 Jul)
+CENA            13 25 27.615 - 43 01 08.81 RJ    n/a     9.9    n/a   LSR  RADIO [c] [S1] 6.78 Jy (SMA Jul 2010)
+1716+686        17 16 13.938 + 68 36 38.74 RJ    n/a     0.3    n/a   LSR  RADIO [c] [S1] 0.3 -     Jy (2004 Oct)
+CygA            19 59 28.357 + 40 44 02.10 RJ    n/a     0.62   n/a   LSR  RADIO [c] [S2] 20151029
 *
 * 76 of the next 78 blazars are new to this version of the catalog
 * see http://www.jach.hawaii.edu/JACpublic/JCMT/pointing/point2000.html
