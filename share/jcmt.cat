@@ -123,6 +123,7 @@
 * 2015 Oct 27 - new flux for 0528+134
 * 2015 Nov 19 - new fluxes for blazars observed with SCUBA-2 between 20150301 and 20151116
 * 2015 Nov 20 - corrected positions for 5 'desperate' continuum sources (CenA position was wrong since unknown)
+*             - Corrected coordinate system for IRC+10401 (RJ instead of RL).
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 * SCUBA-2 CALIBRATORS
@@ -601,7 +602,7 @@ GL2135          18 22 34.68  - 27 06 29.4  RJ  +   50.5  1.5    45.0  LSR  RADIO
 GL2199          18 35 46.80  + 05 35 50.6  RJ  +   34.0  0.9    33.0  LSR  RADIO [l] AH L2/2M 0.63 13.3 ; 0.87 18.4
 V821Her         18 41 54.54  + 17 41 08.5  RJ  +    0.0  2.4    30.0  LSR  RADIO [l] AH L2/2M 1.9 38.1 ; 2.4 45.3
 IRC+00365       18 42 24.87  - 02 17 27.2  RJ  +    4.5  1.1    73.0  LSR  RADIO [l] AH L2/2M 0.60 35.2 ; 1.1 58.8
-IRC+10401       19 03 18.28  + 07 30 47.2  RL  +   14.0  0.9    56.0  LSR  RADIO [l] AH L2 0.74 30.4 ; 0.91 42.3
+IRC+10401       19 03 18.28  + 07 30 47.2  RJ  +   14.0  0.9    56.0  LSR  RADIO [l] AH L2 0.74 30.4 ; 0.91 42.3
 WAql            19 15 23.36  - 07 02 50.4  RJ  -   23.5  3.2    41.0  LSR  RADIO [l] AH L2/2M 2.4 66.5 ; 3.2 84.4
 IRC-10502       19 20 18.12  - 08 02 12.0  RJ  +   21.0  0.9    58.0  LSR  RADIO [l] AH L2/2M 0.59 23.7 ; 0.92 38.6
 V1965Cyg        19 34 10.05  + 28 04 08.5  RJ  -   11.0  1.2    52.0  LSR  RADIO [l] AH L2/2M 0.87 32.7 ; 1.2 41.6
