@@ -122,7 +122,7 @@
 * 2015 Oct 21 - New RxA data for GL5379
 * 2015 Oct 27 - new flux for 0528+134
 * 2015 Nov 19 - new fluxes for blazars observed with SCUBA-2 between 20150301 and 20151116
-* 2015 Nov 20 - corrected positions for 5 'desperate' continuum sources (CenA position was wrong since unknown)
+* 2015 Nov 20 - corrected positions for 5 'desperate' continuum sources (CenA position was wrong since 2012 Oct 10)
 *             - Corrected coordinate system for IRC+10401 (RJ instead of RL).
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
