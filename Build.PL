@@ -28,7 +28,7 @@ my $build = Module::Build->new
    dist_abstract => "A simple astronomical source plotter",
    license  => 'gpl3',
    dist_author => [
-              'Graham Bell <g.bell@jach.hawaii.edu>',
+              'Graham Bell <g.bell@eaobservatory.org>',
               'Tim Jenness <tjenness@cpan.org>',
               'Remo Tilanus <r.tilanus@jach.hawaii.edu>',
               'Pam Shimek <pshimek@uvic.ca>',
