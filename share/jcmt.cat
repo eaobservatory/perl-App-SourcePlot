@@ -124,6 +124,7 @@
 * 2015 Nov 19 - new fluxes for blazars observed with SCUBA-2 between 20150301 and 20151116
 * 2015 Nov 20 - corrected positions for 5 'desperate' continuum sources (CenA position was wrong since 2012 Oct 10)
 *             - Corrected coordinate system for IRC+10401 and updated position (RJ instead of RL).
+* 2015 Dec 07 - new fluxes for blazars observed with SCUBA-2 between 20151116 and 20151123
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 * SCUBA-2 CALIBRATORS
@@ -162,36 +163,36 @@ BVP1            17 43 10.370 - 29 51 44.0  RJ    n/a     1.55    n/a  LSR  RADIO
 * SOURCE        RA            DEC          EQUI  VEL    FLUX   RANGE FRAME DEF   Comments
 *                                          NOX    -    0.85mm    -               [source of flux in col 5] other comments
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-0003-066        00 06 13.893 - 06 23 35.33 RJ    n/a     2.40    n/a  LSR  RADIO [c] [S2] 20151116
-0048-097        00 50 41.318 - 09 29 05.21 RJ    n/a     0.4     n/a  LSR  RADIO [c] [S1] 0.64 Jy (SMA 2006)
+0003-066        00 06 13.893 - 06 23 35.33 RJ    n/a     2.41    n/a  LSR  RADIO [c] [S2] 20151117
+0048-097        00 50 41.318 - 09 29 05.21 RJ    n/a     0.41    n/a  LSR  RADIO [c] [S2] 20151123
 PKS0106         01 08 38.771 + 01 35 00.32 RJ    n/a     0.2     n/a  LSR  RADIO [c] [S1] 0.59 Jy (SMA 2004)
-0133+476        01 36 58.595 + 47 51 29.10 RJ    n/a     0.92    n/a  LSR  RADIO [c] [S2] 20151115
+0133+476        01 36 58.595 + 47 51 29.10 RJ    n/a     0.67    n/a  LSR  RADIO [c] [S2] 20151123
 0149+218        01 52 18.059 + 22 07 07.70 RJ    n/a     0.3     n/a  LSR  RADIO [c] [S1] 0.3 -     Jy (2001 May)
-0202+319        02 05 04.925 + 32 12 30.10 RJ    n/a     0.2     n/a  LSR  RADIO [c] [S1] 0.2 -     Jy (2004 Sep)
-0212+735        02 17 30.813 + 73 49 32.62 RJ    n/a     0.39    n/a  LSR  RADIO [c] [S2] 20150924
-0215+015        02 17 48.955 + 01 44 49.70 RJ    n/a     0.1     n/a  LSR  RADIO [c] [S1] 0.1 -     Jy (2004 Jul)
-0219+428        02 22 39.612 + 43 02 07.80 RJ    n/a     0.3     n/a  LSR  RADIO [c] [S1] 0.3 -     Jy (2001 Jul)
-0221+067        02 24 28.428 + 06 59 23.34 RJ    n/a     0.2     n/a  LSR  RADIO [c] [S1] 0.4 - 0.2 Jy (2001 Jul)
-0224+671        02 28 50.051 + 67 21 03.03 RJ    n/a     0.53    n/a  LSR  RADIO [c] [S2] 20150623
+0202+319        02 05 04.925 + 32 12 30.10 RJ    n/a     0.36    n/a  LSR  RADIO [c] [S2] 20151123
+0212+735        02 17 30.813 + 73 49 32.62 RJ    n/a     0.44    n/a  LSR  RADIO [c] [S2] 20151123
+0215+015        02 17 48.955 + 01 44 49.70 RJ    n/a     0.42    n/a  LSR  RADIO [c] [S2] 20151123
+0219+428        02 22 39.612 + 43 02 07.80 RJ    n/a     0.25    n/a  LSR  RADIO [c] [S2] 20151123
+0221+067        02 24 28.428 + 06 59 23.34 RJ    n/a     0.55    n/a  LSR  RADIO [c] [S2] 20151123
+0224+671        02 28 50.051 + 67 21 03.03 RJ    n/a     0.29    n/a  LSR  RADIO [c] [S2] 20151123
 0234+285        02 37 52.406 + 28 48 08.99 RJ    n/a     0.85    n/a  LSR  RADIO [c] [S2] 20150924
 0235+164        02 38 38.930 + 16 36 59.27 RJ    n/a     0.85    n/a  LSR  RADIO [c] [S2] 20151107
-0300+471        03 03 35.242 + 47 16 16.28 RJ    n/a     0.6     n/a  LSR  RADIO [c] [S1]
+0300+471        03 03 35.242 + 47 16 16.28 RJ    n/a     0.86    n/a  LSR  RADIO [c] [S2] 20151123
 0306+102        03 09 03.624 + 10 29 16.34 RJ    n/a     0.2     n/a  LSR  RADIO [c] [S1] 0.2 -     Jy (2001 Jul)
-3C84            03 19 48.160 + 41 30 42.10 RJ    n/a     6.03    n/a  LSR  RADIO [c] [S2] 20151019
-0336-019        03 39 30.938 - 01 46 35.80 RJ    n/a     0.4     n/a  LSR  RADIO [c] [S1] 0.5 - 0.4 Jy (2004 Sep-Dec)
-0355+508        03 59 29.747 + 50 57 50.16 RJ    n/a     1.54    n/a  LSR  RADIO [c] [S2] 20151027
-3C111           04 18 21.277 + 38 01 35.80 RJ    n/a     0.53    n/a  LSR  RADIO [c] [S2] 20151030
-0420-014        04 23 15.801 - 01 20 33.07 RJ    n/a     0.46    n/a  LSR  RADIO [c] [S2] 20151113
-0422+004        04 24 46.842 + 00 36 06.33 RJ    n/a     0.7     n/a  LSR  RADIO [c] [S1]
+3C84            03 19 48.160 + 41 30 42.10 RJ    n/a     5.81    n/a  LSR  RADIO [c] [S2] 20151123
+0336-019        03 39 30.938 - 01 46 35.80 RJ    n/a     0.95    n/a  LSR  RADIO [c] [S2] 20151123
+0355+508        03 59 29.747 + 50 57 50.16 RJ    n/a     1.57    n/a  LSR  RADIO [c] [S2] 20151123
+3C111           04 18 21.277 + 38 01 35.80 RJ    n/a     0.47    n/a  LSR  RADIO [c] [S2] 20151123
+0420-014        04 23 15.801 - 01 20 33.07 RJ    n/a     0.41    n/a  LSR  RADIO [c] [S2] 20151123
+0422+004        04 24 46.842 + 00 36 06.33 RJ    n/a     0.30    n/a  LSR  RADIO [c] [S2] 20151123
 3C120           04 33 11.096 + 05 21 15.62 RJ    n/a     0.3     n/a  LSR  RADIO [c] [S1] 0.3 -     Jy (2001 Jul)
 PKS0438         04 40 17.180 - 43 33 08.60 RJ    n/a     0.4     n/a  LSR  RADIO [c] [S1]
-0454-234        04 57 03.179 - 23 24 52.02 RJ    n/a     1.50    n/a  LSR  RADIO [c] [S2] 20151028
-0458-020        05 01 12.810 - 01 59 14.26 RJ    n/a     0.2     n/a  LSR  RADIO [c] [S1] 0.5 - 0.2 Jy (2005 Jan)
-0521-365        05 22 57.985 - 36 27 30.85 RJ    n/a     0.5     n/a  LSR  RADIO [c] [S1] 2.71 Jy (SMA 2010)
+0454-234        04 57 03.179 - 23 24 52.02 RJ    n/a     1.37    n/a  LSR  RADIO [c] [S2] 20151123
+0458-020        05 01 12.810 - 01 59 14.26 RJ    n/a     0.71    n/a  LSR  RADIO [c] [S2] 20151123
+0521-365        05 22 57.985 - 36 27 30.85 RJ    n/a     3.53    n/a  LSR  RADIO [c] [S2] 20151123
 0528+134        05 30 56.417 + 13 31 55.15 RJ    n/a     0.16    n/a  LSR  RADIO [c] [S2] 20151027
-0529+075        05 32 38.998 + 07 32 43.35 RJ    n/a     0.4     n/a  LSR  RADIO [c] [S1] 0.4 -     Jy (2004 Feb)
+0529+075        05 32 38.998 + 07 32 43.35 RJ    n/a     0.54    n/a  LSR  RADIO [c] [S2] 20151123
 PKS0537         05 38 50.362 - 44 05 08.94 RJ    n/a     0.83    n/a  LSR  RADIO [c] [S2] 20150929
-0552+398        05 55 30.806 + 39 48 49.17 RJ    n/a     0.4     n/a  LSR  RADIO [c] [S1] 0.3 - 0.4 Jy (2004 Mar-Nov)
+0552+398        05 55 30.806 + 39 48 49.17 RJ    n/a     0.27    n/a  LSR  RADIO [c] [S2] 20151123
 0605-085        06 07 59.699 - 08 34 49.98 RJ    n/a     0.4     n/a  LSR  RADIO [c] [S1] 0.4 -     Jy (2003 Nov)
 0607-157        06 09 40.950 - 15 42 40.67 RJ    n/a     0.65    n/a  LSR  RADIO [c] [S2] 20151026
 0642+449        06 46 32.026 + 44 51 16.59 RJ    n/a     0.3     n/a  LSR  RADIO [c] [S1] 0.4 - 0.3 Jy (2004 Mar-Oct)
@@ -300,24 +301,24 @@ CygA            19 59 28.357 + 40 44 02.10 RJ    n/a     0.62    n/a  LSR  RADIO
 * SOURCE        RA            DEC          EQUI  VEL    FLUX   RANGE FRAME DEF   Comments
 *                                          NOX    -    0.85mm    -               [source of flux in col 5] [other comments]
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-0016+731        00 19 45.786 + 73 27 30.02 RJ    n/a     0.2     n/a  LSR  RADIO [c] [S1] 0.2 - 0.4 Jy (2001 Jul)
-0035+413        00 38 24.844 + 41 37 06.00 RJ    n/a     0.1     n/a  LSR  RADIO [c] [S1] 0.1 -     Jy (2001 Jul)
-0106+013        01 08 38.771 + 01 35 00.32 RJ    n/a     0.2     n/a  LSR  RADIO [c] [S1] 0.3 - 0.2 Jy (2004 Aug-Oct)
-0112-017        01 15 17.100 - 01 27 04.58 RJ    n/a     0.3     n/a  LSR  RADIO [c] [S1]
-0119+041        01 21 56.862 + 04 22 24.73 RJ    n/a     0.2     n/a  LSR  RADIO [c] [S1] 0.2 -     Jy (2000 Aug)
-0134+329        01 37 41.299 + 33 09 35.13 RJ    n/a     0.10    n/a  LSR  RADIO [c] [S2] 20151115
-0135-247        01 37 38.347 - 24 30 53.89 RJ    n/a     0.44    n/a  LSR  RADIO [c] [S2] 20151116
-0138-097        01 41 25.832 - 09 28 43.67 RJ    n/a     0.2     n/a  LSR  RADIO [c] [S1] 0.2 -     Jy (2004 Jan)
+0016+731        00 19 45.786 + 73 27 30.02 RJ    n/a     0.50    n/a  LSR  RADIO [c] [S2] 20151123
+0035+413        00 38 24.844 + 41 37 06.00 RJ    n/a     0.10    n/a  LSR  RADIO [c] [S2] 20151123
+0106+013        01 08 38.771 + 01 35 00.32 RJ    n/a     0.46    n/a  LSR  RADIO [c] [S2] 20151123
+0112-017        01 15 17.100 - 01 27 04.58 RJ    n/a     0.10    n/a  LSR  RADIO [c] [S2] 20151123
+0119+041        01 21 56.862 + 04 22 24.73 RJ    n/a     0.19    n/a  LSR  RADIO [c] [S2] 20151123
+0134+329        01 37 41.299 + 33 09 35.13 RJ    n/a     0.10    n/a  LSR  RADIO [c] [S2] 20151123
+0135-247        01 37 38.347 - 24 30 53.89 RJ    n/a     0.34    n/a  LSR  RADIO [c] [S2] 20151123
+0138-097        01 41 25.832 - 09 28 43.67 RJ    n/a     0.16    n/a  LSR  RADIO [c] [S2] 20151123
 0229+131        02 31 45.894 + 13 22 54.72 RJ    n/a     0.1     n/a  LSR  RADIO [c] [S1] 0.1 -     Jy (2001 Jul)
-0239+108        02 42 29.171 + 11 01 00.73 RJ    n/a     0.2     n/a  LSR  RADIO [c] [S1]
-0333+321        03 36 30.108 + 32 18 29.34 RJ    n/a     0.3     n/a  LSR  RADIO [c] [S1] 0.3 -     Jy (1999 Nov)
-0338-214        03 40 35.608 - 21 19 31.17 RJ    n/a     0.21    n/a  LSR  RADIO [c] [S2] 20151014
-0414-189        04 16 36.544 - 18 51 08.34 RJ    n/a     0.2     n/a  LSR  RADIO [c] [S1]
-0430+052        04 33 11.096 + 05 21 15.62 RJ    n/a     0.3     n/a  LSR  RADIO [c] [S1] 0.3 -     Jy (2001 Jul)
-0511-220        05 13 49.114 - 21 59 16.09 RJ    n/a     0.2     n/a  LSR  RADIO [c] [S1]
+0239+108        02 42 29.171 + 11 01 00.73 RJ    n/a     0.13    n/a  LSR  RADIO [c] [S2] 20151123
+0333+321        03 36 30.108 + 32 18 29.34 RJ    n/a     0.26    n/a  LSR  RADIO [c] [S2] 20151123
+0338-214        03 40 35.608 - 21 19 31.17 RJ    n/a     0.10    n/a  LSR  RADIO [c] [S2] 20151123
+0414-189        04 16 36.544 - 18 51 08.34 RJ    n/a     0.10    n/a  LSR  RADIO [c] [S2] 20151123
+0430+052        04 33 11.096 + 05 21 15.62 RJ    n/a     1.19    n/a  LSR  RADIO [c] [S2] 20151123
+0511-220        05 13 49.114 - 21 59 16.09 RJ    n/a     0.10    n/a  LSR  RADIO [c] [S2] 20151123
 0518+165        05 21 09.886 + 16 38 22.05 RJ    n/a     0.2     n/a  LSR  RADIO [c] [S1]
-0538+498        05 42 36.138 + 49 51 07.23 RJ    n/a     0.2     n/a  LSR  RADIO [c] [S1]
-0539-057        05 41 38.083 - 05 41 49.43 RJ    n/a     0.1     n/a  LSR  RADIO [c] [S1] 0.1 -     Jy (2003 Sep)
+0538+498        05 42 36.138 + 49 51 07.23 RJ    n/a     0.21    n/a  LSR  RADIO [c] [S2] 20151123
+0539-057        05 41 38.083 - 05 41 49.43 RJ    n/a     0.18    n/a  LSR  RADIO [c] [S2] 20151123
 0648-165        06 50 24.582 - 16 37 39.73 RJ    n/a     0.2     n/a  LSR  RADIO [c] [S1]
 0723-008        07 25 50.640 - 00 54 56.54 RJ    n/a     0.5     n/a  LSR  RADIO [c] [S1] 0.5 -     Jy (2003 Oct-Dec)
 0742+103        07 45 33.060 + 10 11 12.69 RJ    n/a     0.2     n/a  LSR  RADIO [c] [S1]
@@ -384,12 +385,12 @@ CygA            19 59 28.357 + 40 44 02.10 RJ    n/a     0.62    n/a  LSR  RADIO
 * SOURCE        RA            DEC          EQUI  VEL    FLUX   RANGE FRAME DEF   Comments
 *                                          NOX    -    0.85mm    -               observed range at 850um
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-0010+405        00 13 31.13  + 40 51 37.14 RJ    n/a     0.39    n/a  LSR  RADIO [c] [S2] 20151028
-0110+495        01 13 27.01  + 49 48 24.04 RJ    n/a     0.3     n/a  LSR  RADIO [c] [S1] 0.3 -     Jy (2004 Aug)
-0218+357        02 21 05.47  + 35 56 13.70 RJ    n/a     0.3     n/a  LSR  RADIO [c] [S1] 0.3 -     Jy (2004 Oct)
-0227+403        02 30 45.70  + 40 32 53.08 RJ    n/a     0.3     n/a  LSR  RADIO [c] [S1] 0.3 -     Jy (2004 Aug)
-0309+411        03 13 01.96  + 41 20 01.19 RJ    n/a     0.5     n/a  LSR  RADIO [c] [S1] 0.5 -     Jy (2004 Aug)
-0444+634        04 49 23.31  + 63 32 09.43 RJ    n/a     0.47    n/a  LSR  RADIO [c] [S2] 20151002
+0010+405        00 13 31.13  + 40 51 37.14 RJ    n/a     0.37    n/a  LSR  RADIO [c] [S2] 20151123
+0110+495        01 13 27.01  + 49 48 24.04 RJ    n/a     0.33    n/a  LSR  RADIO [c] [S2] 20151123
+0218+357        02 21 05.47  + 35 56 13.70 RJ    n/a     0.15    n/a  LSR  RADIO [c] [S2] 20151123
+0227+403        02 30 45.70  + 40 32 53.08 RJ    n/a     0.23    n/a  LSR  RADIO [c] [S2] 20151123
+0309+411        03 13 01.96  + 41 20 01.19 RJ    n/a     0.44    n/a  LSR  RADIO [c] [S2] 20151123
+0444+634        04 49 23.31  + 63 32 09.43 RJ    n/a     0.36    n/a  LSR  RADIO [c] [S2] 20151123
 0707+476        07 10 46.10  + 47 32 11.14 RJ    n/a     0.3     n/a  LSR  RADIO [c] [S1] 0.3 -     Jy (2004 Aug)
 0714+457        07 17 51.85  + 45 38 03.25 RJ    n/a     0.10    n/a  LSR  RADIO [c] [S2] 20151114
 0749+540        07 53 01.38  + 53 52 59.64 RJ    n/a     0.3     n/a  LSR  RADIO [c] [S1] 0.3 -     Jy (2004 Aug)
@@ -402,7 +403,7 @@ CygA            19 59 28.357 + 40 44 02.10 RJ    n/a     0.62    n/a  LSR  RADIO
 1849+670        18 49 16.07  + 67 05 41.68 RJ    n/a     0.4     n/a  LSR  RADIO [c] [S1] 0.4 -     Jy (2004 Aug)
 1926+611        19 27 30.44  + 61 17 32.88 RJ    n/a     0.3     n/a  LSR  RADIO [c] [S1] 0.3 -     Jy (2004 Aug)
 2023+760        20 22 35.58  + 76 11 26.18 RJ    n/a     0.3     n/a  LSR  RADIO [c] [S1] 0.3 -     Jy (2004 Aug)
-2351+456        23 54 21.68  + 45 53 04.24 RJ    n/a     0.3     n/a  LSR  RADIO [c] [S1] 0.3 -     Jy (2004 Aug)
+2351+456        23 54 21.68  + 45 53 04.24 RJ    n/a     0.10    n/a  LSR  RADIO [c] [S2] 20151123
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 * BLAZARS IV  - coordinates from SMA catalog -  http://sma1.sma.hawaii.edu/callist/callist.html
@@ -410,7 +411,7 @@ CygA            19 59 28.357 + 40 44 02.10 RJ    n/a     0.62    n/a  LSR  RADIO
 * SOURCE        RA            DEC          EQUI  VEL    FLUX   RANGE FRAME DEF   Comments
 *                                          NOX    -    0.85mm    -               observed range at 850um
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-0102+584        01 02 45.76  + 58 24 11.14 RJ    n/a     1.66    n/a  LSR  RADIO [c] [S2] 20151108
+0102+584        01 02 45.76  + 58 24 11.14 RJ    n/a     1.56    n/a  LSR  RADIO [c] [S2] 20151123
 2025+337        20 25 10.84  + 33 43 00.21 RJ    n/a     0.33    n/a  LSR  RADIO [c] [S2] 20150617
 0510+180        05 10 02.37  + 18 00 41.58 RJ    n/a     2.07    n/a  LSR  RADIO [c] [S2] 20151030
 J2056-472       20 56 16.40  - 47 14 47.80 RJ    n/a     0.6     n/a  LSR  RADIO [c] [S2] 0.4 (JCMT 2013) - 0.9 (SMA 2012)
