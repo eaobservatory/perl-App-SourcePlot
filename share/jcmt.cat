@@ -126,6 +126,7 @@
 *             - Corrected coordinate system for IRC+10401 and updated position (RJ instead of RL).
 * 2015 Dec 07 - new fluxes for blazars observed with SCUBA-2 between 20151116 and 20151123
 *             - removed heterodyne standard sources (these are not good for spectral line pointing)
+*             - updated RxA info RVAqr
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 * SCUBA-2 CALIBRATORS
@@ -656,7 +657,7 @@ OH338.1+6.4     16 14 03.154 - 42 13 03.81 RJ  -   82.0  1.2    30.0  LSR  RADIO
 16594-4656      17 03 10.08 -  47 00 27.7  RJ  -   26.0  2.4    35.0  LSR  RADIO [l] AH 1.7 36.6 ; 2.4 51.3
 GL6815S         17 18 19.85  - 32 27 21.6  RJ  +   13.0  1.1    48.0  LSR  RADIO [l] H 0.57 12.8 ; 1.1 23.2
 GL5379          17 44 24.01  - 31 55 35.5  RJ  -   23.0  1.9    52.0  LSR  RADIO [l] AH 1.1 33.1 ; 1.9 58.6
-RVAqr           21 05 51.74  - 00 12 42.0  RJ  +    1.0  1.1    30.0  LSR  RADIO [l] ?H tbd ; 1.1 26.5
+RVAqr           21 05 51.74  - 00 12 42.0  RJ  +    1.0  1.1    30.0  LSR  RADIO [l] AH 0.83 19.0 ; 1.1 26.5
 TCep            21 09 31.781 + 68 29 27.20 RJ  -    3.0  1.5    11.0  LSR  RADIO [l] H 0.60 5.0 ; 1.5 9.8
 EPAqr           21 46 31.848 - 02 12 45.93 RJ  -   35.0  4.1    26.0  LSR  RADIO [l] AH 2.4 14.8 ; 4.1 23.3
 GL3099          23 28 17.107 + 10 54 37.35 RJ  +   46.0  1.5    21.0  LSR  RADIO [l] AH 1.4 18.2 ; 1.5 19.3
