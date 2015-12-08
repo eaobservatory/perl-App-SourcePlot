@@ -65,7 +65,7 @@
 * 2002 Dec 26 - Dec coords for o Ceti corrected - previousd update erroneous
 * 2003 Jan 28 - Observatory program targets & Targets-Of-Opportunity removed
 * 2003 Mar 20 - Addition of [c] [s] or [cs] as first characters of Comments field
-*               to indicate utitlity as c-ontinuum or s-pectral-fivepoint
+*               to indicate utility as c-ontinuum or s-pectral-fivepoint
 *               pointing sources. [cs] is for those suitable for both, with
 *               a limiting brightness for normally [s] sources of 0.2Jy
 * 2003 Jun 09 - 12 sp-line 5-point sources added (suggested by Thomas Lowe)
@@ -125,6 +125,7 @@
 * 2015 Nov 20 - corrected positions for 5 'desperate' continuum sources (CenA position was wrong since 2012 Oct 10)
 *             - Corrected coordinate system for IRC+10401 and updated position (RJ instead of RL).
 * 2015 Dec 07 - new fluxes for blazars observed with SCUBA-2 between 20151116 and 20151123
+*             - removed heterodyne standard sources (these are not good for spectral line pointing)
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 * SCUBA-2 CALIBRATORS
@@ -477,29 +478,6 @@ N7538IRS9       23 14 01.682 + 61 27 19.96 RJ  -   58.0  6.5     n/a  LSR  RADIO
 WXPsc           01 06 25.98  + 12 35 53.0  RJ  +    8.5  0.2    35.0  LSR  RADIO [c]2-1 41.0 J3-2 51.2 4-3 23.2
 oCeti           02 19 20.80  - 02 58 40.7  RJ  +   46.5  0.5    28.0  LSR  RADIO [c]2-1 34.6 J3-2 48.2 4-3 46.2 J2005
 CIT6            10 16 02.29  + 30 34 19.1  RJ  -    1.9  0.7    45.0  LSR  RADIO [c]2-1 111.3 3-2 194.9 4-3 1
-*
-* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-*
-*   SPECTRAL LINE STANDARDS
-*
-*   all 2000.0 FK5 coords derived by coco - see previous section
-*   2001 10 19 - offsets updated for crl618, omc1, oh231.8, w75n, ngc7027
-*                                                                                PS offset is for CO and isotopes
-* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-W3(OH)          02 27 04.1   + 61 52 22.   RJ  -   45.0 35.0     n/a  LSR  RADIO [c] PS -600,0 RJ
-L1551-IRS5      04 31 34.140 + 18 08 05.13 RJ  +    6.0  2.4     n/a  LSR  RADIO [l] PS +1200,0 RJ
-CRL618          04 42 53.672 + 36 06 53.17 RJ  -   21.7  3.2    90.0  LSR  RADIO [l] BMSW 180" AZ
-OMC1            05 35 14.373 - 05 22 32.35 RJ  +   10.0 72.0     n/a  LSR  RADIO [l] PS 0, 2100 RJ
-N2071IR         05 47 04.851 + 00 21 47.10 RJ  +    9.5  4.8     n/a  LSR  RADIO [l] PS 2400,0 RJ
-OH231.8         07 42 16.83  - 14 42 52.1  RJ  +   30.0  1.3   140.0  LSR  RADIO [l] BMSW 300" AZ
-IRC+10216       09 47 57.382 + 13 16 43.66 RJ  -   25.6  2.3    35.0  LSR  RADIO [l] PS 300,0 AZ
-16293-2422      16 32 22.909 - 24 28 35.60 RJ  +    4.0  8.3     n/a  LSR  RADIO [l] PS -800,0 RJ
-NGC6334I        17 20 53.445 - 35 47 01.67 RJ  -    6.9 30.0     n/a  LSR  RADIO [l] PS 2400,0 RJ
-G34.3           18 53 18.569 + 01 14 58.26 RJ  +   58.1 31.2     n/a  LSR  RADIO [l] PS -3120,1800 RJ
-W75N            20 38 36.433 + 42 37 34.49 RJ  +   12.5 11.6     n/a  LSR  RADIO [l] PS -1800,0 RJ
-CRL2688         21 02 18.75  + 36 41 37.80 RJ  -   35.4  2.7    80.0  LSR  RADIO [l] BMSW 180" AZ
-NGC7027         21 07 01.598 + 42 14 10.02 RJ  +   26.0  3.7    50.0  LSR  RADIO [l] BMSW 180" AZ
-N7538IRS1       23 13 45.346 + 61 28 10.32 RJ  -   58.0  9.9     n/a  LSR  RADIO [l] PS 1200,0 RJ
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 *   SOURCELIST for SPECTRAL LINE FIVEPOINTS
