@@ -611,8 +611,6 @@ sub calcPoints {
   $coords->telescope($tel);
   my $dt_save = $coords->datetime();
 
-  $DATE =~ s/\/$//;
-
   my $strp = new DateTime::Format::Strptime(
                  pattern => '%Y/%m/%d %H:%M:%S',
                  time_zone => 'UTC',
@@ -705,8 +703,6 @@ sub calcPoint {
   my $DATE = shift;
   my $TIME = shift;
   my $tel = shift;
-
-  $DATE =~ s/\/$//;
 
   my $strp = new DateTime::Format::Strptime(
                  pattern => '%Y/%m/%d %H:%M:%S',

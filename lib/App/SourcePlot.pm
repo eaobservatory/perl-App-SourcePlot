@@ -159,7 +159,7 @@ sub run_sourceplot_gui {
   $mo = '0'.$mo if length($mo) < 2;
   $md = '0'.$md if length($md) < 2;
   $yr += 1900;
-  $DATE = "$yr\/$mo\/$md\/";
+  $DATE = "$yr\/$mo\/$md";
 
   my $canFrame = $MW->Frame(
                      -takefocus => 1,
@@ -1357,9 +1357,7 @@ sub plot {
                  pattern => '%Y/%m/%d %H:%M:%S',
                  on_error => 'croak');
 
-    my $DATESTR = $DATE;
-    $DATESTR =~ s/\/$//;
-    my $dt = $strp->parse_datetime($DATESTR . ' ' . $TIME);
+    my $dt = $strp->parse_datetime($DATE . ' ' . $TIME);
 
     $dt->subtract(hours => 2);
 
@@ -1412,9 +1410,7 @@ sub plot {
                  pattern => '%Y/%m/%d %H:%M:%S',
                  on_error => 'croak');
 
-    my $DATESTR = $DATE;
-    $DATESTR =~ s/\/$//;
-    my $dt = $strp->parse_datetime($DATESTR . ' ' . $TIME);
+    my $dt = $strp->parse_datetime($DATE . ' ' . $TIME);
 
     $dt->subtract(hours => 2);
 
