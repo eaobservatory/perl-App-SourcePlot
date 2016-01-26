@@ -46,7 +46,6 @@ use Astro::Coords::Planet 0.05;
 my $locateBug = 0;
 
 my $MW;
-my $TODAY;
 my $TIME;
 my @SOURCE_LIST = ();
 my @planets = map {ucfirst($_)} Astro::Coords::Planet::planets();
@@ -161,7 +160,6 @@ sub run_sourceplot_gui {
   $md = '0'.$md if length($md) < 2;
   $yr += 1900;
   $DATE = "$yr\/$mo\/$md\/";
-  $TODAY = $DATE;
 
   my $canFrame = $MW->Frame(
                      -takefocus => 1,
