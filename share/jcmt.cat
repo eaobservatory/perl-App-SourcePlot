@@ -133,6 +133,7 @@
 * 2016 May 26 - new fluxes for blazars observed with SCUBA-2 between 20160424 and 20160526
 * 2016 Jun 23 - new fluxes for blazars observed with SCUBA-2 between 20160527 and 20160623
 * 2016 Oct 10 - new fluxes for blazars observed with SCUBA-2 between 20160623 and 20161010
+*               comment out duplicate name 3C454.3 (2251+158), second entries for MWC349A, V645Cyg
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 * SCUBA-2 CALIBRATORS
@@ -272,7 +273,7 @@ BLLAC           22 02 43.291 + 42 16 39.98 RJ    n/a     1.13    n/a  LSR  RADIO
 2227-088        22 29 40.084 - 08 32 54.44 RJ    n/a     1.03    n/a  LSR  RADIO [c] [S2] 20160930
 2230+114        22 32 36.409 + 11 43 50.90 RJ    n/a     3.34    n/a  LSR  RADIO [c] [S2] 20161001
 2243-123        22 46 18.232 - 12 06 51.28 RJ    n/a     0.35    n/a  LSR  RADIO [c] [S2] 20160602
-3C454.3         22 53 57.748 + 16 08 53.56 RJ    n/a     6.97    n/a  LSR  RADIO [c] [S2] 20151229
+*3C454.3        22 53 57.748 + 16 08 53.56 RJ    n/a     6.97    n/a  LSR  RADIO [c] [S2] 20151229
 2251+158        22 53 57.748 + 16 08 53.56 RJ    n/a     9.09    n/a  LSR  RADIO [c] [S2] 20160927
 2255-282        22 58 05.963 - 27 58 21.26 RJ    n/a     0.62    n/a  LSR  RADIO [c] [S2] 20160602
 2318+049        23 20 44.857 + 05 13 49.95 RJ    n/a     0.20    n/a  LSR  RADIO [c] [S2] 20160602
@@ -467,11 +468,11 @@ K3-50           20 01 45.689 + 33 32 43.52 RJ  -   23.7 20.0     n/a  LSR  RADIO
 ON-1            20 10 09.146 + 31 31 37.67 RJ  +   11.8  4.7     n/a  LSR  RADIO [c] c
 GL2591          20 29 24.719 + 40 11 18.87 RJ  -    5.8  3.0     n/a  LSR  RADIO [c] c
 W75N            20 38 36.433 + 42 37 34.49 RJ  +   12.5 35.0     n/a  LSR  RADIO [c] c
-MWC349A         20 32 45.53  + 40 39 36.62 RJ  -    6.6  1.9     n/a  LSR  RADIO [c] s True point source
+*MWC349A        20 32 45.53  + 40 39 36.62 RJ  -    6.6  1.9     n/a  LSR  RADIO [c] s True point source
 *PVCep          20 45 54.39  + 67 57 38.8  RJ  +    3.0  1.2     n/a  LSR  RADIO [c] s
 CRL2688         21 02 18.75  + 36 41 37.80 RJ  -   35.4  5.9    80.0  LSR  RADIO [c] c Secondary flux calibrator
 NGC7027         21 07 01.598 + 42 14 10.02 RJ  +   26.0  5.0    50.0  LSR  RADIO [c] c
-V645Cyg         21 39 58.2   + 50 14 22.   RJ  -   43.7  0.9     n/a  LSR  RADIO [c] s
+*V645Cyg        21 39 58.2   + 50 14 22.   RJ  -   43.7  0.9     n/a  LSR  RADIO [c] s
 LKHA234         21 43 06.170 + 66 06 56.09 RJ  -   10.0  5.0     n/a  LSR  RADIO [c] c Herbig Be star
 N7538IRS1       23 13 45.346 + 61 28 10.32 RJ  -   58.0 33.0     n/a  LSR  RADIO [c] c
 N7538IRS9       23 14 01.682 + 61 27 19.96 RJ  -   58.0  6.5     n/a  LSR  RADIO [c] c
