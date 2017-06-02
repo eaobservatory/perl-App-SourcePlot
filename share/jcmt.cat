@@ -138,6 +138,7 @@
 * 2016 Oct 26 - corrected position oCeti for proper motion to 2017.0
 * 2016 Nov 21 - corrected star positions for proper motion to 2017.0, where available (indicated by pm)
 * 2017 Jun 01 - new fluxes for blazars observed with SCUBA-2 between 20161011 and 20170531
+* 2017 Jun 02 - removed duplicates PKS0106 (= 0106+013) and 3C120 (= 0430+052)
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 * SCUBA-2 CALIBRATORS
@@ -178,7 +179,6 @@ BVP1            17 43 10.370 - 29 51 44.0  RJ    n/a     1.55    n/a  LSR  RADIO
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 0003-066        00 06 13.893 - 06 23 35.33 RJ    n/a     1.58    n/a  LSR  RADIO [c] [S2] 20170519
 0048-097        00 50 41.318 - 09 29 05.21 RJ    n/a     0.32    n/a  LSR  RADIO [c] [S2] 20151227
-PKS0106         01 08 38.771 + 01 35 00.32 RJ    n/a     0.2     n/a  LSR  RADIO [c] [S1] 0.59 Jy (SMA 2004)
 0133+476        01 36 58.595 + 47 51 29.10 RJ    n/a     0.60    n/a  LSR  RADIO [c] [S2] 20160722
 0149+218        01 52 18.059 + 22 07 07.70 RJ    n/a     0.3     n/a  LSR  RADIO [c] [S1] 0.3 -     Jy (2001 May)
 0202+319        02 05 04.925 + 32 12 30.10 RJ    n/a     0.36    n/a  LSR  RADIO [c] [S2] 20151123
@@ -197,7 +197,6 @@ PKS0106         01 08 38.771 + 01 35 00.32 RJ    n/a     0.2     n/a  LSR  RADIO
 3C111           04 18 21.277 + 38 01 35.80 RJ    n/a     0.47    n/a  LSR  RADIO [c] [S2] 20151123
 0420-014        04 23 15.801 - 01 20 33.07 RJ    n/a     0.33    n/a  LSR  RADIO [c] [S2] 20161128
 0422+004        04 24 46.842 + 00 36 06.33 RJ    n/a     0.30    n/a  LSR  RADIO [c] [S2] 20151123
-3C120           04 33 11.096 + 05 21 15.62 RJ    n/a     0.3     n/a  LSR  RADIO [c] [S1] 0.3 -     Jy (2001 Jul)
 PKS0438         04 40 17.180 - 43 33 08.60 RJ    n/a     0.4     n/a  LSR  RADIO [c] [S1]
 0454-234        04 57 03.179 - 23 24 52.02 RJ    n/a     0.55    n/a  LSR  RADIO [c] [S2] 20170221
 0458-020        05 01 12.810 - 01 59 14.26 RJ    n/a     0.54    n/a  LSR  RADIO [c] [S2] 20170221
