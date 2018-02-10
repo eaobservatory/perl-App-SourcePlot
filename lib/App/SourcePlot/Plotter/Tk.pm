@@ -81,14 +81,14 @@ sub new {
     for ($i=0;$i<$numy;$i++) {
       $frame = $screen->Frame;
       for ($j=0;$j<$numx;$j++) {
-	$ET->{CANVAS}[$i*$numy + $j] = $frame->Canvas(
+        $ET->{CANVAS}[$i*$numy + $j] = $frame->Canvas(
             -background=>"LightCyan3",
             -relief => 'raised', 
             -width  => $ET->{X_SIZE},
             -height => $ET->{Y_SIZE},
             -cursor => 'top_left_arrow',
-	);
-	$ET->{CANVAS}[$i*$numy + $j]->pack(-side => 'left', -fill => 'x');
+        );
+        $ET->{CANVAS}[$i*$numy + $j]->pack(-side => 'left', -fill => 'x');
       }
       $frame->pack(-side=>'top');
     }
@@ -1244,7 +1244,7 @@ sub phot {
       $self->origPhot($img);
     } else {
       if (defined $self->phot()) {
-	$self->phot()->delete;
+        $self->phot()->delete;
       }
       $img = $self->origPhot();
     }
@@ -1307,8 +1307,8 @@ sub monitorXY {
     # Set up a binding for click
     # Call a separate sub for clarity rather than use a closure
     $canvas->Tk::bind("<Button-1>", 
-		      [ $self => '_XYcallback', 
-			$canvas, Ev('x'), Ev('y'), $xref, $yref ]);
+                      [ $self => '_XYcallback', 
+                        $canvas, Ev('x'), Ev('y'), $xref, $yref ]);
 
   } else {
     # Remove bindings
