@@ -453,7 +453,7 @@ sub timeDotY {
 
 =item time_ele_points
 
-These functions return an array of comparative points for different 
+These functions return an array of comparative points for different
 characteristics of this source.  The avaliable comparisons are:
 
   time_ele_points       - time vs elevation
@@ -468,7 +468,7 @@ characteristics of this source.  The avaliable comparisons are:
   pa_time_points       - parallactic angle vs time
   pa_ele_points       - parallactic angle vs elevation
   pa_az_points       - parallactic angle vs azimuth
-  
+
   Example syntax:
 
   @time_ele_points = $obs->time_ele_points();
@@ -591,7 +591,7 @@ sub copy {
 =item calcPoints
 
 Calculations the Elevation, Azimeth, etc. points
-$MW is the main window widget.  Required for 
+$MW is the main window widget.  Required for
 progress bar
 
   $obs->calcPoints($date, $time, $num_points, $MW, $tel);

@@ -952,7 +952,7 @@ sub editSource {
                               -setgrid    => 1,
                              )->grid(qw/-sticky nsew/, -row=>1);
   $T->bindtags(qw/widget_demo/);        # remove all bindings but dummy "widget_demo"
- 
+
   # create the done button
   my $buttonF = $Top->Frame->pack(-padx=>10, -pady=>10, -fill =>'x');
   my $doneBut = $buttonF->Button(
@@ -1552,7 +1552,7 @@ sub plot {
     $plotter->usingWorld(0);
     $plotter->worldCenter($xborder, $yplot-$yborder);
     $plotter->usingWorld(1);
-   } 
+   }
   }elsif ($X_AXIS =~ /time/i) {
     my $ho = $timeH - 8;
     for ( my $hour = $minX+$lstDiffX*4; $hour < $maxX; $hour += $lstDiffX*4 ) {
@@ -1865,8 +1865,8 @@ sub plot {
 
   # now interact them
   print "    Plotting the grid lines\n" if $locateBug;
-  if (($X_AXIS eq $Y_AXIS) || (($X_AXIS =~ /elevation/i) && 
-     ($Y_AXIS =~ /air mass/i)) || (($X_AXIS =~ /air mass/i) && 
+  if (($X_AXIS eq $Y_AXIS) || (($X_AXIS =~ /elevation/i) &&
+     ($Y_AXIS =~ /air mass/i)) || (($X_AXIS =~ /air mass/i) &&
      ($Y_AXIS =~ /elevation/i))) {
     $plotter->drawColor('purple');
     $plotter->drawLine ($minX, $minY, $maxX, $maxY);
@@ -2330,7 +2330,7 @@ sub calcTime {
                 $plotter->drawText ($x2 - 1.1*$bx, $y2-0.2*$by, 'c', 'ltimeDot'. $source->name());
                 $plotter->fontColor($source->color());
               });
-            $plotter->bindTag('ltimeDot'.$source->name(), '<Any-Leave>' => 
+            $plotter->bindTag('ltimeDot'.$source->name(), '<Any-Leave>' =>
               sub {
                 $plotter->delete ('ltimeDot'.$source->name());
               });
@@ -2489,7 +2489,7 @@ Parameters:
 
     $w     -  Window in which to insert
     $text  -  Text to insert (it's inserted at the "insert" mark)
-    $args  -  One or more tags to apply to text.  If this is empty 
+    $args  -  One or more tags to apply to text.  If this is empty
               then all tags are removed from the text.
 
 Returns:  Nothing
