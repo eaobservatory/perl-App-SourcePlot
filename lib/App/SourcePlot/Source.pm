@@ -721,6 +721,10 @@ sub _calcPoint {
   my $dt = shift;
   my $tel = shift;
 
+  # PAL (and so Astro::Coords) can not handle seconds > 59 (used in the case
+  # of leap seconds), so replace with 59 seconds when this happens.
+  $dt->set_second(59) if $dt->second() > 59;
+
   my $coords = $self->coords();
   $coords->datetime($dt) if defined $dt;
   $coords->telescope($tel) if defined $tel;
