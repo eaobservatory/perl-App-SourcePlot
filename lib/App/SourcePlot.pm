@@ -22,7 +22,7 @@ display a plot of astronomical sources on adjustable axes.
 use strict;
 #use warnings;
 
-our $VERSION = '1.28';
+our $VERSION = '1.29';
 
 use Config::IniFiles;
 use Tk;
@@ -2549,10 +2549,11 @@ Casey Best (University of Victoria),
 Pam Shimek (University of Victoria),
 Tim Jenness (Joint Astronomy Centre),
 Remo Tilanus (Joint Astronomy Centre),
-Graham Bell (Joint Astronomy Centre).
+Graham Bell (Joint Astronomy Centre / East Asian Observatory).
 
 =head1 COPYRIGHT
 
+Copyright (C) 2016-2018 East Asian Observatory.
 Copyright (C) 2012, 2013 Science and Technology Facilities Council.
 Copyright (C) 1998, 1999 Particle Physics and Astronomy Research
 Council. All Rights Reserved.
