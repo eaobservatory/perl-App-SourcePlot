@@ -112,9 +112,21 @@ my $balloon;
 
 Initializes the Source Plot GUI application and enters the Tk main loop.
 
+Accepts the following arguments in hash form:
+
+=over 4
+
+=item date
+
+The UT date.  Should be in the format YYYY-MM-DD or YYYY/MM/DD.
+
+=back
+
 =cut
 
 sub run_sourceplot_gui {
+  my %arg = @_;
+
   # setting up default values for Source Plot Options
   my $defaults_file = File::Spec->catfile(File::HomeDir->my_home(),
                                           '.splotcfg');
@@ -154,12 +166,20 @@ sub run_sourceplot_gui {
   $balloon = $MW->Balloon();
 
   # set the date to the current date
-  my ($ss, $mm, $hh, $md, $mo, $yr, $wd, $yd, $isdst) = gmtime(time);
-  $mo++;   # this catches the month up to the current date
-  $mo = '0'.$mo if length($mo) < 2;
-  $md = '0'.$md if length($md) < 2;
-  $yr += 1900;
-  $DATE = "$yr\/$mo\/$md";
+  my ($mo, $md, $yr);
+  if (exists $arg{'date'}) {
+    unless ($arg{'date'} =~ /^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})$/) {
+      print STDERR "Please enter the date in the format YYYY-MM-DD\n";
+      exit 1;
+    }
+    ($yr, $mo, $md) = ($1, $2, $3);
+  }
+  else {
+    (undef, undef, undef, $md, $mo, $yr, undef, undef, undef) = gmtime(time);
+    $mo++;   # this catches the month up to the current date
+    $yr += 1900;
+  }
+  $DATE = sprintf('%4d/%02d/%02d', $yr, $mo, $md);
 
   my $canFrame = $MW->Frame(
                      -takefocus => 1,
