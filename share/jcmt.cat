@@ -145,6 +145,7 @@
 * 2018 Mar 27 - new fluxes for blazars observed with SCUBA-2 between 20171004 and 20180309
 * 2019 May 23 - new fluxes for blazars observed with SCUBA-2 between 20180310 and 20190522
 * 2019 May 23 - added GL5552, V1426Cyg, and 08074-3615
+* 2020 Dec 07 - added GL1822
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 * SCUBA-2 CALIBRATORS
@@ -640,6 +641,8 @@ VCrB            15 49 31.318 + 39 34 17.70 RJ  -   99.0  0.5    17.0  LSR  RADIO
 TDra            17 56 23.239 + 58 13 06.46 RJ  -   14.0  0.9    29.0  LSR  RADIO [l] AH Hippm 0.71 14.3 ; 0.90 18.2
 RVCyg           21 43 16.319 + 38 01 02.85 RJ  +   17.0  0.7    31.0  LSR  RADIO [l] H Hippm 0.39 8.5 ; 0.66 13.5
 TXPsc           23 46 23.517 + 03 29 12.52 RJ  +   13.0  1.0    20.0  LSR  RADIO [l] AH Hippm 0.56 5.6 ; 1.0 7.4
+*
+GL1822          16 06 08.363 -30 49 33.99  RJ  -    3.0  0.5    35.0  LSR  RADIO [l]    2M 0.45 ; 0.54
 *
 * and 1 source observed at CO:3-2 by S.Ramstedt (m07ai05)
 *
