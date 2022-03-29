@@ -146,6 +146,7 @@
 * 2019 May 23 - new fluxes for blazars observed with SCUBA-2 between 20180310 and 20190522
 * 2019 May 23 - added GL5552, V1426Cyg, and 08074-3615
 * 2020 Dec 07 - added GL1822
+* 2022 Mar 28 - removed VirgoA
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 * SCUBA-2 CALIBRATORS
@@ -236,7 +237,6 @@ OJ287           08 54 48.875 + 20 06 30.64 RJ    n/a     1.96    n/a  LSR  RADIO
 1156+295        11 59 31.834 + 29 14 43.83 RJ    n/a     0.30    n/a  LSR  RADIO [c] [S2] 20190426
 1213-172        12 15 46.752 - 17 31 45.40 RJ    n/a     0.58    n/a  LSR  RADIO [c] [S2] 20180714
 3C273           12 29 06.700 + 02 03 08.60 RJ    n/a     2.86    n/a  LSR  RADIO [c] [S2] 20190507
-VirgoA          12 30 49.423 + 12 23 28.04 RJ    n/a     0.67    n/a  LSR  RADIO [c] [S2] 20190402
 3C279           12 56 11.167 - 05 47 21.52 RJ    n/a     3.77    n/a  LSR  RADIO [c] [S2] 20190502
 1308+326        13 10 28.664 + 32 20 43.78 RJ    n/a     0.59    n/a  LSR  RADIO [c] [S2] 20180712
 1313-333        13 16 07.986 - 33 38 59.17 RJ    n/a     0.86    n/a  LSR  RADIO [c] [S2] 20180723
