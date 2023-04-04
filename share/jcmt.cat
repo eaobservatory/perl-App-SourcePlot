@@ -148,6 +148,7 @@
 * 2020 Dec 07 - added GL1822
 * 2022 Mar 28 - removed VirgoA
 * 2022 Nov 11 - added 86GHz SiO sources
+* 2023 Apr 03 - removed 13 86GHz sources that are tested bad
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 * SCUBA-2 CALIBRATORS
@@ -692,16 +693,11 @@ GL3099          23 28 17.107 + 10 54 37.35 RJ  +   46.0  1.5    21.0  LSR  RADIO
 *- -- -- -- -- -- --  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 *- -- -- -- -- -- --  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 *
-* Existing ones copied from above, Tpeak left unchanged for reference
-*
 VYCMa           07 22 58.336 - 25 46 03.35 RJ  +   19.0  2.6    92.0  LSR  RADIO [w] pm
 RLeo            09 47 33.482 + 11 25 42.97 RJ  -    0.4  2.4    17.0  LSR  RADIO [w] pm
 IRC+10216       09 47 57.447 + 13 16 43.76 RJ  -   25.6 31.8    35.0  LSR  RADIO [w] pm
-CIT6            10 16 02.290 + 30 34 19.10 RJ  -    1.9  6.9    45.0  LSR  RADIO [w]
 RHya            13 29 42.711 - 23 16 52.55 RJ  -   10.0  2.5    19.0  LSR  RADIO [w] pm
 WHya            13 49 01.934 - 28 22 04.50 RJ  +   41.3  2.0    20.0  LSR  RADIO [w] pm
-VCyg            20 41 18.258 + 48 08 28.70 RJ  +   14.0  3.7    25.0  LSR  RADIO [w] pm
-NGC7027         21 07 01.598 + 42 14 10.02 RJ  +   26.0 12.9    50.0  LSR  RADIO [w]
 BXCam           05 46 44.290 + 69 58 24.20 RJ  -    2.0  0.8    45.0  LSR  RADIO [w]
 oCeti           02 19 20.803 - 02 58 43.54 RJ  +   46.5 43.1    19.0  LSR  RADIO [w] pm
 TXCam           05 00 51.220 + 56 10 54.20 RJ  +    9.2  n/a    45.0  LSR  RADIO [w]
@@ -710,19 +706,9 @@ RXBoo           14 24 11.654 + 25 42 12.58 RJ  +    1.1  n/a    22.0  LSR  RADIO
 RCas            23 58 25.028 + 51 23 20.00 RJ  +   25.0  4.1    31.0  LSR  RADIO [w] pm
 GXMon           06 52 47.040 + 08 25 19.20 RJ  -    9.0  1.8    40.0  LSR  RADIO [w]
 RLMi            09 45 34.289 + 34 30 42.68 RJ  +    0.1  0.9    20.0  LSR  RADIO [w] pm
-*
-* New ones from the following lists
-* 1. https://www.cv.nrao.edu/~jmangum/12meter/catalogs/star.cat
-*- -- -- -- -- -- --  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-*
 UHer            16 23 34.700 + 19 00 18.00 RJ  -   21.0  n/a     n/a  LSR  RADIO [w]
 MIRA            02 16 49.100 - 03 12 22.00 RJ  +   48.0  n/a     n/a  LSR  RADIO [w]
-*GL618           04 39 34.0   + 36 01 16.00 RJ  -   21.0  n/a    n/a   LSR  RADIO [w]
 CHicyg          19 48 38.500 + 32 47 10.00 RJ  +    9.5  n/a     n/a  LSR  RADIO [w]
-*
-* 2. https://www.narrabri.atnf.csiro.au/mopra/siomasers/old/
-*- -- -- -- -- -- --  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-*
 RAnd            00 24 02.000 + 38 34 38.50 RJ    n/a     n/a     n/a  LSR  RADIO [w]
 WXPsc           01 06 26.010 + 12 35 52.80 RJ  +   16.0  2.1     n/a  LSR  RADIO [w]
 SVS00878        02 37 23.620 - 26 58 38.90 RJ  -    7.0  0.8     n/a  LSR  RADIO [w]
@@ -746,14 +732,10 @@ RCnc            08 16 33.810 + 11 43 34.20 RJ  +   15.0  1.2     n/a  LSR  RADIO
 RWVel           09 20 19.570 - 49 31 27.20 RJ  -   12.5  1.1     n/a  LSR  RADIO [w]
 RCar            09 32 14.480 - 62 47 19.70 RJ  +    7.0  n/a     n/a  LSR  RADIO [w]
 RLMi            09 45 34.100 + 34 30 43.90 RJ  +    5.0  n/a     n/a  LSR  RADIO [w]
-VAnt            10 21 09.120 - 34 47 19.30 RJ  -   19.0  n/a     n/a  LSR  RADIO [w]
 RCrt            11 00 33.980 - 18 19 28.50 RJ  +   14.0  1.3     n/a  LSR  RADIO [w]
 XCen            11 49 11.850 - 41 45 28.00 RJ  +   28.0  1.0     n/a  LSR  RADIO [w]
 RTVir           13 02 38.000 + 05 11 08.30 RJ  +   18.0  0.8     n/a  LSR  RADIO [w]
-SCrB            15 21 23.940 + 31 22 03.30 RJ  +    0.0  n/a     n/a  LSR  RADIO [w]
 IRSV1540        15 44 39.900 - 54 23 04.40 RJ  -   82.0  2.3     n/a  LSR  RADIO [w]
-RSer            15 50 41.710 + 15 08 01.20 RJ  +   30.0  0.2     n/a  LSR  RADIO [w]
-UHer            16 25 47.520 + 18 53 32.80 RJ  +    0.0  9.7     n/a  LSR  RADIO [w]
 AHSco           17 11 16.900 - 32 19 32.40 RJ  +    0.0  4.3     n/a  LSR  RADIO [w]
 V2108Oph        17 14 19.370 + 08 56 02.50 RJ  +   13.0  1.1     n/a  LSR  RADIO [w]
 OH2.6-0.4       17 53 18.920 - 26 56 37.10 RJ  -    3.0  1.9     n/a  LSR  RADIO [w]
@@ -763,34 +745,16 @@ V1111Oph        18 37 19.380 + 10 25 41.40 RJ  -   32.0  5.3     n/a  LSR  RADIO
 XOph            18 38 21.140 + 08 50 02.10 RJ  -   52.5  1.6     n/a  LSR  RADIO [w]
 RAql            19 06 22.190 + 08 13 47.40 RJ  +   44.0  1.7     n/a  LSR  RADIO [w]
 RTAql           19 38 01.600 + 11 43 18.50 RJ  -   31.0  0.8     n/a  LSR  RADIO [w]
-GYAql           19 50 06.350 - 07 36 52.80 RJ  +   35.0  3.3     n/a  LSR  RADIO [w]
 ChiCyg          19 50 33.900 + 32 54 51.60 RJ  +   12.0  9.7     n/a  LSR  RADIO [w]
 SPav            19 55 13.900 - 59 11 43.70 RJ  -   18.0  0.6     n/a  LSR  RADIO [w]
 RRAql           19 57 36.160 - 01 53 10.50 RJ  +   26.0  1.5     n/a  LSR  RADIO [w]
 XPav            20 11 46.030 - 59 56 12.70 RJ  -   21.0  1.2     n/a  LSR  RADIO [w]
-RPeg            23 06 39.200 + 10 32 35.90 RJ  +   23.0  1.4     n/a  LSR  RADIO [w]
 WPeg            23 19 50.510 + 26 16 43.80 RJ  -   15.6  3.6     n/a  LSR  RADIO [w]
 RAqr            23 43 49.450 - 15 17 04.30 RJ  -   27.0  3.5     n/a  LSR  RADIO [w]
-*
-*
-* 3. GLT pointing souce catalogue
-*
-*               RA & DEC                   Eq  Vlsr     Tpeak   Vrange           JCMT   comments
-*- -- -- -- -- -- --  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-*- -- -- -- -- -- --  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-*
 Vcam            06 02 32.294 + 74 30 27.25 RJ    n/a     n/a     n/a  LSR  RADIO [w]
 IRC+60169       06 34 33.420 + 60 56 27.70 RJ    n/a     n/a     n/a  LSR  RADIO [w]
-GL2445          19 44 07.000 + 35 14 08.20 RJ    n/a     n/a     n/a  LSR  RADIO [w]
 AUCyg           20 18 32.770 + 34 23 20.50 RJ    n/a     n/a     n/a  LSR  RADIO [w]
 UUPeg           21 31 04.160 + 11 09 13.30 RJ    n/a     n/a     n/a  LSR  RADIO [w]
-*
-* 4. EAVN 2022.11 Sources
-*- -- -- -- -- -- --  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-*
-BLLAC           22 02 43.291 + 42 16 39.98 RJ    n/a     n/a     n/a  LSR  RADIO [w]
-0954+658        09 58 47.245 + 65 33 54.82 RJ    n/a     n/a     n/a  LSR  RADIO [w]
-*
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 *           MISCELLANEOUS SOURCES
