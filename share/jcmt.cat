@@ -149,6 +149,7 @@
 * 2022 Mar 28 - removed VirgoA
 * 2022 Nov 11 - added 86GHz SiO sources
 * 2023 Apr 03 - removed 13 86GHz sources that are tested bad
+* 2023 Apr 13 - further update to 86GHz source list
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 * SCUBA-2 CALIBRATORS
@@ -693,68 +694,61 @@ GL3099          23 28 17.107 + 10 54 37.35 RJ  +   46.0  1.5    21.0  LSR  RADIO
 *- -- -- -- -- -- --  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 *- -- -- -- -- -- --  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 *
-VYCMa           07 22 58.336 - 25 46 03.35 RJ  +   19.0  2.6    92.0  LSR  RADIO [w] pm
-RLeo            09 47 33.482 + 11 25 42.97 RJ  -    0.4  2.4    17.0  LSR  RADIO [w] pm
-IRC+10216       09 47 57.447 + 13 16 43.76 RJ  -   25.6 31.8    35.0  LSR  RADIO [w] pm
-RHya            13 29 42.711 - 23 16 52.55 RJ  -   10.0  2.5    19.0  LSR  RADIO [w] pm
-WHya            13 49 01.934 - 28 22 04.50 RJ  +   41.3  2.0    20.0  LSR  RADIO [w] pm
-BXCam           05 46 44.290 + 69 58 24.20 RJ  -    2.0  0.8    45.0  LSR  RADIO [w]
-oCeti           02 19 20.803 - 02 58 43.54 RJ  +   46.5 43.1    19.0  LSR  RADIO [w] pm
-TXCam           05 00 51.220 + 56 10 54.20 RJ  +    9.2  n/a    45.0  LSR  RADIO [w]
-NMLTau          03 53 28.870 + 11 24 21.70 RJ  +   30.5  n/a    56.0  LSR  RADIO [w]
-RXBoo           14 24 11.654 + 25 42 12.58 RJ  +    1.1  n/a    22.0  LSR  RADIO [w] pm
-RCas            23 58 25.028 + 51 23 20.00 RJ  +   25.0  4.1    31.0  LSR  RADIO [w] pm
-GXMon           06 52 47.040 + 08 25 19.20 RJ  -    9.0  1.8    40.0  LSR  RADIO [w]
-RLMi            09 45 34.289 + 34 30 42.68 RJ  +    0.1  0.9    20.0  LSR  RADIO [w] pm
-UHer            16 23 34.700 + 19 00 18.00 RJ  -   21.0  n/a     n/a  LSR  RADIO [w]
-MIRA            02 16 49.100 - 03 12 22.00 RJ  +   48.0  n/a     n/a  LSR  RADIO [w]
-CHicyg          19 48 38.500 + 32 47 10.00 RJ  +    9.5  n/a     n/a  LSR  RADIO [w]
-RAnd            00 24 02.000 + 38 34 38.50 RJ    n/a     n/a     n/a  LSR  RADIO [w]
-WXPsc           01 06 26.010 + 12 35 52.80 RJ  +   16.0  2.1     n/a  LSR  RADIO [w]
-SVS00878        02 37 23.620 - 26 58 38.90 RJ  -    7.0  0.8     n/a  LSR  RADIO [w]
-RHor            02 53 52.810 - 49 53 23.40 RJ  +   36.5  1.2     n/a  LSR  RADIO [w]
-IKTau           03 53 28.700 + 11 24 22.70 RJ  +   33.7 12.0     n/a  LSR  RADIO [w]
-UMen            04 09 35.710 - 81 51 18.10 RJ  +   20.0  5.8     n/a  LSR  RADIO [w]
-RDor            04 36 45.700 - 62 04 37.40 RJ  +   11.0 24.5     n/a  LSR  RADIO [w]
-SVS01835        04 57 01.750 - 84 16 05.80 RJ  -    8.0  2.2     n/a  LSR  RADIO [w]
-TLep            05 04 50.830 - 21 54 16.60 RJ  -   28.0  1.3     n/a  LSR  RADIO [w]
-UDor            05 10 08.780 - 64 19 05.40 RJ  +   29.0  0.7     n/a  LSR  RADIO [w]
-SPic            05 10 57.240 - 48 30 26.00 RJ  -    1.0  1.2     n/a  LSR  RADIO [w]
-ROct            05 26 06.740 - 86 23 18.80 RJ  +   21.0  0.5     n/a  LSR  RADIO [w]
-Orion           05 35 14.500 - 05 22 29.60 RJ  +    5.0 38.0     n/a  LSR  RADIO [w]
-UOri            05 55 49.120 + 20 10 36.50 RJ  -   40.0  1.9     n/a  LSR  RADIO [w]
-GXMon           06 52 46.930 + 08 25 21.10 RJ  -   10.0  3.0     n/a  LSR  RADIO [w]
-L2Pup           07 13 32.310 - 44 38 24.10 RJ  +   28.0  2.2     n/a  LSR  RADIO [w]
-SVS03513        07 17 05.680 - 34 49 39.00 RJ  -   19.0  n/a     n/a  LSR  RADIO [w]
-VYCMa           07 22 58.100 - 25 46 01.80 RJ  +   24.0 32.0     n/a  LSR  RADIO [w]
-SVS03731        07 46 34.200 - 32 18 16.60 RJ  +   30.0  n/a     n/a  LSR  RADIO [w]
-RCnc            08 16 33.810 + 11 43 34.20 RJ  +   15.0  1.2     n/a  LSR  RADIO [w]
-RWVel           09 20 19.570 - 49 31 27.20 RJ  -   12.5  1.1     n/a  LSR  RADIO [w]
-RCar            09 32 14.480 - 62 47 19.70 RJ  +    7.0  n/a     n/a  LSR  RADIO [w]
-RLMi            09 45 34.100 + 34 30 43.90 RJ  +    5.0  n/a     n/a  LSR  RADIO [w]
-RCrt            11 00 33.980 - 18 19 28.50 RJ  +   14.0  1.3     n/a  LSR  RADIO [w]
-XCen            11 49 11.850 - 41 45 28.00 RJ  +   28.0  1.0     n/a  LSR  RADIO [w]
-RTVir           13 02 38.000 + 05 11 08.30 RJ  +   18.0  0.8     n/a  LSR  RADIO [w]
-IRSV1540        15 44 39.900 - 54 23 04.40 RJ  -   82.0  2.3     n/a  LSR  RADIO [w]
 AHSco           17 11 16.900 - 32 19 32.40 RJ  +    0.0  4.3     n/a  LSR  RADIO [w]
-V2108Oph        17 14 19.370 + 08 56 02.50 RJ  +   13.0  1.1     n/a  LSR  RADIO [w]
-OH2.6-0.4       17 53 18.920 - 26 56 37.10 RJ  -    3.0  1.9     n/a  LSR  RADIO [w]
-VXSgr           18 08 04.100 - 22 13 25.60 RJ  +    6.0  5.1     n/a  LSR  RADIO [w]
-SSTel           18 32 18.480 - 56 37 00.40 RJ  +    4.0  1.0     n/a  LSR  RADIO [w]
-V1111Oph        18 37 19.380 + 10 25 41.40 RJ  -   32.0  5.3     n/a  LSR  RADIO [w]
-XOph            18 38 21.140 + 08 50 02.10 RJ  -   52.5  1.6     n/a  LSR  RADIO [w]
-RAql            19 06 22.190 + 08 13 47.40 RJ  +   44.0  1.7     n/a  LSR  RADIO [w]
-RTAql           19 38 01.600 + 11 43 18.50 RJ  -   31.0  0.8     n/a  LSR  RADIO [w]
-ChiCyg          19 50 33.900 + 32 54 51.60 RJ  +   12.0  9.7     n/a  LSR  RADIO [w]
-SPav            19 55 13.900 - 59 11 43.70 RJ  -   18.0  0.6     n/a  LSR  RADIO [w]
-RRAql           19 57 36.160 - 01 53 10.50 RJ  +   26.0  1.5     n/a  LSR  RADIO [w]
-XPav            20 11 46.030 - 59 56 12.70 RJ  -   21.0  1.2     n/a  LSR  RADIO [w]
-WPeg            23 19 50.510 + 26 16 43.80 RJ  -   15.6  3.6     n/a  LSR  RADIO [w]
-RAqr            23 43 49.450 - 15 17 04.30 RJ  -   27.0  3.5     n/a  LSR  RADIO [w]
-Vcam            06 02 32.294 + 74 30 27.25 RJ    n/a     n/a     n/a  LSR  RADIO [w]
-IRC+60169       06 34 33.420 + 60 56 27.70 RJ    n/a     n/a     n/a  LSR  RADIO [w]
 AUCyg           20 18 32.770 + 34 23 20.50 RJ    n/a     n/a     n/a  LSR  RADIO [w]
+BXCam           05 46 44.290 + 69 58 24.20 RJ  -    2.0  0.8    45.0  LSR  RADIO [w]
+ChiCyg          19 50 33.900 + 32 54 51.60 RJ  +   12.0  9.7     n/a  LSR  RADIO [w]
+IKTau           03 53 28.700 + 11 24 22.70 RJ  +   33.7 12.0     n/a  LSR  RADIO [w]
+IRC+60169       06 34 33.420 + 60 56 27.70 RJ    n/a     n/a     n/a  LSR  RADIO [w]
+IRSV1540        15 44 39.900 - 54 23 04.40 RJ  -   82.0  2.3     n/a  LSR  RADIO [w]
+GXMon           06 52 47.040 + 08 25 19.20 RJ  -    9.0  1.8    40.0  LSR  RADIO [w]
+L2Pup           07 13 32.310 - 44 38 24.10 RJ  +   28.0  2.2     n/a  LSR  RADIO [w]
+MIRA            02 16 49.100 - 03 12 22.00 RJ  +   48.0  n/a     n/a  LSR  RADIO [w]
+NMLTau          03 53 28.870 + 11 24 21.70 RJ  +   30.5  n/a    56.0  LSR  RADIO [w]
+oCeti           02 19 20.803 - 02 58 43.54 RJ  +   46.5 43.1    19.0  LSR  RADIO [w] pm
+OH2.6-0.4       17 53 18.920 - 26 56 37.10 RJ  -    3.0  1.9     n/a  LSR  RADIO [w]
+Orion           05 35 14.500 - 05 22 29.60 RJ  +    5.0 38.0     n/a  LSR  RADIO [w]
+RAql            19 06 22.190 + 08 13 47.40 RJ  +   44.0  1.7     n/a  LSR  RADIO [w]
+RAqr            23 43 49.450 - 15 17 04.30 RJ  -   27.0  3.5     n/a  LSR  RADIO [w]
+RCas            23 58 25.028 + 51 23 20.00 RJ  +   25.0  4.1    31.0  LSR  RADIO [w] pm
+RCar            09 32 14.480 - 62 47 19.70 RJ  +    7.0  n/a     n/a  LSR  RADIO [w]
+RCnc            08 16 33.810 + 11 43 34.20 RJ  +   15.0  1.2     n/a  LSR  RADIO [w]
+RCrt            11 00 33.980 - 18 19 28.50 RJ  +   14.0  1.3     n/a  LSR  RADIO [w]
+RDor            04 36 45.700 - 62 04 37.40 RJ  +   11.0 24.5     n/a  LSR  RADIO [w]
+RHor            02 53 52.810 - 49 53 23.40 RJ  +   36.5  1.2     n/a  LSR  RADIO [w]
+RHya            13 29 42.711 - 23 16 52.55 RJ  -   10.0  2.5    19.0  LSR  RADIO [w] pm
+RLeo            09 47 33.482 + 11 25 42.97 RJ  -    0.4  2.4    17.0  LSR  RADIO [w] pm
+RLMi            09 45 34.289 + 34 30 42.68 RJ  +    0.1  0.9    20.0  LSR  RADIO [w] pm
+ROct            05 26 06.740 - 86 23 18.80 RJ  +   21.0  0.5     n/a  LSR  RADIO [w]
+RRAql           19 57 36.160 - 01 53 10.50 RJ  +   26.0  1.5     n/a  LSR  RADIO [w]
+RTAql           19 38 01.600 + 11 43 18.50 RJ  -   31.0  0.8     n/a  LSR  RADIO [w]
+RTVir           13 02 38.000 + 05 11 08.30 RJ  +   18.0  0.8     n/a  LSR  RADIO [w]
+RWVel           09 20 19.570 - 49 31 27.20 RJ  -   12.5  1.1     n/a  LSR  RADIO [w]
+RXBoo           14 24 11.654 + 25 42 12.58 RJ  +    1.1  n/a    22.0  LSR  RADIO [w] pm
+SPav            19 55 13.900 - 59 11 43.70 RJ  -   18.0  0.6     n/a  LSR  RADIO [w]
+SPic            05 10 57.240 - 48 30 26.00 RJ  -    1.0  1.2     n/a  LSR  RADIO [w]
+SSTel           18 32 18.480 - 56 37 00.40 RJ  +    4.0  1.0     n/a  LSR  RADIO [w]
+SVS00878        02 37 23.620 - 26 58 38.90 RJ  -    7.0  0.8     n/a  LSR  RADIO [w]
+SVS01835        04 57 01.750 - 84 16 05.80 RJ  -    8.0  2.2     n/a  LSR  RADIO [w]
+SVS03513        07 17 05.680 - 34 49 39.00 RJ  -   19.0  n/a     n/a  LSR  RADIO [w]
+SVS03731        07 46 34.200 - 32 18 16.60 RJ  +   30.0  n/a     n/a  LSR  RADIO [w]
+TLep            05 04 50.830 - 21 54 16.60 RJ  -   28.0  1.3     n/a  LSR  RADIO [w]
+TXCam           05 00 51.220 + 56 10 54.20 RJ  +    9.2  n/a    45.0  LSR  RADIO [w]
+UDor            05 10 08.780 - 64 19 05.40 RJ  +   29.0  0.7     n/a  LSR  RADIO [w]
+UMen            04 09 35.710 - 81 51 18.10 RJ  +   20.0  5.8     n/a  LSR  RADIO [w]
+UOri            05 55 49.120 + 20 10 36.50 RJ  -   40.0  1.9     n/a  LSR  RADIO [w]
 UUPeg           21 31 04.160 + 11 09 13.30 RJ    n/a     n/a     n/a  LSR  RADIO [w]
+V1111Oph        18 37 19.380 + 10 25 41.40 RJ  -   32.0  5.3     n/a  LSR  RADIO [w]
+V2108Oph        17 14 19.370 + 08 56 02.50 RJ  +   13.0  1.1     n/a  LSR  RADIO [w]
+Vcam            06 02 32.294 + 74 30 27.25 RJ    n/a     n/a     n/a  LSR  RADIO [w]
+VXSgr           18 08 04.100 - 22 13 25.60 RJ  +    6.0  5.1     n/a  LSR  RADIO [w]
+VYCMa           07 22 58.336 - 25 46 03.35 RJ  +   19.0  2.6    92.0  LSR  RADIO [w] pm
+WHya            13 49 01.934 - 28 22 04.50 RJ  +   41.3  2.0    20.0  LSR  RADIO [w] pm
+WPeg            23 19 50.510 + 26 16 43.80 RJ  -   15.6  3.6     n/a  LSR  RADIO [w]
+WXPsc           01 06 26.010 + 12 35 52.80 RJ  +   16.0  2.1     n/a  LSR  RADIO [w]
+XCen            11 49 11.850 - 41 45 28.00 RJ  +   28.0  1.0     n/a  LSR  RADIO [w]
+XOph            18 38 21.140 + 08 50 02.10 RJ  -   52.5  1.6     n/a  LSR  RADIO [w]
+XPav            20 11 46.030 - 59 56 12.70 RJ  -   21.0  1.2     n/a  LSR  RADIO [w]
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 *           MISCELLANEOUS SOURCES
