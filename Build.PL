@@ -37,8 +37,8 @@ my $build = Module::Build->new
    dist_version => '1.30',
    meta_merge => {
                resources =>  {
-                              repository => "git://github.com/eaobservatory/perl-App-SourcePlot.git",
-                              homepage => "http://github.com/eaobservatory/perl-App-SourcePlot/tree/master",
+                              repository => "https://github.com/eaobservatory/perl-App-SourcePlot.git",
+                              homepage => "https://github.com/eaobservatory/perl-App-SourcePlot/tree/master",
                              },
                 },
    requires => {
