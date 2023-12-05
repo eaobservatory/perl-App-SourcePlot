@@ -762,6 +762,17 @@ UHer            16 25 47.472 + 18 53 53.86 RJ  -   21.0  n/a     n/a  LSR  RADIO
 RTEri           03 34 12.480 - 16 09 50.64 RJ  +   24.9  0.4     n/a  LSR  RADIO    n/a        n/a       n/a    [d]
 RUHya           14 11 34.397 - 28 53 07.44 RJ  -    2.8  0.3     n/a  LSR  RADIO    n/a        n/a       n/a    [d]
 *
+*
+* CO6-5 line sources used for Kuntur pointing
+*
+W75N            20 38 36.433 + 42 37 34.49 RJ  +   12.5 35.0     n/a  LSR  RADIO    n/a        n/a       n/a    [l] bright CO 6-5 source
+N2071IR         05 47 04.851 + 00 21 47.10 RJ  +    9.5 16.0     n/a  LSR  RADIO    n/a        n/a       n/a    [l] bright CO 6-5 source
+N7538IRS1       23 13 45.346 + 61 28 10.32 RJ  -   58.0 33.0     n/a  LSR  RADIO    n/a        n/a       n/a    [l] bright CO 6-5 source
+NMLTau          03 53 28.870 + 11 24 21.70 RJ  +   30.5  3.0    56.0  LSR  RADIO    n/a        n/a       n/a    [l] bright CO 6-5 source
+IRC+10216       09 47 57.447 + 13 16 43.76 RJ  -   25.6 31.8    35.0  LSR  RADIO    n/a        n/a       n/a    [l] bright CO 6-5 source
+oCeti           02 19 20.803 - 02 58 43.54 RJ  +   46.5 14.4    19.0  LSR  RADIO    n/a        n/a       n/a    [l] bright CO 6-5 source
+CIT6            10 16 02.290 + 30 34 19.10 RJ  -    1.9  6.9    45.0  LSR  RADIO    n/a        n/a       n/a    [l] bright CO 6-5 source
+*
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 *           MISCELLANEOUS SOURCES
 *
