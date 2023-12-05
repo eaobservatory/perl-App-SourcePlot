@@ -152,6 +152,8 @@
 * 2023 Apr 03 - removed 13 86GHz sources that are tested bad
 * 2023 Apr 13 - further update to 86GHz source list
 * 2023 Dec 05 - Added [d] to a few sources of [l] and [w] category
+*             - Added UHer,RTEri,RUHya to [d] category
+*               for 658GHz, according to Baudry 2017, and Hunter 2007
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 * SCUBA-2 CALIBRATORS
@@ -751,6 +753,14 @@ WXPsc           01 06 26.010 + 12 35 52.80 RJ  +   16.0  2.1     n/a  LSR  RADIO
 XCen            11 49 11.850 - 41 45 28.00 RJ  +   28.0  1.0     n/a  LSR  RADIO    n/a        n/a       n/a    [w]
 XOph            18 38 21.140 + 08 50 02.10 RJ  -   52.5  1.6     n/a  LSR  RADIO    n/a        n/a       n/a    [w]
 XPav            20 11 46.030 - 59 56 12.70 RJ  -   21.0  1.2     n/a  LSR  RADIO    n/a        n/a       n/a    [wd]
+*
+* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+*
+* 658GHz water maser sources, added 2023-12-04 from Baudry 2017 & Hunter 2007
+*
+UHer            16 25 47.472 + 18 53 53.86 RJ  -   21.0  n/a     n/a  LSR  RADIO    n/a        n/a       n/a    [d]
+RTEri           03 34 12.480 - 16 09 50.64 RJ  +   24.9  0.4     n/a  LSR  RADIO    n/a        n/a       n/a    [d]
+RUHya           14 11 34.397 - 28 53 07.44 RJ  -    2.8  0.3     n/a  LSR  RADIO    n/a        n/a       n/a    [d]
 *
 * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 *           MISCELLANEOUS SOURCES
