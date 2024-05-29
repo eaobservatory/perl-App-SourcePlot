@@ -42,10 +42,10 @@ sub new {
     my $class = ref($proto) || $proto;
 
     my $screen = shift;
+    my $width = shift;
+    my $height = shift;
 
     my $ET = bless {
-        X_SIZE => shift,
-        Y_SIZE => shift,
         FONT => '-*-Helvetica-Medium-R-Normal--*-140-*-*-*-*-*-*',
         FONT_COLOR => 'Black',
         DRAW_COLOR => 'Black',
@@ -55,11 +55,11 @@ sub new {
     $ET->{CANVAS} = $screen->Canvas(
         -background => "LightCyan3",
         -relief => 'raised',
-        -width => $ET->{X_SIZE},
-        -height => $ET->{Y_SIZE},
+        -width => $width,
+        -height => $height,
         -cursor => 'top_left_arrow',
     );
-    $ET->{CANVAS}->pack(-side => 'left', -fill => 'x');
+    $ET->{CANVAS}->grid(-row => 0, -column => 0, -sticky => 'nsew');
 
     $ET->setWorldSize(0, 0, 1, 1);
     $ET->usingWorld(0);
@@ -103,7 +103,7 @@ Returns the width of a canvas.
 
 sub width {
     my $self = shift;
-    return $self->toWx($self->{X_SIZE});
+    return $self->getCanvas->width;
 }
 
 =item height
@@ -116,7 +116,7 @@ Returns the width of a canvas.
 
 sub height {
     my $self = shift;
-    return $self->toWy($self->{Y_SIZE});
+    return $self->getCanvas->height;
 }
 
 =item setBackground

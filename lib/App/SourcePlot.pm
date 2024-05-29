@@ -96,9 +96,9 @@ my $EditWin = {};
 my $CatWin = {};
 
 #setup dimensions
-my $xplot = 590;
+my $xplot_default = 590;
 my $xborder = 50;
-my $yplot = 550;
+my $yplot_default = 550;
 my $yborder = 30;
 
 my $RESPONSE;
@@ -166,7 +166,7 @@ sub run_sourceplot_gui {
     $MW->positionfrom('user');
     $MW->geometry('+0+90');
     $MW->title('Source Plot');
-    $MW->resizable(0, 0);
+    $MW->resizable(1, 1);
     $MW->iconname('Source Plot');
     $MW->update;
 
@@ -194,18 +194,16 @@ sub run_sourceplot_gui {
 
     my $canFrame = $MW->Frame(
         -takefocus => 1,
-        -width => $xplot,
     );
 
     # Create a canvas and calculate the world to pixel ratio
-    $plotter = App::SourcePlot::Plotter::Tk->new($canFrame, $xplot, $yplot);
+    $plotter = App::SourcePlot::Plotter::Tk->new($canFrame, $xplot_default, $yplot_default);
     $plotter->setBackground('black');
-    $plotter->worldCenter($xborder, $yplot - $yborder);
+    $plotter->worldCenter($xborder, $yplot_default - $yborder);
     $plotter->usingWorld(1);
 
     my $buttonFrame = $MW->Frame(
         -takefocus => 1,
-        -width => $xplot,
     );
 
     my $exitBut = $buttonFrame->Button(
@@ -349,8 +347,14 @@ sub run_sourceplot_gui {
     )->pack(-side => 'left');
     $balloon->attach($cBut, -balloonmsg => 'Press to open the Catalog Window');
 
-    $canFrame->grid('-sticky' => 'nsew');
-    $buttonFrame->grid('-sticky' => 'nsew');
+    $canFrame->gridRowconfigure(0, -weight => 1);
+    $canFrame->gridColumnconfigure(0, -weight => 1);
+
+    $canFrame->grid(-row => 0, -column => 0, -sticky => 'nsew');
+    $buttonFrame->grid(-row => 1, -column => 0, -sticky => 'nsew', -padx => 3, -pady => 3);
+
+    $MW->gridRowconfigure(0, -weight => 1);
+    $MW->gridColumnconfigure(0, -weight => 1);
 
     print "made it to just before the windows come up\n" if $locateBug;
 
@@ -363,6 +367,12 @@ sub run_sourceplot_gui {
 
     plot();
     calcTime();
+
+    # Trigger the "plot" routine when the canvas is resized so that the plot
+    # is redrawn to fit the new size.
+    $canFrame->bind('<Configure>' => sub {
+        plot();
+    });
 
     print "made it to just before the main loop\n" if $locateBug;
 
@@ -1550,6 +1560,11 @@ Plots the graphs, including axis.
 
 sub plot {
     print "Entered plot\n" if $locateBug;
+    my $xplot = $plotter->width;
+    my $yplot = $plotter->height;
+    $plotter->usingWorld(0);
+    $plotter->worldCenter($xborder, $yplot - $yborder);
+    $plotter->usingWorld(1);
     my ($xworldRatio, $yworldRatio);
     my $debug = 0;
     $TIME =~ s/^\s+//;
