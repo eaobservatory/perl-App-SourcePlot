@@ -274,16 +274,17 @@ use Getopt::Long;
 use App::SourcePlot;
 
 my ($option_help, $option_version, $option_date);
-GetOptions('help|man' => \$option_help,
-           'version' => \$option_version,
-           'date=s' => \$option_date)
-  or pod2usage(-verbose => 0);
+GetOptions(
+    'help|man' => \$option_help,
+    'version' => \$option_version,
+    'date=s' => \$option_date,
+) or pod2usage(-verbose => 0);
 pod2usage(-verbose => 2) if $option_help;
 
 if ($option_version) {
-  print 'SourcePlot launch script version ' . $VERSION . "\n";
-  print 'Using App::SourcePlot application version ' . $App::SourcePlot::VERSION . "\n";
-  exit(0);
+    print 'SourcePlot launch script version ' . $VERSION . "\n";
+    print 'Using App::SourcePlot application version ' . $App::SourcePlot::VERSION . "\n";
+    exit(0);
 }
 
 my %arg = ();
