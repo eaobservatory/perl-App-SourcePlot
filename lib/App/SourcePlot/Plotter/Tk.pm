@@ -970,38 +970,6 @@ sub drawBox {
   return $box;
 }
 
-
-############################################################
-#
-#  Displays a Tk error window with the passed in string
-#
-#  Parameters:
-#    $MW - a Tk MainWindow object
-#    $text - the error message to be printed
-#    $title - optionally add a title the tk window
-#
-#  Returns nothing
-#
-sub error {
-  my $MW = shift;
-  my $errWin = $MW->Toplevel(-borderwidth=>10);
-  $errWin->title('Observation Log Error!');
-  $errWin->resizable(0,0);
-  $errWin->Button(
-     -text         => 'Ok',
-     -command      => sub{
-       destroy $errWin;
-  })->pack(-side=>'bottom');
-  my $message = shift;
-  $errWin->Label (
-    -text => "\nError!\n\n   ".$message."   \n",
-    -relief=>'sunken'
-  )->pack(-side=>'bottom', pady => 10);
-  $errWin->title(shift) if @_;
-  $MW->update;
-  $errWin->grab;
-}
-
 =back
 
 =head1 AUTHOR

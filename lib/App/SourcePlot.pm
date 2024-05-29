@@ -2470,32 +2470,6 @@ sub tagOnOff {
   }
 }
 
-=item B<error>
-
-Displays an error message in Tk.
-
-=cut
-
-sub error {
-  my $MW = shift;
-  my $errWin = $MW->Toplevel(-borderwidth=>10);
-  $errWin->title('Observation Log Error!');
-  $errWin->resizable(0,0);
-  $errWin->Button(
-     -text         => 'Ok',
-     -command      => sub{
-       destroy $errWin;
-  })->pack(-side=>'bottom');
-  my $message = shift;
-  $errWin->Label (
-    -text => "\nError!\n\n   ".$message."   \n",
-    -relief=>'sunken'
-  )->pack(-side=>'bottom', -pady => 10);
-  $errWin->title(shift) if @_;
-  $MW->update;
-  $errWin->grab;
-}
-
 =item B<inswt>
 
 The "Insert With Tags" procedure inserts text into a given text widget
