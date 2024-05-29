@@ -187,14 +187,10 @@ sub run_sourceplot_gui {
   );
 
   # Create a canvas and calculate the world to pixel ratio
-  $plotter = new App::SourcePlot::Plotter::Tk($xplot, $yplot, 1, 1, $canFrame);
+  $plotter = App::SourcePlot::Plotter::Tk->new($canFrame, $xplot, $yplot);
   $plotter->setBackground('black');
   $plotter->worldCenter($xborder, $yplot-$yborder);
   $plotter->usingWorld(1);
-
-  # Set up the X Y coordinate feedback
-  #my ($XPOS, $YPOS);
-  #$plotter->monitorXY( \$XPOS, \$YPOS );
 
   my $buttonFrame = $MW->Frame(
                      -takefocus => 1,
