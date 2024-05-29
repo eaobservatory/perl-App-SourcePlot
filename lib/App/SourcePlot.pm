@@ -1086,19 +1086,14 @@ sub editSource {
     my $Top = $MW->Toplevel();
     $Top->geometry('+600+90');
     $Top->title('Source Plot: Edit Window');
-    $Top->resizable(0, 0);
+    $Top->resizable(1, 1);
     my $topFrame = $Top->Frame(
         -relief => 'groove',
         -borderwidth => 2,
         -width => 50,
-    )->pack(-padx => 10, -fill => 'x', -ipady => 3, -pady => 10);
+    )->grid(-column => 0, -row => 0, -padx => 3, -pady => 3, -sticky => 'nsew');
 
     # create the header
-    my $headFrame = $topFrame->Frame(
-        -relief => 'flat',
-        -borderwidth => 2,
-    )->grid(-row => 0, -sticky => 'nsew', -ipadx => 3);
-
     my $head = $topFrame->Text(
         -wrap => 'none',
         -relief => 'flat',
@@ -1124,11 +1119,14 @@ sub editSource {
         -height => 15,
         -font => '-*-Courier-Medium-R-Normal--*-120-*-*-*-*-*-*',
         -setgrid => 1,
-    )->grid(qw/-sticky nsew/, -row => 1);
+    )->grid(-sticky => 'nsew', -row => 1);
     $T->bindtags(qw/widget_demo/); # remove all bindings but dummy "widget_demo"
 
+    $topFrame->gridRowconfigure(1, -weight => 1);
+    $topFrame->gridColumnconfigure(0, -weight => 1);
+
     # create the done button
-    my $buttonF = $Top->Frame->pack(-padx => 10, -pady => 10, -fill => 'x');
+    my $buttonF = $Top->Frame->grid(-column => 0, -row => 1, -padx => 3, -pady => 3, -sticky => 'nsew');
     my $doneBut = $buttonF->Button(
         -text => 'Done',
         -width => 4,
@@ -1329,6 +1327,9 @@ sub editSource {
     );
     $planBut->pack(-side => 'left');
     $balloon->attach($planBut, -balloonmsg => "Press to add a planet\nto the plot");
+
+    $Top->gridRowconfigure(0, -weight => 1);
+    $Top->gridColumnconfigure(0, -weight => 1);
 
     $EditWin->{'Window'} = $Top;
     $EditWin->{'Text'} = $T;
