@@ -2550,9 +2550,9 @@ sub calcTime {
 
     $plotter->drawColor('white');
     foreach my $source (@SOURCE_LIST) {
-        next if (! $source->active());
+        next unless $source->active();
         next if (defined $so && $source != $so);
-        if (($so == undef) || ($so->timeDotX() eq '')) {
+        if ((not defined $so) || ($so->timeDotX() eq '')) {
             $plotter->delete('timeDot' . $source->name());
 
             print "Real time = $TIME and real date = $DATE\n" if $timeBug;
@@ -2612,157 +2612,94 @@ sub calcTime {
 
             # draw the time dot
             if ($ele > 0) {
-                $plotter->drawColor($source->color());
-                if ((($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /elevation/i))
-                        || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /elevation/i))
-                        || (($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /air mass/i))
-                        || (($Y_AXIS =~ /air mass/i) && ($X_AXIS =~ /azimuth/i))) {
-                    my $r = 90 - $source->timeDotX();
-                    if ($r < 90) {
-                        my $theta = (90 - $source->timeDotY()) * pi / 180;
-                        my $x2 = 90 + $r * cos $theta;
-                        my $y2 = 90 + $r * sin $theta;
-                        $plotter->drawFillOval($x2 - 2, $y2 - 2, $x2 + 2, $y2 + 2, 'timeDot' . $source->name());
-                        $plotter->bindTag(
-                            'timeDot' . $source->name(),
-                            '<Any-Enter>' => sub {
-                            },
-                        );
-                        $plotter->bindTag(
-                            'ltimeDot' . $source->name(),
-                            '<Any-Leave>' => sub {
-                            },
-                        );
-                    }
-                }
-                else {
-                    my ($sX, $sY) = $plotter->toW($dotSizeX, $dotSizeY);
-                    $sX -= $plotter->toWx(0);
-                    $sY -= $plotter->toWy(0);
-                    my $x2 = $source->timeDotX();
-                    my $y2 = $source->timeDotY();
-                    if ($x2 ne '' && $y2 ne '') {
-                        $plotter->drawFillOval($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2 + $sY, 'timeDot' . $source->name());
-                        $plotter->bindTag(
-                            'timeDot' . $source->name(),
-                            '<Any-Enter>' => sub {
-                                $plotter->drawColor($source->color());
-                                $plotter->drawFillOval($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2 + $sY, 'ltimeDot' . $source->name());
-                                # draw AZ-EL pointers
-                                $plotter->drawColor('red');
-                                $plotter->fontColor('red');
-                                $plotter->penWidth(2);
-                                $plotter->drawLine($x2 - $elex, $y2 - $eley, $x2, $y2, 'ltimeDot' . $source->name());
-                                $plotter->drawLine($x2 - $azx, $y2 - $azy, $x2, $y2, 'ltimeDot' . $source->name());
-                                $plotter->penWidth(1);
-                                my ($xoff, $yoff) = $plotter->toW(7, 7);
-                                $xoff -= $plotter->toWx(0);
-                                $yoff -= $plotter->toWy(0);
-                                $plotter->drawText($x2 - $elex - $xoff, $y2 - $eley - $yoff, 'El', 'ltimeDot' . $source->name());
-                                # and RA-Dec box
-                                my $bx = 1.5 * sqrt($azx * $azx + $elex * $elex);
-                                my $by = 1.5 * sqrt($azy * $azy + $eley * $eley);
-                                $plotter->drawLine($x2 - $bx, $y2 - $by, $x2 - $bx, $y2 + $by, 'ltimeDot' . $source->name());
-                                $plotter->drawLine($x2 - $bx, $y2 + $by, $x2 + $bx, $y2 + $by, 'ltimeDot' . $source->name());
-                                $plotter->drawLine($x2 + $bx, $y2 + $by, $x2 + $bx, $y2 - $by, 'ltimeDot' . $source->name());
-                                $plotter->drawLine($x2 + $bx, $y2 - $by, $x2 - $bx, $y2 - $by, 'ltimeDot' . $source->name());
-                                $plotter->drawText($x2, $y2 - 1.2 * $by, 'R.A.', 'ltimeDot' . $source->name());
-                                $plotter->drawText($x2 - 1.12 * $bx, $y2 + 0.2 * $by, 'D', 'ltimeDot' . $source->name());
-                                $plotter->drawText($x2 - 1.1 * $bx, $y2, 'e', 'ltimeDot' . $source->name());
-                                $plotter->drawText($x2 - 1.1 * $bx, $y2 - 0.2 * $by, 'c', 'ltimeDot' . $source->name());
-                                $plotter->fontColor($source->color());
-                            },
-                        );
-                        $plotter->bindTag(
-                            'ltimeDot' . $source->name(),
-                            '<Any-Leave>' => sub {
-                                $plotter->delete('ltimeDot' . $source->name());
-                            },
-                        );
-                        $source->AzElOffsets($elex, $eley, $azx, $azy);
-                    }
-                }
+                $source->AzElOffsets($elex, $eley, $azx, $azy);
+                plot_time_dot($source);
             }
         }
         else {
             # draw the time dot
             if ($source->elevation() > 0) {
-                $plotter->drawColor($source->color());
-                if ((($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /elevation/i))
-                        || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /elevation/i))
-                        || (($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /air mass/i))
-                        || (($Y_AXIS =~ /air mass/i) && ($X_AXIS =~ /azimuth/i))) {
-                    my $r = 90 - $source->timeDotX();
-                    if ($r < 90) {
-                        my $theta = (90 - $source->timeDotY()) * pi / 180;
-                        my $x2 = 90 + $r * cos $theta;
-                        my $y2 = 90 + $r * sin $theta;
-                        $plotter->drawFillOval($x2 - 2, $y2 - 2, $x2 + 2, $y2 + 2, 'timeDot' . $source->name());
-                        $plotter->bindTag(
-                            'timeDot' . $source->name(),
-                            '<Any-Enter>' => sub {
-                            },
-                        );
-                        $plotter->bindTag(
-                            'ltimeDot' . $source->name(),
-                            '<Any-Leave>' => sub {
-                            },
-                        );
-                    }
-                }
-                else {
-                    my ($sX, $sY) = $plotter->toW($dotSizeX, $dotSizeY);
-                    $sX -= $plotter->toWx(0);
-                    $sY -= $plotter->toWy(0);
-                    my $x2 = $source->timeDotX();
-                    my $y2 = $source->timeDotY();
-                    if ($x2 ne '' && $y2 ne '') {
-                        my ($elex, $eley, $azx, $azy) = $source->AzElOffsets();
-                        $plotter->drawColor($source->color());
-                        $plotter->drawFillOval($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2 + $sY, 'timeDot' . $source->name());
-                        $plotter->bindTag(
-                            'timeDot' . $source->name(),
-                            '<Any-Enter>' => sub {
-                                $plotter->drawColor($source->color());
-                                $plotter->drawFillOval($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2 + $sY, 'ltimeDot' . $source->name());
-                                $plotter->drawColor('red');
-                                $plotter->fontColor('red');
-                                $plotter->penWidth(2);
-                                # draw AZ-EL pointers
-                                $plotter->drawLine($x2 - $elex, $y2 - $eley, $x2, $y2, 'ltimeDot' . $source->name());
-                                $plotter->drawLine($x2 - $azx, $y2 - $azy, $x2, $y2, 'ltimeDot' . $source->name());
-                                $plotter->penWidth(1);
-                                my ($xoff, $yoff) = $plotter->toW(7, 7);
-                                $xoff -= $plotter->toWx(0);
-                                $yoff -= $plotter->toWy(0);
-                                $plotter->drawText($x2 - $elex - $xoff, $y2 - $eley - $yoff, 'El', 'ltimeDot' . $source->name());
-                                # and RA-Dec box
-                                my $bx = 1.5 * sqrt($azx * $azx + $elex * $elex);
-                                my $by = 1.5 * sqrt($azy * $azy + $eley * $eley);
-                                $plotter->drawLine($x2 - $bx, $y2 - $by, $x2 - $bx, $y2 + $by, 'ltimeDot' . $source->name());
-                                $plotter->drawLine($x2 - $bx, $y2 + $by, $x2 + $bx, $y2 + $by, 'ltimeDot' . $source->name());
-                                $plotter->drawLine($x2 + $bx, $y2 + $by, $x2 + $bx, $y2 - $by, 'ltimeDot' . $source->name());
-                                $plotter->drawLine($x2 + $bx, $y2 - $by, $x2 - $bx, $y2 - $by, 'ltimeDot' . $source->name());
-                                $plotter->drawText($x2, $y2 - 1.2 * $by, 'R.A.', 'ltimeDot' . $source->name());
-                                $plotter->drawText($x2 - 1.12 * $bx, $y2 + 0.2 * $by, 'D', 'ltimeDot' . $source->name());
-                                $plotter->drawText($x2 - 1.1 * $bx, $y2, 'e', 'ltimeDot' . $source->name());
-                                $plotter->drawText($x2 - 1.1 * $bx, $y2 - 0.2 * $by, 'c', 'ltimeDot' . $source->name());
-                                $plotter->fontColor($source->color());
-                            }
-                        );
-                        $plotter->bindTag(
-                            'ltimeDot' . $source->name(),
-                            '<Any-Leave>' => sub {
-                                $plotter->delete('ltimeDot' . $source->name());
-                            },
-                        );
-                    }
-                }
+                plot_time_dot($source);
             }
         }
     }
 
     $TIMER = $MW->after($TimeLap, \&calcTime);
+}
+
+sub plot_time_dot {
+    my $source = shift;
+    my ($elex, $eley, $azx, $azy) = $source->AzElOffsets();
+
+    $plotter->drawColor($source->color());
+    if ((($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /elevation/i))
+            || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /elevation/i))
+            || (($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /air mass/i))
+            || (($Y_AXIS =~ /air mass/i) && ($X_AXIS =~ /azimuth/i))) {
+        my $r = 90 - $source->timeDotX();
+        if ($r < 90) {
+            my $theta = (90 - $source->timeDotY()) * pi / 180;
+            my $x2 = 90 + $r * cos $theta;
+            my $y2 = 90 + $r * sin $theta;
+            $plotter->drawFillOval($x2 - 2, $y2 - 2, $x2 + 2, $y2 + 2, 'timeDot' . $source->name());
+            $plotter->bindTag(
+                'timeDot' . $source->name(),
+                '<Any-Enter>' => sub {
+                },
+            );
+            $plotter->bindTag(
+                'ltimeDot' . $source->name(),
+                '<Any-Leave>' => sub {
+                },
+            );
+        }
+    }
+    else {
+        my ($sX, $sY) = $plotter->toW($dotSizeX, $dotSizeY);
+        $sX -= $plotter->toWx(0);
+        $sY -= $plotter->toWy(0);
+        my $x2 = $source->timeDotX();
+        my $y2 = $source->timeDotY();
+        if ($x2 ne '' && $y2 ne '') {
+            $plotter->drawFillOval($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2 + $sY, 'timeDot' . $source->name());
+            $plotter->bindTag(
+                'timeDot' . $source->name(),
+                '<Any-Enter>' => sub {
+                    $plotter->drawColor($source->color());
+                    $plotter->drawFillOval($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2 + $sY, 'ltimeDot' . $source->name());
+                    # draw AZ-EL pointers
+                    $plotter->drawColor('red');
+                    $plotter->fontColor('red');
+                    $plotter->penWidth(2);
+                    $plotter->drawLine($x2 - $elex, $y2 - $eley, $x2, $y2, 'ltimeDot' . $source->name());
+                    $plotter->drawLine($x2 - $azx, $y2 - $azy, $x2, $y2, 'ltimeDot' . $source->name());
+                    $plotter->penWidth(1);
+                    my ($xoff, $yoff) = $plotter->toW(7, 7);
+                    $xoff -= $plotter->toWx(0);
+                    $yoff -= $plotter->toWy(0);
+                    $plotter->drawText($x2 - $elex - $xoff, $y2 - $eley - $yoff, 'El', 'ltimeDot' . $source->name());
+                    # and RA-Dec box
+                    my $bx = 1.5 * sqrt($azx * $azx + $elex * $elex);
+                    my $by = 1.5 * sqrt($azy * $azy + $eley * $eley);
+                    $plotter->drawLine($x2 - $bx, $y2 - $by, $x2 - $bx, $y2 + $by, 'ltimeDot' . $source->name());
+                    $plotter->drawLine($x2 - $bx, $y2 + $by, $x2 + $bx, $y2 + $by, 'ltimeDot' . $source->name());
+                    $plotter->drawLine($x2 + $bx, $y2 + $by, $x2 + $bx, $y2 - $by, 'ltimeDot' . $source->name());
+                    $plotter->drawLine($x2 + $bx, $y2 - $by, $x2 - $bx, $y2 - $by, 'ltimeDot' . $source->name());
+                    $plotter->drawText($x2, $y2 - 1.2 * $by, 'R.A.', 'ltimeDot' . $source->name());
+                    $plotter->drawText($x2 - 1.12 * $bx, $y2 + 0.2 * $by, 'D', 'ltimeDot' . $source->name());
+                    $plotter->drawText($x2 - 1.1 * $bx, $y2, 'e', 'ltimeDot' . $source->name());
+                    $plotter->drawText($x2 - 1.1 * $bx, $y2 - 0.2 * $by, 'c', 'ltimeDot' . $source->name());
+                    $plotter->fontColor($source->color());
+                },
+            );
+            $plotter->bindTag(
+                'ltimeDot' . $source->name(),
+                '<Any-Leave>' => sub {
+                    $plotter->delete('ltimeDot' . $source->name());
+                },
+            );
+        }
+    }
 }
 
 =item B<tagOnOff>
