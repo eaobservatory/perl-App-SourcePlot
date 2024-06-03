@@ -84,6 +84,7 @@ my $DATE;
 my $telObject;
 my ($minX, $minY);
 my ($maxX, $maxY);
+my $TELPOSN = undef;
 
 my $NUM_POINTS = 97;
 my $BUSY = 0;
@@ -159,6 +160,8 @@ sub run_sourceplot_gui {
     $Y_AXIS = $defaults->val('Options', 'YAXIS', $defaults{'YAXIS'});
     $TIME = $defaults->val('Options', 'TIME', $defaults{'TIME'});
     $telObject = Astro::Telescope->new($TEL);
+
+    $TELPOSN = $arg{'telposn'} if exists $arg{'telposn'};
 
     ##### global windows
 
@@ -2479,6 +2482,9 @@ sub plot {
                     if $plotter->existTag('l' . $source->name());
             }
         }
+
+        calcTime('TelescopePosition');
+
         if ($Top != undef) {
             destroy $Top;
         }
@@ -2522,12 +2528,27 @@ sub calcTime {
     $TIMER->cancel if defined $TIMER;
     my $so = shift;
 
-    my $sources;
+    my ($sources, $telsource);
     if (defined $so) {
-        $sources = [[$so, 'drawFillOval', 1]];
+        if (ref $so) {
+            $sources = [[$so, 'drawFillOval', 1]];
+        }
+        elsif ('TelescopePosition' eq $so) {
+            $sources = [];
+            $telsource = $TELPOSN->get_position() if defined $TELPOSN;
+        }
+        else {
+            die 'Unexpected source parameter';
+        }
     }
     else {
         $sources = [map {[$_, 'drawFillOval', 1]} @SOURCE_LIST];
+        $telsource = $TELPOSN->get_position() if defined $TELPOSN;
+    }
+
+    if (defined $telsource) {
+        $telsource->color('#ffffff');
+        push @$sources, [$telsource, 'drawOval', 3];
     }
 
     my $timeBug = 0;

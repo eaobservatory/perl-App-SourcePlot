@@ -6,7 +6,7 @@ sourceplot - display a plot of astronomical sources on adjustable axes
 
 =head1 SYNOPSIS
 
-    sourceplot [--help | --version] [--date YYYY-MM-DD]
+    sourceplot [--help | --version] [--date YYYY-MM-DD] [--telposn TELESCOPE]
 
 =head1 PURPOSE
 
@@ -42,6 +42,10 @@ Show version information.
 =item --date YYYY-MM-DD
 
 Select initial date.
+
+=item --telposn TELESCOPE
+
+Indicate current pointing position of given telescope, if available.
 
 =back
 
@@ -273,11 +277,12 @@ use Pod::Usage;
 use Getopt::Long;
 use App::SourcePlot;
 
-my ($option_help, $option_version, $option_date);
+my ($option_help, $option_version, $option_date, $option_telposn);
 GetOptions(
     'help|man' => \$option_help,
     'version' => \$option_version,
     'date=s' => \$option_date,
+    'telposn=s' => \$option_telposn,
 ) or pod2usage(-verbose => 0);
 pod2usage(-verbose => 2) if $option_help;
 
@@ -290,6 +295,17 @@ if ($option_version) {
 my %arg = ();
 
 $arg{'date'} = $option_date if defined $option_date;
+
+unless (defined $option_telposn) {
+}
+elsif ('JCMT' eq uc $option_telposn) {
+    require App::SourcePlot::TelPosn::JCMT;
+    $arg{'telposn'} = App::SourcePlot::TelPosn::JCMT->new;
+}
+else {
+    print "Unable to obtain position of telescope $option_telposn\n";
+    exit(1);
+}
 
 App::SourcePlot::run_sourceplot_gui(%arg);
 
