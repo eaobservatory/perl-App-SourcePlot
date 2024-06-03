@@ -2521,6 +2521,15 @@ Draws a dot at the current time on each source.
 sub calcTime {
     $TIMER->cancel if defined $TIMER;
     my $so = shift;
+
+    my $sources;
+    if (defined $so) {
+        $sources = [[$so, 'drawFillOval', 1]];
+    }
+    else {
+        $sources = [map {[$_, 'drawFillOval', 1]} @SOURCE_LIST];
+    }
+
     my $timeBug = 0;
     my ($ss, $mm, $hh, $md, $mo, $yr, $wd, $yd, $isdst) = gmtime(time);
     $mo ++;  # this catches the month up to the current date
@@ -2549,78 +2558,71 @@ sub calcTime {
     my $d = $dt->strftime('%Y/%m/%d');
 
     $plotter->drawColor('white');
-    foreach my $source (@SOURCE_LIST) {
+    foreach my $sourceinfo (@$sources) {
+        my ($source, $plotstyle, $radiusscale) = @$sourceinfo;
         next unless $source->active();
-        next if (defined $so && $source != $so);
-        if ((not defined $so) || ($so->timeDotX() eq '')) {
-            $plotter->delete('timeDot' . $source->name());
 
-            print "Real time = $TIME and real date = $DATE\n" if $timeBug;
-            print "Date = $d and time = $t before calcpoint\n" if $timeBug;
-            my ($lst, $ele, $az, $pa, $elex, $eley, $azx, $azy) = $source->calcPoint($d, $t, $telObject);
+        $plotter->delete('timeDot' . $source->name());
 
-            if ($lst < $minX) {
-                $lst += 2 * pi;
-            }
-            elsif ($lst > $maxX) {
-                $lst -= 2 * pi;
-            }
+        print "Real time = $TIME and real date = $DATE\n" if $timeBug;
+        print "Date = $d and time = $t before calcpoint\n" if $timeBug;
+        my ($lst, $ele, $az, $pa, $elex, $eley, $azx, $azy) = $source->calcPoint($d, $t, $telObject);
 
-            my ($x, $y);
-
-            if ($X_AXIS =~ /time/i) {
-                $x = $lst;
-            }
-            elsif (($X_AXIS =~ /elevation/i) || ($X_AXIS =~ /air mass/i)) {
-                $x = $ele;
-            }
-            elsif ($X_AXIS =~ /azimuth/i) {
-                $x = $az;
-            }
-            elsif ($X_AXIS =~ /parallactic angle/i) {
-                $x = $pa;
-            }
-
-            if ($Y_AXIS =~ /time/i) {
-                $y = $lst;
-            }
-            elsif (($Y_AXIS =~ /elevation/i) || ($Y_AXIS =~ /air mass/i)) {
-                $y = $ele;
-            }
-            elsif ($Y_AXIS =~ /azimuth/i) {
-                $y = $az;
-            }
-            elsif ($Y_AXIS =~ /parallactic angle/i) {
-                $y = $pa;
-            }
-
-            if ((($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /elevation/i))
-                    || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /elevation/i))
-                    || (($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /air mass/i))
-                    || (($Y_AXIS =~ /air mass/i) && ($X_AXIS =~ /azimuth/i))) {
-                $x = $ele;
-                $y = $az;
-            }
-
-            $source->timeDotX($x);
-            $source->timeDotY($y);
-
-            $elex = $plotter->toWx($elex) - $plotter->toWx(0);
-            $eley = $plotter->toWy($eley) - $plotter->toWy(0);
-            $azx = $plotter->toWx($azx) - $plotter->toWx(0);
-            $azy = $plotter->toWy($azy) - $plotter->toWy(0);
-
-            # draw the time dot
-            if ($ele > 0) {
-                $source->AzElOffsets($elex, $eley, $azx, $azy);
-                plot_time_dot($source);
-            }
+        if ($lst < $minX) {
+            $lst += 2 * pi;
         }
-        else {
-            # draw the time dot
-            if ($source->elevation() > 0) {
-                plot_time_dot($source);
-            }
+        elsif ($lst > $maxX) {
+            $lst -= 2 * pi;
+        }
+
+        my ($x, $y);
+
+        if ($X_AXIS =~ /time/i) {
+            $x = $lst;
+        }
+        elsif (($X_AXIS =~ /elevation/i) || ($X_AXIS =~ /air mass/i)) {
+            $x = $ele;
+        }
+        elsif ($X_AXIS =~ /azimuth/i) {
+            $x = $az;
+        }
+        elsif ($X_AXIS =~ /parallactic angle/i) {
+            $x = $pa;
+        }
+
+        if ($Y_AXIS =~ /time/i) {
+            $y = $lst;
+        }
+        elsif (($Y_AXIS =~ /elevation/i) || ($Y_AXIS =~ /air mass/i)) {
+            $y = $ele;
+        }
+        elsif ($Y_AXIS =~ /azimuth/i) {
+            $y = $az;
+        }
+        elsif ($Y_AXIS =~ /parallactic angle/i) {
+            $y = $pa;
+        }
+
+        if ((($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /elevation/i))
+                || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /elevation/i))
+                || (($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /air mass/i))
+                || (($Y_AXIS =~ /air mass/i) && ($X_AXIS =~ /azimuth/i))) {
+            $x = $ele;
+            $y = $az;
+        }
+
+        $source->timeDotX($x);
+        $source->timeDotY($y);
+
+        $elex = $plotter->toWx($elex) - $plotter->toWx(0);
+        $eley = $plotter->toWy($eley) - $plotter->toWy(0);
+        $azx = $plotter->toWx($azx) - $plotter->toWx(0);
+        $azy = $plotter->toWy($azy) - $plotter->toWy(0);
+
+        # draw the time dot
+        if ($ele > 0) {
+            $source->AzElOffsets($elex, $eley, $azx, $azy);
+            plot_time_dot($source, $plotstyle, $radiusscale);
         }
     }
 
@@ -2629,6 +2631,9 @@ sub calcTime {
 
 sub plot_time_dot {
     my $source = shift;
+    my $plotstyle = shift;
+    my $radiusscale = shift;
+
     my ($elex, $eley, $azx, $azy) = $source->AzElOffsets();
 
     $plotter->drawColor($source->color());
@@ -2636,12 +2641,13 @@ sub plot_time_dot {
             || (($X_AXIS =~ /azimuth/i) && ($Y_AXIS =~ /elevation/i))
             || (($Y_AXIS =~ /azimuth/i) && ($X_AXIS =~ /air mass/i))
             || (($Y_AXIS =~ /air mass/i) && ($X_AXIS =~ /azimuth/i))) {
+        my $sX = my $sY = 2 * $radiusscale;
         my $r = 90 - $source->timeDotX();
         if ($r < 90) {
             my $theta = (90 - $source->timeDotY()) * pi / 180;
             my $x2 = 90 + $r * cos $theta;
             my $y2 = 90 + $r * sin $theta;
-            $plotter->drawFillOval($x2 - 2, $y2 - 2, $x2 + 2, $y2 + 2, 'timeDot' . $source->name());
+            $plotter->$plotstyle($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2 + $sY, 'timeDot' . $source->name());
             $plotter->bindTag(
                 'timeDot' . $source->name(),
                 '<Any-Enter>' => sub {
@@ -2656,12 +2662,12 @@ sub plot_time_dot {
     }
     else {
         my ($sX, $sY) = $plotter->toW($dotSizeX, $dotSizeY);
-        $sX -= $plotter->toWx(0);
-        $sY -= $plotter->toWy(0);
+        $sX = ($sX - $plotter->toWx(0)) * $radiusscale;
+        $sY = ($sY - $plotter->toWy(0)) * $radiusscale;
         my $x2 = $source->timeDotX();
         my $y2 = $source->timeDotY();
         if ($x2 ne '' && $y2 ne '') {
-            $plotter->drawFillOval($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2 + $sY, 'timeDot' . $source->name());
+            $plotter->$plotstyle($x2 - $sX, $y2 - $sY, $x2 + $sX, $y2 + $sY, 'timeDot' . $source->name());
             $plotter->bindTag(
                 'timeDot' . $source->name(),
                 '<Any-Enter>' => sub {
