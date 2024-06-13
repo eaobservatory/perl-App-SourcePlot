@@ -444,7 +444,7 @@ C<App::SourcePlot::Source> object.
 sub addCommand {
     my $selected = shift;
 
-    if (@{$selected} != ()) {
+    if (@{$selected}) {
         my $source;
         $LAST_COMMAND = 'Add';
         @UNDO_LIST = ();
@@ -2493,7 +2493,7 @@ sub plot {
 
         calcTime('TelescopePosition');
 
-        if ($Top != undef) {
+        if (defined $Top) {
             destroy $Top;
         }
         $plotter->penWidth(1);
