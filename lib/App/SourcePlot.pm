@@ -377,6 +377,14 @@ sub run_sourceplot_gui {
         plot();
     });
 
+    if (defined $arg{'plugins'}) {
+        foreach my $plugin (@{$arg{'plugins'}}) {
+            $plugin->initialize($MW,
+                -addCmd => \&addCommand,
+            );
+        }
+    }
+
     print "made it to just before the main loop\n" if $locateBug;
 
     MainLoop;
