@@ -6,7 +6,7 @@ sourceplot - display a plot of astronomical sources on adjustable axes
 
 =head1 SYNOPSIS
 
-    sourceplot [--help | --version] [--date YYYY-MM-DD] [--telposn TELESCOPE] [--samp]
+    sourceplot [--help | --version] [--date YYYY-MM-DD] [--telposition TELESCOPE] [--samp]
 
 =head1 PURPOSE
 
@@ -43,7 +43,7 @@ Show version information.
 
 Select initial date.
 
-=item --telposn TELESCOPE
+=item --telposition TELESCOPE
 
 Indicate current pointing position of given telescope, if available.
 
@@ -287,7 +287,7 @@ GetOptions(
     'help|man' => \$option_help,
     'version' => \$option_version,
     'date=s' => \$option_date,
-    'telposn=s' => \$option_telposn,
+    'telposition=s' => \$option_telposn,
     'samp' => \$option_samp,
 ) or pod2usage(-verbose => 0);
 pod2usage(-verbose => 2) if $option_help;
