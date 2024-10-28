@@ -35,6 +35,8 @@ to handle a limited variety of VOTable files.
 
 use strict;
 
+our $VERSION = '1.32';
+
 use File::Spec;
 use Tk::IO;
 use LWP::UserAgent;

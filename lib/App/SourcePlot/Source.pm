@@ -2,7 +2,7 @@ package App::SourcePlot::Source;
 
 =head1 NAME
 
-App::SourcePlot::Source - creates a observation source
+App::SourcePlot::Source - Create a observation source
 
 =head1 SYNOPSIS
 
@@ -29,7 +29,7 @@ use Math::Trig qw/pi/;
 use DateTime;
 use DateTime::Format::Strptime;
 
-our $VERSION = '1.31';
+our $VERSION = '1.32';
 
 my $locateBug = 0;
 

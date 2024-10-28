@@ -2,7 +2,7 @@ package App::SourcePlot::Plotter::Tk;
 
 =head1 NAME
 
-App::SourcePlot::Plotter::Tk - creates a Tk canvas with easy-to-use method names
+App::SourcePlot::Plotter::Tk - Create a Tk canvas with easy-to-use method names
 
 =head1 DESCRIPTION
 
@@ -15,11 +15,10 @@ packages.
 use 5.004;
 use Carp;
 use strict;
-use vars qw/$VERSION/;
 
 use Tk;
 
-$VERSION = '1.31';
+our $VERSION = '1.32';
 
 =head1 METHODS
 

@@ -2,7 +2,7 @@ package App::SourcePlot;
 
 =head1 NAME
 
-App::SourcePlot - implements Souce Plot application
+App::SourcePlot - Implements Souce Plot application
 
 =head1 SYNOPSIS
 
@@ -22,7 +22,7 @@ display a plot of astronomical sources on adjustable axes.
 use strict;
 #use warnings;
 
-our $VERSION = '1.31';
+our $VERSION = '1.32';
 
 use Config::IniFiles;
 use Tk;

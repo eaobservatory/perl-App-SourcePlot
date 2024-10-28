@@ -33,7 +33,7 @@ my $build = Module::Build->new(
         'Pam Shimek <pshimek@uvic.ca>',
         'Casey Best <cbest@uvic.ca>',
     ],
-    dist_version => '1.31',
+    dist_version_from => 'lib/App/SourcePlot.pm',
     meta_merge => {
         resources => {
             repository => 'https://github.com/eaobservatory/perl-App-SourcePlot.git',

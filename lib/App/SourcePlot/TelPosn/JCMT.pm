@@ -2,11 +2,13 @@ package App::SourcePlot::TelPosn::JCMT;
 
 =head1 NAME
 
-App::SourcePlot::TelPosn::JCMT - class to obtain pointing position of JCMT
+App::SourcePlot::TelPosn::JCMT - Class to obtain pointing position of JCMT
 
 =cut
 
 use strict;
+
+our $VERSION = '1.32';
 
 use Astro::PAL;
 
